@@ -1,0 +1,47 @@
+---
+import Section from "@ui/Section.astro";
+import Eyebrow from "@ui/Eyebrow.astro";
+import MediaSlot from "@ui/MediaSlot.astro";
+import NexusMark from "@ui/NexusMark.astro";
+import { useTranslations } from "@lib/i18n";
+import { media } from "@lib/images";
+
+const t = useTranslations(Astro.currentLocale);
+const { eyebrow, heading, body } = t.about;
+const id = "about";
+---
+
+<Section id={id} class="relative overflow-hidden">
+  <NexusMark
+    class="pointer-events-none absolute -right-24 top-1/2 -z-10 h-[125%] -translate-y-1/2 opacity-[0.045] sm:-right-10"
+  />
+
+  <Eyebrow text={eyebrow} class="reveal" />
+
+  <h2 class="display reveal mt-5 max-w-[18ch] text-[clamp(2rem,4.6vw,3.75rem)]">
+    {heading}
+  </h2>
+
+  <div class="rule-brand reveal mt-10 max-w-md" style="--reveal-delay:60ms"></div>
+
+  {/* Asymmetric split: the photograph carries the weight, the body copy sits
+      in the narrow column beside it. */}
+  <div class="mt-12 grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-12">
+    <MediaSlot
+      class="reveal h-[clamp(300px,42vw,540px)] w-full lg:col-span-7"
+      {...media.teamPractice}
+      sizes="(min-width: 1024px) 58vw, 92vw"
+      tint={14}
+    />
+
+    <div class="flex flex-col gap-6 lg:col-span-4 lg:col-start-9">
+      {
+        body.map((p, i) => (
+          <p class="lede reveal" style={`--reveal-delay:${100 + i * 60}ms`}>
+            {p}
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</Section>

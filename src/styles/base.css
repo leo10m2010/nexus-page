@@ -1,0 +1,33 @@
+/* --------------------------------- base --------------------------------- */
+
+/* Shape lock: radius 0 everywhere, to match the angular mark. Enforced by not
+   reaching for rounded utilities rather than by a global !important override.
+   Only UA-styled controls need an explicit reset. */
+button,
+input,
+select,
+textarea {
+  border-radius: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--c-accent); color: var(--c-on-accent); }
+
+:focus-visible {
+  outline: 2px solid var(--c-accent-lift);
+  outline-offset: 3px;
+}

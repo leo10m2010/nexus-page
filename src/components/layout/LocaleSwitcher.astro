@@ -1,0 +1,75 @@
+---
+import { Icon } from "astro-icon/components";
+import { localeMeta, locales, localePath, resolveLocale, useTranslations } from "@lib/i18n";
+
+/* Compact on purpose. The nav has to stay on one line at 1024px in every
+   language, and three loose EN / ES / RU links would not fit once the longer
+   Spanish nav labels are in. A 60px trigger does. */
+const current = resolveLocale(Astro.currentLocale);
+const t = useTranslations(Astro.currentLocale);
+---
+
+<div class="locale relative">
+  <button
+    type="button"
+    data-locale-toggle
+    class="flex h-10 items-center gap-1.5 border border-line px-2.5 text-muted transition-colors hover:border-line-strong hover:text-ink"
+    aria-label={t.a11y.switchLanguage}
+    aria-expanded="false"
+    aria-haspopup="true"
+    aria-controls="locale-menu"
+  >
+    <Icon name="ph:globe-simple-bold" class="size-[17px]" />
+    <span class="font-display text-[0.75rem] font-bold tracking-[0.1em]">
+      {localeMeta[current].code}
+    </span>
+  </button>
+
+  <ul
+    id="locale-menu"
+    hidden
+    class="locale-menu absolute right-0 top-[calc(100%+1px)] z-10 min-w-[9.5rem] border border-line bg-elev"
+  >
+    {
+      locales.map((l) => (
+        <li>
+          <a
+            href={localePath(l)}
+            hreflang={localeMeta[l].htmlLang}
+            lang={localeMeta[l].htmlLang}
+            aria-current={l === current ? "true" : undefined}
+            class="flex items-center justify-between gap-4 px-3.5 py-2.5 text-sm text-muted transition-colors hover:bg-elev2 hover:text-ink aria-[current]:text-accent-lift"
+          >
+            {localeMeta[l].name}
+            <span class="font-display text-[0.6875rem] font-bold tracking-[0.1em] opacity-70">
+              {localeMeta[l].code}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>(".locale");
+  const btn = root?.querySelector<HTMLButtonElement>("[data-locale-toggle]");
+  const menu = root?.querySelector<HTMLElement>(".locale-menu");
+
+  const setOpen = (open: boolean) => {
+    if (!btn || !menu) return;
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+  };
+
+  btn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    setOpen(menu?.hidden !== false);
+  });
+  document.addEventListener("click", (e) => {
+    if (!root?.contains(e.target as Node)) setOpen(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+</script>

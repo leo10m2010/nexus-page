@@ -1,0 +1,13 @@
+---
+import CompetitionPage from "@components/CompetitionPage.astro";
+import { showCompetition } from "@config/features";
+
+/* Returning an empty list means Astro emits no file at all. While the flag is
+   off the page does not exist in dist/, so the URL cannot be reached even by
+   guessing it. It stays visible in `npm run dev`. */
+export function getStaticPaths() {
+  return showCompetition ? [{ params: { slug: undefined } }] : [];
+}
+---
+
+<CompetitionPage />

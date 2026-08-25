@@ -1,0 +1,53 @@
+# EQUIPOS
+#
+# DATOS DE EJEMPLO. Todos los equipos de abajo son inventados para poder ver
+# la pagina montada. Reemplazalos por los reales antes de publicar.
+#
+# Campos:
+#   id      identificador interno, en minusculas y sin espacios.
+#           Es lo que escribes en matches.yaml para referirte al equipo.
+#   name    nombre visible.
+#   tag     abreviatura de 2 a 4 letras. Sale en el monograma y en los marcadores.
+#   region  texto libre: LATAM, EU, NA, CIS, SEA...
+#   logo    opcional. Ruta dentro de public/, por ejemplo /teams/aurora.svg
+#           Si no lo pones, se dibuja un monograma con el tag.
+
+- id: aurora
+  name: Aurora Collective
+  tag: AUR
+  region: LATAM
+
+- id: kite
+  name: Kite Esports
+  tag: KTE
+  region: EU
+
+- id: meridian
+  name: Meridian Nine
+  tag: MN9
+  region: NA
+
+- id: vantage
+  name: Vantage Point
+  tag: VPT
+  region: CIS
+
+- id: northgate
+  name: Northgate
+  tag: NGT
+  region: EU
+
+- id: solaris
+  name: Solaris Athletic
+  tag: SOL
+  region: BR
+
+- id: halcyon
+  name: Halcyon Division
+  tag: HCY
+  region: SEA
+
+- id: ridgeback
+  name: Ridgeback
+  tag: RDG
+  region: LATAM

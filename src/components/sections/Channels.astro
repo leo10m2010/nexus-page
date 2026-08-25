@@ -1,0 +1,41 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@ui/Section.astro";
+import { channels } from "@config/site";
+import { useTranslations } from "@lib/i18n";
+import type { ChannelCode } from "@types";
+
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Section
+  spacing="tight"
+  ariaLabel={t.a11y.broadcastChannels}
+  class="border-y border-line bg-elev"
+  innerClass="flex flex-col gap-6 md:flex-row md:items-center md:justify-between"
+>
+  <p class="reveal flex items-center gap-3 text-[0.9375rem] text-muted">
+    <Icon name="simple-icons:twitch" class="size-[18px] shrink-0 text-accent-lift" />
+    {t.channels.intro}
+  </p>
+
+  <ul class="reveal flex flex-wrap items-stretch gap-px bg-line" style="--reveal-delay:80ms">
+    {
+      channels.map((c) => (
+        <li class="bg-elev">
+          <a
+            class="group flex items-baseline gap-2.5 px-5 py-3 transition-colors hover:bg-elev2"
+            href={c.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="display-sm text-xl text-ink transition-colors group-hover:text-accent-lift">
+              {c.code}
+            </span>
+            <span class="text-sm text-muted">{t.channels.languages[c.code.toLowerCase() as ChannelCode]}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

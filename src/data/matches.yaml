@@ -1,0 +1,87 @@
+# PARTIDOS
+#
+# DATOS DE EJEMPLO. Reemplazalos por los reales antes de publicar.
+#
+# Un partido aparece en el CALENDARIO si no tiene "score",
+# y en RESULTADOS en cuanto se lo pones. No hay que moverlo de sitio.
+#
+# Campos:
+#   id          identificador interno, unico.
+#   tournament  el id de un torneo de tournaments.yaml
+#   stage       groupStage | quarterfinal | semifinal | final | thirdPlace
+#               (se traduce solo a los tres idiomas)
+#   startsAt    fecha y hora con zona horaria. La Z final significa UTC.
+#               Ejemplo: 2026-09-12T18:00:00Z
+#               La web muestra la hora local de cada visitante.
+#   home / away el id de un equipo de teams.yaml
+#   score       [marcador_home, marcador_away]. BORRA esta linea entera
+#               mientras el partido no se haya jugado.
+
+# --- Por jugar: salen en el calendario ---
+- id: s1-qf1
+  tournament: season-one
+  stage: quarterfinal
+  startsAt: 2026-09-12T18:00:00Z
+  home: aurora
+  away: kite
+
+- id: s1-qf2
+  tournament: season-one
+  stage: quarterfinal
+  startsAt: 2026-09-12T21:00:00Z
+  home: meridian
+  away: vantage
+
+- id: s1-qf3
+  tournament: season-one
+  stage: quarterfinal
+  startsAt: 2026-09-13T18:00:00Z
+  home: northgate
+  away: solaris
+
+- id: s1-qf4
+  tournament: season-one
+  stage: quarterfinal
+  startsAt: 2026-09-13T21:00:00Z
+  home: halcyon
+  away: ridgeback
+
+- id: lq-sf1
+  tournament: latam-qualifier
+  stage: semifinal
+  startsAt: 2026-08-28T23:00:00Z
+  home: aurora
+  away: ridgeback
+
+# --- Jugados: salen en resultados ---
+- id: si-final
+  tournament: summer-invitational
+  stage: final
+  startsAt: 2026-06-21T19:00:00Z
+  home: kite
+  away: meridian
+  score: [3, 1]
+
+- id: si-sf1
+  tournament: summer-invitational
+  stage: semifinal
+  startsAt: 2026-06-19T18:00:00Z
+  home: kite
+  away: northgate
+  score: [2, 0]
+
+- id: si-sf2
+  tournament: summer-invitational
+  stage: semifinal
+  startsAt: 2026-06-19T21:00:00Z
+  home: meridian
+  away: solaris
+  score: [2, 1]
+
+- id: si-qf1
+  tournament: summer-invitational
+  stage: quarterfinal
+  startsAt: 2026-06-14T18:00:00Z
+  home: northgate
+  away: halcyon
+  score: [2, 1]

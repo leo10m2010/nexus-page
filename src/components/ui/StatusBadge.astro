@@ -1,0 +1,35 @@
+---
+import type { Tournament } from "@lib/competition";
+import { useTranslations } from "@lib/i18n";
+
+/* The dot here carries real state, which is the only case the design rules
+   allow one: it marks a tournament that is actually running right now. */
+interface Props {
+  status: Tournament["status"];
+}
+const { status } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
+
+const tone = {
+  live: "border-accent text-accent-lift",
+  upcoming: "border-line-strong text-ink",
+  finished: "border-line text-muted",
+}[status];
+---
+
+<span
+  class={`inline-flex items-center gap-2 border px-2.5 py-1 font-display text-[0.6875rem] font-bold tracking-[0.14em] uppercase ${tone}`}
+>
+  {status === "live" && <span class="live-dot size-1.5 bg-accent-lift"></span>}
+  {t.competition.status[status]}
+</span>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .live-dot { animation: live 2s ease-in-out infinite; }
+    @keyframes live {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  }
+</style>

@@ -1,0 +1,62 @@
+---
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import NexusMark from "./NexusMark.astro";
+
+/* A framed media area. Pass an imported image from `src/assets/` and Astro
+   emits responsive WebP with intrinsic dimensions (no layout shift). With no
+   `src` it falls back to a quiet brand surface, so the layout still reads as
+   intentional while a photo is missing. */
+interface Props {
+  src?: ImageMetadata;
+  alt?: string;
+  sizes?: string;
+  priority?: boolean;
+  /** Navy wash strength over the photo, 0 to 100. Ties stock to the palette. */
+  tint?: number;
+  class?: string;
+}
+
+const {
+  src,
+  alt = "",
+  sizes = "(min-width: 1024px) 50vw, 92vw",
+  priority = false,
+  tint = 22,
+  class: klass = "",
+} = Astro.props;
+---
+
+{
+  src ? (
+    <div class={`relative overflow-hidden ${klass}`}>
+      <Image
+        src={src}
+        alt={alt}
+        widths={[480, 768, 1024, 1440]}
+        sizes={sizes}
+        format="webp"
+        quality={72}
+        class="absolute inset-0 size-full object-cover"
+        loading={priority ? "eager" : "lazy"}
+        decoding={priority ? "sync" : "async"}
+        {...(priority ? { fetchpriority: "high" } : {})}
+      />
+      {/* Navy wash only. A --c-bg scrim would invert with the theme and
+          haze the foot of a dark photo on the light palette. */}
+      <div
+        class="absolute inset-0"
+        aria-hidden="true"
+        style={`background: color-mix(in srgb, var(--c-brand) ${tint}%, transparent)`}
+      />
+    </div>
+  ) : (
+    <div
+      class={`chevron-field relative grid place-items-center overflow-hidden border border-line ${klass}`}
+      style="background: color-mix(in srgb, var(--c-bg) 55%, transparent)"
+      aria-hidden="true"
+    >
+      <NexusMark class="h-[42%] max-h-32 w-auto opacity-[0.16]" />
+    </div>
+  )
+}

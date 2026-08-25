@@ -1,0 +1,41 @@
+# TORNEOS
+#
+# DATOS DE EJEMPLO. Reemplazalos por los reales antes de publicar.
+#
+# Campos:
+#   id          identificador interno. Es lo que escribes en matches.yaml.
+#   name        nombre visible.
+#   status      upcoming | live | finished
+#   startDate   fecha de inicio, formato AAAA-MM-DD
+#   endDate     fecha de fin, formato AAAA-MM-DD
+#   region      texto libre.
+#   format      doubleElimination | singleElimination | roundRobin | swiss
+#               (se traduce solo a los tres idiomas)
+#   teamCount   numero de equipos.
+
+- id: season-one
+  name: Nexus Series Season One
+  status: upcoming
+  startDate: 2026-09-12
+  endDate: 2026-10-18
+  region: International
+  format: doubleElimination
+  teamCount: 16
+
+- id: latam-qualifier
+  name: LATAM Qualifier
+  status: live
+  startDate: 2026-08-20
+  endDate: 2026-08-30
+  region: LATAM
+  format: swiss
+  teamCount: 24
+
+- id: summer-invitational
+  name: Summer Invitational
+  status: finished
+  startDate: 2026-06-05
+  endDate: 2026-06-21
+  region: International
+  format: singleElimination
+  teamCount: 8

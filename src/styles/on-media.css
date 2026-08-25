@@ -1,0 +1,15 @@
+/* ------------------------------- on media -------------------------------- */
+
+/* Content sitting on top of photography. Photographs do not flip with the
+   theme, so neither can the type over them: these tokens pin to the
+   light-on-dark set in both modes. Scoped, never global. */
+.on-media {
+  --c-text: #eeedee;
+  --c-text-muted: #bcc3d2;
+  --c-line: rgb(238 237 238 / 0.18);
+  --c-line-strong: rgb(238 237 238 / 0.34);
+  --c-accent: #ae7c32;
+  --c-accent-lift: #d8ab5e;
+  --c-on-accent: #06080f;
+  color: var(--c-text);
+}

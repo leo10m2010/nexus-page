@@ -1,0 +1,148 @@
+---
+import { Icon } from "astro-icon/components";
+import BrandLogo from "@ui/BrandLogo.astro";
+import Button from "@ui/Button.astro";
+import ThemeToggle from "@layout/ThemeToggle.astro";
+import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
+import { useTranslations } from "@lib/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+import { navItems, NAV_HEIGHT } from "@config/nav";
+import { ctas } from "@config/site";
+import { showCompetition } from "@config/features";
+import { localePath, resolveLocale } from "@lib/i18n";
+
+/* Only linked while the page actually exists in the build. */
+const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}competition/`.replace("//", "/");
+---
+
+<header
+  class="fixed inset-x-0 top-0 z-50 border-b border-line backdrop-blur-xl"
+  style={`height:${NAV_HEIGHT}px;background:var(--c-scrim)`}
+>
+  <nav
+    class="mx-auto flex h-full max-w-[1400px] items-center gap-6 px-5 sm:px-8"
+    aria-label={t.a11y.primaryNav}
+  >
+    <a href="#home" class="shrink-0" aria-label={t.a11y.backToTop}>
+      <BrandLogo height={24} />
+    </a>
+
+    <ul class="ml-auto hidden items-center gap-8 lg:flex">
+      {
+        navItems.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="nav-link font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
+            >
+              {t.nav[l.key]}
+            </a>
+          </li>
+        ))
+      }
+      {
+        showCompetition && (
+          <li>
+            <a
+              href={competitionHref}
+              class="nav-link font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
+            >
+              {t.competition.navLabel}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+
+    <div class="ml-auto flex items-center gap-2 lg:ml-0">
+      <LocaleSwitcher />
+      <ThemeToggle />
+
+      {/* The wrapper owns visibility: `.btn` sets display and is declared after
+          Tailwind's `hidden`, so the utility would lose on the anchor itself. */}
+      <span class="hidden sm:block">
+        <Button {...ctas.partnership} label={t.cta.partnership} class="!py-[0.6875rem]" />
+      </span>
+
+      <button
+        type="button"
+        data-menu-toggle
+        data-label-open={t.a11y.openMenu}
+        data-label-close={t.a11y.closeMenu}
+        class="grid size-10 place-items-center border border-line text-ink lg:hidden"
+        aria-label={t.a11y.openMenu}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <Icon name="ph:list-bold" class="size-5" />
+      </button>
+    </div>
+  </nav>
+
+  <div id="mobile-menu" hidden class="border-t border-line bg-elev px-5 py-6 lg:hidden">
+    <ul class="flex flex-col gap-1">
+      {
+        navItems.map((l) => (
+          <li>
+            <a href={l.href} class="menu-link display-sm block py-3 text-2xl text-ink">
+              {t.nav[l.key]}
+            </a>
+          </li>
+        ))
+      }
+      {
+        showCompetition && (
+          <li>
+            <a href={competitionHref} class="menu-link display-sm block py-3 text-2xl text-ink">
+              {t.competition.navLabel}
+            </a>
+          </li>
+        )
+      }
+    </ul>
+    <Button {...ctas.partnership} label={t.cta.partnership} block class="menu-link mt-5" />
+  </div>
+</header>
+
+<style>
+  /* Underline grows from the left on hover: cheap, motivated feedback. */
+  .nav-link { position: relative; padding-block: 0.35rem; }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--c-accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s var(--ease-out-quint);
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link::after { transition: none; }
+  }
+</style>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
+  const menu = document.getElementById("mobile-menu");
+
+  const setMenu = (open: boolean) => {
+    if (!menu || !btn) return;
+    menu.hidden = !open;
+    btn.setAttribute("aria-expanded", String(open));
+    const label = open ? btn.dataset.labelClose : btn.dataset.labelOpen;
+    if (label) btn.setAttribute("aria-label", label);
+  };
+
+  // `hidden` widens to boolean | "until-found", so compare explicitly.
+  btn?.addEventListener("click", () => setMenu(menu?.hidden !== false));
+  menu?.querySelectorAll(".menu-link").forEach((a) =>
+    a.addEventListener("click", () => setMenu(false)),
+  );
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setMenu(false);
+  });
+</script>

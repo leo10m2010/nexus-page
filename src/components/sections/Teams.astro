@@ -1,0 +1,36 @@
+---
+import Section from "@ui/Section.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import { getTeams } from "@lib/competition";
+import { useTranslations } from "@lib/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+const teams = await getTeams();
+---
+
+<Section id="teams" bordered>
+  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">
+    {t.competition.teams}
+  </h2>
+
+  {
+    teams.length === 0 ? (
+      <p class="lede reveal mt-8">{t.competition.empty}</p>
+    ) : (
+      <ul class="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+        {teams.map((team, i) => (
+          <li
+            class="reveal flex items-center gap-4 bg-elev px-6 py-6"
+            style={`--reveal-delay:${(i % 4) * 60}ms`}
+          >
+            <TeamMark team={team} size={44} />
+            <span class="min-w-0">
+              <span class="display-sm block truncate text-base">{team.name}</span>
+              <span class="mt-1 block text-[0.8125rem] text-muted">{team.region}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Section>

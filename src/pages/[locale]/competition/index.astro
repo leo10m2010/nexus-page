@@ -1,0 +1,14 @@
+---
+import CompetitionPage from "@components/CompetitionPage.astro";
+import { DEFAULT_LOCALE, locales } from "@lib/i18n";
+import { showCompetition } from "@config/features";
+
+export function getStaticPaths() {
+  if (!showCompetition) return [];
+  return locales
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .map((locale) => ({ params: { locale } }));
+}
+---
+
+<CompetitionPage />

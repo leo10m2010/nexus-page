@@ -1,0 +1,26 @@
+---
+/* The wordmark swaps with the theme via --logo-src (white.svg on dark,
+   normal.svg on light). Both share a 3.145:1 aspect ratio. */
+interface Props {
+  height?: number;
+  class?: string;
+}
+const { height = 26, class: klass = "" } = Astro.props;
+---
+
+<span
+  class={`brand-logo block ${klass}`}
+  style={`height:${height}px;width:${(height * 3.145).toFixed(1)}px`}
+  role="img"
+  aria-label="Nexus Series"
+>
+</span>
+
+<style>
+  .brand-logo {
+    background-image: var(--logo-src);
+    background-size: contain;
+    background-position: left center;
+    background-repeat: no-repeat;
+  }
+</style>

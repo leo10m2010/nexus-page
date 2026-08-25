@@ -1,0 +1,47 @@
+---
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/inter-tight/wght.css";
+import "@styles/global.css";
+
+import Seo from "@layout/Seo.astro";
+import { themeBootScript } from "@lib/theme";
+import { localeMeta, resolveLocale, useTranslations } from "@lib/i18n";
+
+interface Props {
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { title, description, noindex } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+---
+
+<!doctype html>
+<html lang={localeMeta[locale].htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/logos/app.svg" />
+    <link rel="apple-touch-icon" href="/logos/app.svg" />
+    <meta name="theme-color" content="#06080f" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f1f1f0" media="(prefers-color-scheme: light)" />
+
+    <Seo title={title} description={description} noindex={noindex} />
+
+    <script is:inline set:html={themeBootScript} />
+  </head>
+
+  <body>
+    <a
+      href="#about"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"
+      >{t.a11y.skipToContent}</a
+    >
+    <slot />
+    <script>
+      import "@lib/reveal";
+    </script>
+  </body>
+</html>

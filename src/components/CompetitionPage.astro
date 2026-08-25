@@ -1,0 +1,41 @@
+---
+import Base from "@layouts/Base.astro";
+import Nav from "@layout/Nav.astro";
+import Footer from "@layout/Footer.astro";
+import Section from "@ui/Section.astro";
+import Eyebrow from "@ui/Eyebrow.astro";
+import Tournaments from "@sections/Tournaments.astro";
+import Schedule from "@sections/Schedule.astro";
+import Results from "@sections/Results.astro";
+import Teams from "@sections/Teams.astro";
+import { site } from "@config/site";
+import { NAV_HEIGHT } from "@config/nav";
+import { useTranslations } from "@lib/i18n";
+import { features } from "@config/features";
+
+const t = useTranslations(Astro.currentLocale);
+const c = t.competition;
+---
+
+<Base
+  title={`${c.heading.replace(/\.$/, "")} | ${site.name}`}
+  description={c.lede}
+  noindex={!features.competition.published}
+>
+  <Nav />
+  <main>
+    <Section class="border-b border-line" innerClass="max-w-[60rem]">
+      <div style={`padding-top:${NAV_HEIGHT}px`}>
+        <Eyebrow text={c.eyebrow} class="reveal" />
+        <h1 class="display reveal mt-5 text-[clamp(2rem,4.6vw,3.75rem)]">{c.heading}</h1>
+        <p class="lede reveal mt-6" style="--reveal-delay:80ms">{c.lede}</p>
+      </div>
+    </Section>
+
+    <Tournaments />
+    <Schedule />
+    <Results />
+    <Teams />
+  </main>
+  <Footer />
+</Base>

@@ -1,0 +1,26 @@
+---
+import BrandLogo from "@ui/BrandLogo.astro";
+import SocialLinks from "@ui/SocialLinks.astro";
+import { site } from "@config/site";
+import { useTranslations } from "@lib/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-line bg-elev">
+  <div
+    class="mx-auto flex max-w-[1400px] flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between"
+  >
+    <a href="#home" aria-label={t.a11y.backToTop}>
+      <BrandLogo height={22} />
+    </a>
+
+    <p class="text-sm text-muted">
+      &copy; {year} {site.name}. {t.footer.rights}
+    </p>
+
+    <SocialLinks />
+  </div>
+</footer>

@@ -1,0 +1,21 @@
+/* -------------------------------- motion -------------------------------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Progressive enhancement: content is visible by default and only hides
+     once the head script has confirmed JS is running. If the observer never
+     fires, or JS fails outright, the page still reads. */
+  .js-reveal .reveal {
+    opacity: 0;
+    transform: translateY(22px);
+    transition: opacity 0.7s var(--ease-out-quint),
+                transform 0.7s var(--ease-out-quint);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .js-reveal .reveal.is-in { opacity: 1; transform: none; }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js-reveal .reveal { opacity: 1; transform: none; }
+}

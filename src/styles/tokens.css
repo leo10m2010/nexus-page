@@ -1,0 +1,92 @@
+/* ---------------------------------------------------------------
+   NEXUS SERIES - design tokens
+   Palette lock: navy #1d3c87 (structural brand) + gold #ae7c32
+   (single accent) + off-white #eeedee. Taken from the brand SVGs.
+   Shape lock: radius 0 everywhere. The mark is angular, the UI is too.
+   Theme: dual. Dark is the default (the primary logo is drawn for
+   dark, and the product lives on broadcast surfaces).
+--------------------------------------------------------------- */
+
+:root {
+  color-scheme: dark;
+
+  --c-bg: #06080f;
+  --c-bg-elev: #0b1020;
+  --c-bg-elev-2: #101830;
+  --c-line: rgb(238 237 238 / 0.10);
+  --c-line-strong: rgb(238 237 238 / 0.20);
+  --c-text: #eeedee;
+  --c-text-muted: #9aa3b8;
+  --c-brand: #1d3c87;
+  --c-brand-lift: #4470d8;
+  --c-accent: #ae7c32;
+  --c-accent-lift: #d2a355;
+  --c-on-accent: #06080f;
+  --c-scrim: rgb(6 8 15 / 0.72);
+
+  --logo-src: url("/logos/white.svg");
+  --mark-src: url("/logos/icono-normal.svg");
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --c-bg: #f1f1f0;
+  --c-bg-elev: #fafaf9;
+  --c-bg-elev-2: #e8e8e6;
+  --c-line: rgb(16 19 28 / 0.12);
+  --c-line-strong: rgb(16 19 28 / 0.24);
+  --c-text: #10131c;
+  --c-text-muted: #4a5266;
+  --c-brand: #1d3c87;
+  --c-brand-lift: #1d3c87;
+  --c-accent: #8a6023;
+  --c-accent-lift: #6f4c1b;
+  --c-on-accent: #fafaf9;
+  --c-scrim: rgb(241 241 240 / 0.78);
+
+  --logo-src: url("/logos/normal.svg");
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --c-bg: #f1f1f0;
+    --c-bg-elev: #fafaf9;
+    --c-bg-elev-2: #e8e8e6;
+    --c-line: rgb(16 19 28 / 0.12);
+    --c-line-strong: rgb(16 19 28 / 0.24);
+    --c-text: #10131c;
+    --c-text-muted: #4a5266;
+    --c-brand: #1d3c87;
+    --c-brand-lift: #1d3c87;
+    --c-accent: #8a6023;
+    --c-accent-lift: #6f4c1b;
+    --c-on-accent: #fafaf9;
+    --c-scrim: rgb(241 241 240 / 0.78);
+
+    --logo-src: url("/logos/normal.svg");
+  }
+}
+
+@theme {
+  --color-bg: var(--c-bg);
+  --color-elev: var(--c-bg-elev);
+  --color-elev2: var(--c-bg-elev-2);
+  --color-line: var(--c-line);
+  --color-line-strong: var(--c-line-strong);
+  --color-ink: var(--c-text);
+  --color-muted: var(--c-text-muted);
+  --color-brand: var(--c-brand);
+  --color-brand-lift: var(--c-brand-lift);
+  --color-accent: var(--c-accent);
+  --color-accent-lift: var(--c-accent-lift);
+  --color-on-accent: var(--c-on-accent);
+
+  --font-display: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter Tight Variable", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-none: 0px;
+  --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+}

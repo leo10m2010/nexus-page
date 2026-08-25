@@ -1,0 +1,11 @@
+---
+/* Small caps label above a section heading. Rationed on purpose: at most one
+   per three sections, or the page starts to read as a template. */
+interface Props {
+  text: string;
+  class?: string;
+}
+const { text, class: klass = "" } = Astro.props;
+---
+
+<p class={`eyebrow ${klass}`}>{text}</p>

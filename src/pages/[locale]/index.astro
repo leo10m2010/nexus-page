@@ -1,0 +1,14 @@
+---
+import HomePage from "@components/HomePage.astro";
+import { DEFAULT_LOCALE, locales } from "@lib/i18n";
+
+/* The default locale is served from the root by index.astro, so it is not
+   generated here. Adding a language to `locales` adds its route. */
+export function getStaticPaths() {
+  return locales
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .map((locale) => ({ params: { locale } }));
+}
+---
+
+<HomePage />

@@ -1,0 +1,27 @@
+---
+import { Icon } from "astro-icon/components";
+import { socialLinks } from "@config/site";
+
+interface Props {
+  class?: string;
+}
+const { class: klass = "" } = Astro.props;
+---
+
+<ul class={`flex items-center gap-1 ${klass}`}>
+  {
+    socialLinks.map((s) => (
+      <li>
+        <a
+          class="grid size-10 place-items-center text-muted transition-colors hover:text-accent-lift"
+          href={s.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={s.label}
+        >
+          <Icon name={s.icon} class="size-5" />
+        </a>
+      </li>
+    ))
+  }
+</ul>

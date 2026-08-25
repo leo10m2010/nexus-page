@@ -1,0 +1,64 @@
+---
+import Section from "@ui/Section.astro";
+import StatusBadge from "@ui/StatusBadge.astro";
+import { getTournaments } from "@lib/competition";
+import { formatDateRange } from "@lib/format";
+import { useTranslations } from "@lib/i18n";
+
+const t = useTranslations(Astro.currentLocale);
+const tournaments = await getTournaments();
+const locale = Astro.currentLocale;
+---
+
+<Section id="tournaments" bordered>
+  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">
+    {t.competition.tournaments}
+  </h2>
+
+  {/* The running tournament takes the wide cell. The grid has exactly as many
+      cells as there are tournaments. */}
+  <div class="mt-10 grid gap-px bg-line md:grid-cols-2">
+    {
+      tournaments.map((tour, i) => (
+        <article
+          class={`reveal flex flex-col justify-between gap-8 bg-elev p-8 sm:p-10 ${
+            i === 0 ? "md:col-span-2" : ""
+          }`}
+          style={`--reveal-delay:${i * 70}ms`}
+        >
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <h3
+              class={`display-sm ${i === 0 ? "text-[clamp(1.5rem,2.6vw,2.25rem)]" : "text-xl"}`}
+            >
+              {tour.name}
+            </h3>
+            <StatusBadge status={tour.status} />
+          </div>
+
+          <dl class="flex flex-wrap gap-x-10 gap-y-4 text-[0.9375rem]">
+            <div>
+              <dt class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
+                {t.competition.schedule}
+              </dt>
+              <dd class="mt-1 text-ink">
+                {formatDateRange(tour.startDate, tour.endDate, locale)}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
+                {t.competition.teams}
+              </dt>
+              <dd class="mt-1 text-ink">{t.competition.teamCount(tour.teamCount)}</dd>
+            </div>
+            <div>
+              <dt class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
+                {tour.region}
+              </dt>
+              <dd class="mt-1 text-ink">{t.competition.format[tour.format]}</dd>
+            </div>
+          </dl>
+        </article>
+      ))
+    }
+  </div>
+</Section>

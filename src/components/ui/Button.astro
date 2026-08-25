@@ -1,0 +1,34 @@
+---
+import { Icon } from "astro-icon/components";
+import type { Link } from "@types";
+
+/* The only way a call to action is rendered. Variants live here so a CTA
+   cannot drift in padding, casing or hover behaviour between sections. */
+interface Props extends Link {
+  variant?: "primary" | "ghost";
+  icon?: string;
+  block?: boolean;
+  class?: string;
+}
+
+const {
+  label,
+  href,
+  external = false,
+  variant = "primary",
+  icon,
+  block = false,
+  class: klass = "",
+} = Astro.props;
+
+const rel = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+---
+
+<a
+  class={`btn btn-${variant} ${block ? "w-full" : ""} ${klass}`}
+  href={href}
+  {...rel}
+>
+  {icon && <Icon name={icon} class="size-[17px]" />}
+  {label}
+</a>

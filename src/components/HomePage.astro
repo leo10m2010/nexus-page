@@ -1,0 +1,30 @@
+---
+import Base from "@layouts/Base.astro";
+import Nav from "@layout/Nav.astro";
+import Footer from "@layout/Footer.astro";
+import Hero from "@sections/Hero.astro";
+import Channels from "@sections/Channels.astro";
+import About from "@sections/About.astro";
+import Vision from "@sections/Vision.astro";
+import Partners from "@sections/Partners.astro";
+import Contact from "@sections/Contact.astro";
+import { site } from "@config/site";
+import { useTranslations } from "@lib/i18n";
+
+/* One page body, rendered by every locale route. Sections read the active
+   dictionary from Astro.currentLocale, so nothing is threaded through props. */
+const t = useTranslations(Astro.currentLocale);
+---
+
+<Base title={`${site.name} | ${t.tagline}`} description={t.hero.lede}>
+  <Nav />
+  <main>
+    <Hero />
+    <Channels />
+    <About />
+    <Vision />
+    <Partners />
+    <Contact />
+  </main>
+  <Footer />
+</Base>

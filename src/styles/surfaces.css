@@ -1,0 +1,24 @@
+/* -------------------------------- surface ------------------------------- */
+
+.rule { height: 1px; background: var(--c-line); }
+
+/* A hairline that carries the brand angle: navy fading into gold. */
+.rule-brand {
+  height: 1px;
+  background: linear-gradient(90deg, var(--c-brand-lift), var(--c-accent) 45%, transparent);
+}
+
+.panel {
+  background: var(--c-bg-elev);
+  border: 1px solid var(--c-line);
+}
+
+/* Chevron field: the 45deg cut of the N mark, repeated as texture.
+   Fixed, pointer-events-none, never on a scrolling container. */
+.chevron-field {
+  background-image: repeating-linear-gradient(
+    135deg,
+    var(--c-line) 0 1px,
+    transparent 1px 14px
+  );
+}

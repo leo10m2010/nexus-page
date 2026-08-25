@@ -1,0 +1,57 @@
+---
+import Button from "@ui/Button.astro";
+import MediaBackdrop from "@ui/MediaBackdrop.astro";
+import { ctas } from "@config/site";
+import { NAV_HEIGHT } from "@config/nav";
+import { useTranslations } from "@lib/i18n";
+import { media } from "@lib/images";
+
+/* Full-bleed stage photography. The frame has a dark, quiet left side and the
+   stage right of centre, so the type lives in the lower band where the scrim
+   is strongest and the arena stays legible above it. */
+const t = useTranslations(Astro.currentLocale);
+const { headline, headlineClamp, lede } = t.hero;
+---
+
+<section
+  id="home"
+  class="on-media relative isolate flex min-h-[100dvh] flex-col justify-end border-b border-line"
+>
+  <MediaBackdrop
+    {...media.heroStage}
+    position="56% center"
+    scrim="stage"
+    sizes="100vw"
+    tint={12}
+    priority
+    class="-z-10"
+  />
+
+  <div
+    class="mx-auto w-full max-w-[1400px] px-5 pb-14 sm:px-8 sm:pb-20"
+    style={`padding-top:${NAV_HEIGHT + 20}px`}
+  >
+    <h1 class="display reveal" style={`font-size:${headlineClamp}`}>
+      {
+        headline.map((line, i) => (
+          <>
+            {i > 0 && <br />}
+            {line.accent ? <span class="text-accent-lift">{line.text}</span> : line.text}
+          </>
+        ))
+      }
+    </h1>
+
+    <div class="mt-9 grid gap-8 lg:grid-cols-12 lg:items-end">
+      <p class="lede reveal lg:col-span-6" style="--reveal-delay:90ms">{lede}</p>
+
+      <div
+        class="reveal flex flex-wrap gap-3 lg:col-span-5 lg:col-start-8 lg:justify-end"
+        style="--reveal-delay:170ms"
+      >
+        <Button {...ctas.community} label={t.cta.community} />
+        <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" />
+      </div>
+    </div>
+  </div>
+</section>

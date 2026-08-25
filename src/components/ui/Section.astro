@@ -1,0 +1,41 @@
+---
+/* Page section shell: owns the anchor, the max width, the gutters and the
+   vertical rhythm, so sections only describe their own content. */
+interface Props {
+  id?: string;
+  labelledby?: string;
+  ariaLabel?: string;
+  /** `none` lets a section run full bleed and manage its own padding. */
+  spacing?: "none" | "tight" | "default";
+  bordered?: boolean;
+  class?: string;
+  innerClass?: string;
+}
+
+const {
+  id,
+  labelledby,
+  ariaLabel,
+  spacing = "default",
+  bordered = false,
+  class: klass = "",
+  innerClass = "",
+} = Astro.props;
+
+const pad = {
+  none: "",
+  tight: "py-7",
+  default: "py-24 sm:py-32",
+}[spacing];
+---
+
+<section
+  id={id}
+  aria-labelledby={labelledby}
+  aria-label={ariaLabel}
+  class={`${bordered ? "border-t border-line" : ""} ${pad} ${klass}`}
+>
+  <div class={`mx-auto w-full max-w-[1400px] px-5 sm:px-8 ${innerClass}`}>
+    <slot />
+  </div>
+</section>

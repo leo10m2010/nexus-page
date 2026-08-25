@@ -1,0 +1,31 @@
+{
+  "name": "nexus-series-web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "node scripts/check-data.mjs && astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "build:fast": "astro build",
+    "og": "node scripts/build-og.mjs",
+    "check:data": "node scripts/check-data.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource-variable/inter-tight": "^5.3.0",
+    "@iconify-json/ph": "^1.2.2",
+    "@iconify-json/simple-icons": "^1.2.93",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.6",
+    "astro-icon": "^1.2.0",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3",
+    "yaml": "^2.9.0"
+  }
+}
