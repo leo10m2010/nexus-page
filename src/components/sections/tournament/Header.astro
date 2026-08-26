@@ -1,0 +1,76 @@
+---
+import Section from "@ui/Section.astro";
+import StatusBadge from "@ui/StatusBadge.astro";
+import type { Tournament } from "@lib/competition";
+import { formatDateRange, formatMoney } from "@lib/format";
+import { useTranslations, resolveLocale, DEFAULT_LOCALE } from "@lib/i18n";
+import { NAV_HEIGHT } from "@config/nav";
+
+/* The masthead of a tournament page. Everything here is a fact you would want
+   before deciding to read on: what it is, whether it is running, when, where,
+   for how much. The same facts appear again in the panel further down, in a
+   form you can scan row by row; up here they are one line of headline data. */
+interface Props {
+  tournament: Tournament;
+}
+const { tournament } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+const backHref = `${locale === DEFAULT_LOCALE ? "" : `/${locale}`}/competition/`;
+
+const facts = [
+  { label: c.info.dates, value: formatDateRange(tournament.startDate, tournament.endDate, locale) },
+  {
+    label: c.info.prizePool,
+    value: tournament.prizePool
+      ? formatMoney(tournament.prizePool.total, tournament.prizePool.currency, locale)
+      : null,
+  },
+  { label: c.info.teams, value: c.teamCount(tournament.teamCount) },
+  { label: c.info.format, value: c.format[tournament.format] },
+  { label: c.info.location, value: tournament.location ?? tournament.region },
+].filter((f): f is { label: string; value: string } => f.value !== null);
+
+/* A tournament without a prize pool has one fact fewer, and the strip has to
+   lose a column with it rather than end on an empty one. */
+const columns =
+  { 4: "lg:grid-cols-4", 5: "lg:grid-cols-5" }[facts.length] ?? "lg:grid-cols-5";
+---
+
+<Section class="relative overflow-hidden border-b border-line">
+  {/* The 45deg cut of the N mark, used as a quiet field behind the title. */}
+  <div class="chevron-field pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
+
+  <div class="relative" style={`padding-top:${NAV_HEIGHT}px`}>
+    <a
+      href={backHref}
+      class="eyebrow reveal inline-flex items-center gap-2 text-muted transition-colors hover:text-accent-lift"
+    >
+      <span aria-hidden="true">&larr;</span>
+      {c.allTournaments}
+    </a>
+
+    <div class="reveal mt-6 flex flex-wrap items-center gap-4">
+      {tournament.series && <p class="eyebrow">{tournament.series}</p>}
+      <StatusBadge status={tournament.status} />
+    </div>
+
+    <h1 class="display reveal mt-5 max-w-[24ch] text-[clamp(2rem,5vw,4.25rem)]">
+      {tournament.name}
+    </h1>
+
+    <dl class={`reveal mt-12 grid gap-px border-t border-line bg-line sm:grid-cols-2 ${columns}`}>
+      {
+        facts.map((fact) => (
+          <div class="bg-bg pt-5 sm:pr-6">
+            <dt class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">{fact.label}</dt>
+            <dd class="display-sm mt-2 text-[1.0625rem]">{fact.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</Section>

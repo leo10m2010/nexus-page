@@ -1,0 +1,90 @@
+---
+import Section from "@ui/Section.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import type { Group } from "@lib/competition";
+import { useTranslations } from "@lib/i18n";
+
+/* Group tables. Nothing in here is stored: a result is written once, in
+   matches.yaml, and these numbers are counted from it. Which means a table
+   can never disagree with the result it came from. */
+interface Props {
+  id: string;
+  groups: Group[];
+}
+const { id, groups } = Astro.props;
+
+const t = useTranslations(Astro.currentLocale);
+const c = t.competition;
+
+const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
+---
+
+<Section id={id} bordered>
+  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.standings}</h2>
+
+  <div class="grid-hairline mt-10 grid lg:grid-cols-2">
+    {
+      groups.map((group, i) => (
+        <div class="reveal bg-elev p-6 sm:p-8" style={`--reveal-delay:${i * 70}ms`}>
+          <h3 class="display-sm text-sm text-accent-lift">
+            {c.stage.groupStage} <span class="px-1 text-muted">/</span> {group.name}
+          </h3>
+
+          <div class="mt-5 overflow-x-auto">
+            <table class="w-full min-w-[26rem] border-collapse text-left">
+              <thead>
+                <tr class="border-b border-line-strong">
+                  <th scope="col" class="th w-8 text-right">#</th>
+                  <th scope="col" class="th pl-4">{c.standingsHead.team}</th>
+                  <th scope="col" class="th text-right">{c.standingsHead.series}</th>
+                  <th scope="col" class="th text-right">{c.standingsHead.maps}</th>
+                  <th scope="col" class="th text-right">{c.standingsHead.diff}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.rows.map((row, place) => (
+                  <tr class="border-b border-line last:border-0">
+                    <td
+                      class={`py-3.5 text-right font-display text-[0.8125rem] font-bold tabular-nums ${
+                        place === 0 ? "text-accent-lift" : "text-muted"
+                      }`}
+                    >
+                      {place + 1}
+                    </td>
+                    <td class="py-3.5 pl-4">
+                      <span class="flex items-center gap-2.5">
+                        <TeamMark team={row.team} size={24} />
+                        <span class="truncate text-[0.9375rem]">{row.team.name}</span>
+                      </span>
+                    </td>
+                    <td class="py-3.5 text-right text-[0.9375rem] tabular-nums">
+                      {row.wins}<span class="px-0.5 text-muted">-</span>{row.losses}
+                    </td>
+                    <td class="py-3.5 text-right text-[0.9375rem] text-muted tabular-nums">
+                      {row.mapsWon}<span class="px-0.5">-</span>{row.mapsLost}
+                    </td>
+                    <td class="py-3.5 text-right text-[0.9375rem] text-muted tabular-nums">
+                      {sign(row.mapsWon - row.mapsLost)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .th {
+    padding-block: 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+</style>

@@ -1,0 +1,201 @@
+---
+import TeamMark from "@ui/TeamMark.astro";
+import Section from "@ui/Section.astro";
+import type { BracketRound, BracketSide, ResolvedMatch } from "@lib/competition";
+import { formatDate } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+/* The bracket, drawn straight from matches.yaml: a match belongs to a column
+   because it says which bracket and which round it is in, not because of
+   where it sits in the file.
+
+   Elbows are only drawn where a round actually feeds the next one, which is
+   when the next round has half the matches. In the lower bracket, where a
+   round instead takes on the teams dropping out of the upper bracket, the
+   columns stand on their own and no line is invented between them. */
+interface Props {
+  id: string;
+  sides: BracketSide[];
+}
+const { id, sides } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+/** Two matches per box, so the pair can carry the elbow that joins them. */
+const pairs = (matches: ResolvedMatch[]): ResolvedMatch[][] =>
+  matches.reduce<ResolvedMatch[][]>((out, match, i) => {
+    if (i % 2 === 0) out.push([match]);
+    else out[out.length - 1]!.push(match);
+    return out;
+  }, []);
+
+const feeds = (round: BracketRound, next: BracketRound | undefined): boolean =>
+  next != null && next.matches.length * 2 === round.matches.length;
+
+const heading = (round: BracketRound): string =>
+  round.stage ? c.stage[round.stage] : c.round(round.round);
+
+/* A one-column side, like the grand final, already says its name above the
+   column. Repeating it on the column would be the same word twice. */
+const repeatsSide = (side: BracketSide, round: BracketRound): boolean =>
+  sides.length > 1 && side.rounds.length === 1 && heading(round) === c.bracketSide[side.side];
+
+const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
+  if (!match.score) return false;
+  const [home, away] = match.score;
+  return side === "home" ? home > away : away > home;
+};
+---
+
+<Section id={id} bordered>
+  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.bracket}</h2>
+
+  <div class="mt-10 flex flex-col gap-12">
+    {
+      sides.map((side, s) => (
+        <div class="reveal" style={`--reveal-delay:${s * 70}ms`}>
+          {sides.length > 1 && (
+            <h3 class="display-sm mb-5 text-sm text-accent-lift">{c.bracketSide[side.side]}</h3>
+          )}
+
+          <div class="overflow-x-auto pb-2">
+            <div class="bracket">
+              {side.rounds.map((round, r) => (
+                <div class={`bracket-round ${feeds(round, side.rounds[r + 1]) ? "is-feeding" : ""}`}>
+                  {!repeatsSide(side, round) && <h4 class="bracket-head">{heading(round)}</h4>}
+
+                  <div class="bracket-body">
+                    {pairs(round.matches).map((pair) => (
+                      <div class={`bracket-pair ${pair.length === 2 ? "is-pair" : ""}`}>
+                        {pair.map((match) => (
+                          <article class="bracket-match">
+                            <p class="bracket-meta">
+                              <span>{formatDate(match.startsAt, locale)}</span>
+                              {match.bestOf && <span>{c.bestOf(match.bestOf)}</span>}
+                            </p>
+
+                            {(["home", "away"] as const).map((seat) => (
+                              <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
+                                <TeamMark team={match[seat]} size={20} />
+                                <span class="truncate">{match[seat]?.name ?? c.tbd}</span>
+                                <span class="bracket-score tabular-nums">
+                                  {match.score ? match.score[seat === "home" ? 0 : 1] : "-"}
+                                </span>
+                              </div>
+                            ))}
+                          </article>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .bracket {
+    display: flex;
+    align-items: stretch;
+    gap: 2.5rem;
+    min-width: max-content;
+  }
+
+  .bracket-round { display: flex; width: 15.5rem; flex-direction: column; }
+
+  .bracket-head {
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+
+  .bracket-body { display: flex; flex: 1; flex-direction: column; }
+
+  /* Every pair takes an equal share of the column, and its two matches sit at
+     a quarter and three quarters of it. That is what makes the midpoint of a
+     pair land exactly on the match it feeds in the next column. */
+  .bracket-pair {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+
+  /* The margin is what keeps two boxes apart in the first round, where the
+     column is full and space-around has no slack left to distribute. It is
+     equal top and bottom, so the centres stay at a quarter and three quarters
+     of the pair and the elbows still land on them. */
+  .bracket-match {
+    position: relative;
+    margin-block: 0.4375rem;
+    border: 1px solid var(--c-line);
+    background: var(--c-bg-elev);
+  }
+
+  .bracket-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--c-line);
+    padding: 0.375rem 0.625rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+
+  .bracket-seat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-left: 2px solid transparent;
+    padding: 0.4375rem 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--c-text-muted);
+  }
+  .bracket-seat + .bracket-seat { border-top: 1px solid var(--c-line); }
+  .bracket-seat.is-winner { border-left-color: var(--c-accent); color: var(--c-text); }
+
+  .bracket-score { margin-left: auto; font-variant-numeric: tabular-nums; }
+  .is-winner .bracket-score { color: var(--c-accent-lift); }
+
+  /* Connectors, drawn in the 2.5rem gap: a stub out of each match, a vertical
+     line joining the pair, and a stub from its midpoint into the next round. */
+  .is-feeding .bracket-match::after,
+  .is-feeding .bracket-pair::after,
+  .is-feeding .bracket-pair.is-pair::before {
+    content: "";
+    position: absolute;
+    background: var(--c-line-strong);
+  }
+  .is-feeding .bracket-match::after {
+    top: 50%;
+    left: 100%;
+    height: 1px;
+    width: 1.25rem;
+  }
+  .is-feeding .bracket-pair.is-pair::before {
+    top: 25%;
+    left: calc(100% + 1.25rem);
+    height: 50%;
+    width: 1px;
+  }
+  .is-feeding .bracket-pair::after {
+    top: 50%;
+    left: calc(100% + 1.25rem);
+    height: 1px;
+    width: 1.25rem;
+  }
+</style>

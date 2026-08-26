@@ -99,10 +99,61 @@ export interface Dictionary {
       string
     >;
     stage: Record<
-      "groupStage" | "quarterfinal" | "semifinal" | "final" | "thirdPlace",
+      | "groupStage"
+      | "lowerRound"
+      | "quarterfinal"
+      | "semifinal"
+      | "upperFinal"
+      | "lowerFinal"
+      | "final"
+      | "grandFinal"
+      | "thirdPlace",
       string
     >;
     teamCount: (n: number) => string;
     timeZoneNote: string;
+
+    /* ----------------- the page of a single tournament ----------------- */
+
+    /** Section headings, reused verbatim as the labels of the in-page tabs. */
+    section: Record<
+      "overview" | "format" | "participants" | "standings" | "bracket" | "matches",
+      string
+    >;
+    /** Rows of the fact panel that sits beside the overview. */
+    info: Record<
+      | "organizer"
+      | "venue"
+      | "location"
+      | "dates"
+      | "prizePool"
+      | "teams"
+      | "format"
+      | "broadcast",
+      string
+    >;
+    venue: Record<"online" | "offline" | "hybrid", string>;
+    /** How a team got into the field. */
+    qualification: Record<"invited" | "qualifier" | "regional" | "defending", string>;
+    phase: Record<"qualifier" | "groupStage" | "swissStage" | "playoffs" | "finals", string>;
+    bracketSide: Record<"upper" | "lower" | "final", string>;
+    prizeHead: Record<"place" | "prize" | "team", string>;
+    /** Column heads of a group table: series record, maps, map difference. */
+    standingsHead: Record<"team" | "series" | "maps" | "diff", string>;
+    /** Best of three, five... written short: Bo3, Bo5. */
+    bestOf: (n: number) => string;
+    /** How many teams carry on from a phase. */
+    advance: (n: number) => string;
+    /** Title of a bracket column that does not name itself. */
+    round: (n: number) => string;
+    /** An ordinal place: 1st, 1.º, 1-е. */
+    place: (n: number) => string;
+    /** A shared place, like 5th - 8th. */
+    placeRange: (from: number, to: number) => string;
+    /** A bracket slot nobody has qualified for yet. */
+    tbd: string;
+    roster: string;
+    allTournaments: string;
+    viewTournament: string;
   };
 }

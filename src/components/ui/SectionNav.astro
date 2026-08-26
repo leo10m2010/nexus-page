@@ -1,0 +1,86 @@
+---
+import { NAV_HEIGHT } from "@config/nav";
+
+/* In-page tab bar for a long document: the sections of a tournament page.
+   It sticks under the site header and marks which section you are reading,
+   which is the whole reason a page this long stays navigable. Anchors are
+   plain links, so it works with JavaScript off; only the marking is scripted. */
+interface Props {
+  items: { id: string; label: string }[];
+  ariaLabel: string;
+}
+const { items, ariaLabel } = Astro.props;
+---
+
+{
+  items.length > 1 && (
+    <nav
+      class="section-nav sticky z-40 border-y border-line backdrop-blur-xl"
+      style={`top:${NAV_HEIGHT - 1}px;background:var(--c-scrim)`}
+      aria-label={ariaLabel}
+    >
+      <div class="mx-auto w-full max-w-[1400px] overflow-x-auto px-5 sm:px-8">
+        <ul class="flex min-w-max items-stretch">
+          {items.map((item) => (
+            <li>
+              <a
+                href={`#${item.id}`}
+                data-section-link={item.id}
+                class="block px-4 py-4 font-display text-[0.75rem] font-semibold tracking-[0.16em] text-muted uppercase transition-colors first:pl-0 hover:text-ink"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+  )
+}
+
+<style>
+  .section-nav a { position: relative; }
+  .section-nav a::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1rem;
+    bottom: 0;
+    height: 2px;
+    background: var(--c-accent);
+    opacity: 0;
+  }
+  .section-nav li:first-child a::after { inset-inline-start: 0; }
+  .section-nav a[aria-current="true"] { color: var(--c-text); }
+  .section-nav a[aria-current="true"]::after { opacity: 1; }
+</style>
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-section-link]")];
+
+  if (links.length) {
+    const sections = links
+      .map((link) => document.getElementById(link.dataset.sectionLink!))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const mark = (id: string) => {
+      for (const link of links) {
+        if (link.dataset.sectionLink === id) link.setAttribute("aria-current", "true");
+        else link.removeAttribute("aria-current");
+      }
+    };
+
+    /* The band is the top third of the viewport: a section counts as the one
+       being read once its heading reaches it, not when it first peeks in. */
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+        if (visible) mark(visible.target.id);
+      },
+      { rootMargin: "-20% 0px -70% 0px", threshold: 0 },
+    );
+
+    for (const section of sections) observer.observe(section);
+  }
+</script>

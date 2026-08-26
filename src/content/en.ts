@@ -1,5 +1,12 @@
 import type { Dictionary } from "@types";
 
+/** 1st, 2nd, 3rd, 4th. Only ever used for prize places, so integers only. */
+const place = (n: number): string => {
+  const teens = n % 100;
+  const suffix = teens >= 11 && teens <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th");
+  return `${n}${suffix}`;
+};
+
 /** Source language. Every string is carried over verbatim from nexusseries.org. */
 export const en: Dictionary = {
   nav: { home: "Home", about: "About us", vision: "Vision", contact: "Contact" },
@@ -96,13 +103,61 @@ export const en: Dictionary = {
     },
     stage: {
       groupStage: "Group stage",
+      lowerRound: "Lower bracket",
       quarterfinal: "Quarterfinal",
       semifinal: "Semifinal",
+      upperFinal: "Upper bracket final",
+      lowerFinal: "Lower bracket final",
       final: "Final",
+      grandFinal: "Grand final",
       thirdPlace: "Third place",
     },
     teamCount: (n) => `${n} teams`,
     timeZoneNote: "All times are UTC.",
+    section: {
+      overview: "Overview",
+      format: "Format",
+      participants: "Participants",
+      standings: "Standings",
+      bracket: "Bracket",
+      matches: "Matches",
+    },
+    info: {
+      organizer: "Organizer",
+      venue: "Type",
+      location: "Location",
+      dates: "Dates",
+      prizePool: "Prize pool",
+      teams: "Teams",
+      format: "Format",
+      broadcast: "Broadcast",
+    },
+    venue: { online: "Online", offline: "On stage", hybrid: "Online and on stage" },
+    qualification: {
+      invited: "Invited",
+      qualifier: "Qualifier",
+      regional: "Regional slot",
+      defending: "Defending champion",
+    },
+    phase: {
+      qualifier: "Qualifier",
+      groupStage: "Group stage",
+      swissStage: "Swiss stage",
+      playoffs: "Playoffs",
+      finals: "Finals",
+    },
+    bracketSide: { upper: "Upper bracket", lower: "Lower bracket", final: "Grand final" },
+    prizeHead: { place: "Place", prize: "Prize", team: "Team" },
+    standingsHead: { team: "Team", series: "Series", maps: "Maps", diff: "Diff" },
+    bestOf: (n) => `Bo${n}`,
+    advance: (n) => `Top ${n} advance`,
+    round: (n) => `Round ${n}`,
+    place,
+    placeRange: (from, to) => `${place(from)} - ${place(to)}`,
+    tbd: "To be decided",
+    roster: "Roster",
+    allTournaments: "All tournaments",
+    viewTournament: "Tournament page",
   },
   footer: { rights: "All rights reserved." },
 };

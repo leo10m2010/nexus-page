@@ -63,3 +63,16 @@ export function formatTime(date: Date, locale?: string): string {
 export function dayKey(date: Date): string {
   return date.toISOString().slice(0, 10);
 }
+
+/**
+ * A prize amount. Rendered in the reader's language but always in the
+ * tournament's own currency, and without cents: prize pools are round
+ * numbers and "$22,000.00" reads like an invoice, not like a prize.
+ */
+export function formatMoney(amount: number, currency: string, locale?: string): string {
+  return new Intl.NumberFormat(tag(locale), {
+    style: "currency",
+    currency,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}

@@ -3,17 +3,27 @@ import type { Team } from "@lib/competition";
 
 /* A team either has a real logo file or it gets a monogram built from its tag.
    The monogram is a plain square with letters, not an invented emblem: it
-   should read as a placeholder, not as somebody's actual brand. */
+   should read as a placeholder, not as somebody's actual brand.
+
+   `null` is a slot in a bracket that nobody has qualified for yet. It gets a
+   dashed square, so an empty line reads as waiting rather than as broken. */
 interface Props {
-  team: Team;
+  team: Team | null;
   size?: number;
   class?: string;
 }
 const { team, size = 44, class: klass = "" } = Astro.props;
+const box = `width:${size}px;height:${size}px`;
 ---
 
 {
-  team.logo ? (
+  team === null ? (
+    <span
+      aria-hidden="true"
+      class={`block shrink-0 border border-dashed border-line-strong ${klass}`}
+      style={box}
+    />
+  ) : team.logo ? (
     <img
       src={team.logo}
       alt=""
@@ -22,13 +32,13 @@ const { team, size = 44, class: klass = "" } = Astro.props;
       loading="lazy"
       decoding="async"
       class={`shrink-0 object-contain ${klass}`}
-      style={`width:${size}px;height:${size}px`}
+      style={box}
     />
   ) : (
     <span
       aria-hidden="true"
       class={`grid shrink-0 place-items-center border border-line-strong bg-elev2 font-display font-bold tracking-[0.06em] text-muted ${klass}`}
-      style={`width:${size}px;height:${size}px;font-size:${Math.round(size * 0.3)}px`}
+      style={`${box};font-size:${Math.round(size * 0.3)}px`}
     >
       {team.tag}
     </span>

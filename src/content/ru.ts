@@ -1,5 +1,8 @@
 import type { Dictionary } from "@types";
 
+/** 1-е, 2-е, 3-е. Используется только для призовых мест. */
+const place = (n: number): string => `${n}-е`;
+
 /**
  * Russian. Sentences are phrased so the copula is never omitted, which keeps
  * the page free of em-dashes without producing ungrammatical Russian.
@@ -100,13 +103,61 @@ export const ru: Dictionary = {
     },
     stage: {
       groupStage: "Групповой этап",
+      lowerRound: "Нижняя сетка",
       quarterfinal: "Четвертьфинал",
       semifinal: "Полуфинал",
+      upperFinal: "Финал верхней сетки",
+      lowerFinal: "Финал нижней сетки",
       final: "Финал",
+      grandFinal: "Гранд-финал",
       thirdPlace: "Матч за третье место",
     },
     teamCount: (n) => `Команд: ${n}`,
     timeZoneNote: "Всё время указано в UTC.",
+    section: {
+      overview: "Обзор",
+      format: "Формат",
+      participants: "Участники",
+      standings: "Таблица",
+      bracket: "Сетка",
+      matches: "Матчи",
+    },
+    info: {
+      organizer: "Организатор",
+      venue: "Формат проведения",
+      location: "Место",
+      dates: "Даты",
+      prizePool: "Призовой фонд",
+      teams: "Команды",
+      format: "Формат",
+      broadcast: "Трансляция",
+    },
+    venue: { online: "Онлайн", offline: "LAN", hybrid: "Онлайн и LAN" },
+    qualification: {
+      invited: "Приглашение",
+      qualifier: "Квалификация",
+      regional: "Региональный слот",
+      defending: "Действующий чемпион",
+    },
+    phase: {
+      qualifier: "Квалификация",
+      groupStage: "Групповой этап",
+      swissStage: "Швейцарка",
+      playoffs: "Плей-офф",
+      finals: "Финалы",
+    },
+    bracketSide: { upper: "Верхняя сетка", lower: "Нижняя сетка", final: "Гранд-финал" },
+    prizeHead: { place: "Место", prize: "Приз", team: "Команда" },
+    standingsHead: { team: "Команда", series: "Серии", maps: "Карты", diff: "Разн." },
+    bestOf: (n) => `Bo${n}`,
+    advance: (n) => `Проходят: ${n}`,
+    round: (n) => `Раунд ${n}`,
+    place,
+    placeRange: (from, to) => `${place(from)} - ${place(to)}`,
+    tbd: "Будет определено",
+    roster: "Состав",
+    allTournaments: "Все турниры",
+    viewTournament: "Страница турнира",
   },
   footer: { rights: "Все права защищены." },
 };

@@ -1,0 +1,93 @@
+---
+import Base from "@layouts/Base.astro";
+import Nav from "@layout/Nav.astro";
+import Footer from "@layout/Footer.astro";
+import SectionNav from "@ui/SectionNav.astro";
+import Header from "@sections/tournament/Header.astro";
+import Overview from "@sections/tournament/Overview.astro";
+import Format from "@sections/tournament/Format.astro";
+import Participants from "@sections/tournament/Participants.astro";
+import Standings from "@sections/tournament/Standings.astro";
+import Bracket from "@sections/tournament/Bracket.astro";
+import Fixtures from "@sections/tournament/Fixtures.astro";
+import { site } from "@config/site";
+import { features } from "@config/features";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+import { formatDateRange } from "@lib/format";
+import {
+  getBracket,
+  getGroups,
+  getMatches,
+  getParticipants,
+  getTournament,
+} from "@lib/competition";
+
+/**
+ * One tournament, in the order you would ask about it: what it is, how it
+ * pays, how it is played, who is in it, how the groups stand, the bracket,
+ * the matches.
+ *
+ * A section is only rendered when there is data behind it, and the tab bar is
+ * built from the same list, so a tournament that only has dates and a field
+ * still produces a page that reads as finished rather than as full of holes.
+ */
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+const tournament = await getTournament(id);
+const [participants, groups, bracket, matches] = await Promise.all([
+  getParticipants(tournament),
+  getGroups(id),
+  getBracket(id),
+  getMatches(id),
+]);
+
+const phases = tournament.phases ?? [];
+const hasMatches = matches.some((m) => m.home && m.away);
+
+const sections = [
+  { id: "overview", label: c.section.overview, show: true },
+  { id: "format", label: c.section.format, show: phases.length > 0 },
+  { id: "participants", label: c.section.participants, show: participants.length > 0 },
+  { id: "standings", label: c.section.standings, show: groups.length > 0 },
+  { id: "bracket", label: c.section.bracket, show: bracket.length > 0 },
+  { id: "matches", label: c.section.matches, show: hasMatches },
+].filter((s) => s.show);
+
+const description = [
+  tournament.name,
+  formatDateRange(tournament.startDate, tournament.endDate, locale),
+  c.format[tournament.format],
+  c.teamCount(tournament.teamCount),
+].join(" - ");
+---
+
+<Base
+  title={`${tournament.name} | ${site.name}`}
+  description={description}
+  noindex={!features.competition.published}
+>
+  <Nav />
+  <main>
+    <Header tournament={tournament} />
+    <SectionNav items={sections} ariaLabel={tournament.name} />
+
+    <Overview id="overview" tournament={tournament} participants={participants} />
+    {phases.length > 0 && <Format id="format" phases={phases} />}
+    {
+      participants.length > 0 && (
+        <Participants id="participants" tournament={tournament} participants={participants} />
+      )
+    }
+    {groups.length > 0 && <Standings id="standings" groups={groups} />}
+    {bracket.length > 0 && <Bracket id="bracket" sides={bracket} />}
+    {hasMatches && <Fixtures id="matches" matches={matches} />}
+  </main>
+  <Footer />
+</Base>

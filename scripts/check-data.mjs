@@ -34,7 +34,9 @@ duplicates(matches, "matches");
 
 for (const m of matches) {
   for (const side of ["home", "away"]) {
-    if (!teamIds.has(m[side])) {
+    // An empty side is a slot still to be decided, which is allowed. A side
+    // that names a team that does not exist is not.
+    if (m[side] != null && !teamIds.has(m[side])) {
       problems.push(
         `matches.yaml: "${m.id}" has ${side}: ${m[side]}, which is not an id in teams.yaml`,
       );
@@ -45,17 +47,63 @@ for (const m of matches) {
       `matches.yaml: "${m.id}" has tournament: ${m.tournament}, which is not an id in tournaments.yaml`,
     );
   }
-  if (m.home === m.away) {
+  if (m.home != null && m.home === m.away) {
     problems.push(`matches.yaml: "${m.id}" has the same team on both sides`);
   }
   if (m.score && (!Array.isArray(m.score) || m.score.length !== 2)) {
     problems.push(`matches.yaml: "${m.id}" has a score that is not two numbers, like [2, 1]`);
+  }
+  if (m.score && (m.home == null || m.away == null)) {
+    problems.push(`matches.yaml: "${m.id}" has a score but one of the two sides is empty`);
+  }
+  if (m.bracket && !m.round) {
+    problems.push(`matches.yaml: "${m.id}" is in the "${m.bracket}" bracket but has no round`);
   }
 }
 
 for (const t of tournaments) {
   if (t.startDate && t.endDate && new Date(t.endDate) < new Date(t.startDate)) {
     problems.push(`tournaments.yaml: "${t.id}" ends before it starts`);
+  }
+
+  for (const p of t.participants ?? []) {
+    if (!teamIds.has(p.team)) {
+      problems.push(
+        `tournaments.yaml: "${t.id}" lists participant ${p.team}, which is not an id in teams.yaml`,
+      );
+    }
+  }
+
+  const seats = t.participants?.length;
+  if (seats != null && t.teamCount != null && seats !== t.teamCount) {
+    problems.push(
+      `tournaments.yaml: "${t.id}" says teamCount: ${t.teamCount} but lists ${seats} participants`,
+    );
+  }
+
+  const payouts = t.prizePool?.distribution;
+  if (payouts) {
+    // Each row pays its amount to every place it covers, so a range of
+    // 5th - 8th at 375 is four payouts, not one. The total has to match.
+    const paid = payouts.reduce(
+      (sum, row) => sum + row.amount * ((row.to ?? row.place) - row.place + 1),
+      0,
+    );
+    if (paid !== t.prizePool.total) {
+      problems.push(
+        `tournaments.yaml: "${t.id}" has a prize pool of ${t.prizePool.total} but the distribution adds up to ${paid}`,
+      );
+    }
+    for (const row of payouts) {
+      if (row.to != null && row.to < row.place) {
+        problems.push(`tournaments.yaml: "${t.id}" has a prize row where "to" is before "place"`);
+      }
+      if (row.team != null && !teamIds.has(row.team)) {
+        problems.push(
+          `tournaments.yaml: "${t.id}" awards a prize to ${row.team}, which is not an id in teams.yaml`,
+        );
+      }
+    }
   }
 }
 

@@ -2,8 +2,11 @@
 #
 # DATOS DE EJEMPLO. Reemplazalos por los reales antes de publicar.
 #
-# Campos:
-#   id          identificador interno. Es lo que escribes en matches.yaml.
+# Cada torneo de aqui genera su propia pagina en /competition/<id>/.
+#
+# CAMPOS OBLIGATORIOS
+#   id          identificador interno. Es lo que escribes en matches.yaml,
+#               y tambien la URL de la pagina del torneo.
 #   name        nombre visible.
 #   status      upcoming | live | finished
 #   startDate   fecha de inicio, formato AAAA-MM-DD
@@ -12,24 +15,132 @@
 #   format      doubleElimination | singleElimination | roundRobin | swiss
 #               (se traduce solo a los tres idiomas)
 #   teamCount   numero de equipos.
+#
+# CAMPOS OPCIONALES. Cada bloque que rellenas añade una seccion a la pagina
+# del torneo. Lo que no rellenas, no se dibuja.
+#
+#   series      etiqueta pequeña encima del titulo: "Season One", "Major"...
+#   organizer   quien lo organiza. Si no lo pones, sale Nexus Series.
+#   venue       online | offline | hybrid  (se traduce solo)
+#   location    solo tiene sentido si es presencial: "Madrid, España".
+#
+#   prizePool   premios.
+#     currency        codigo de tres letras: USD, EUR...
+#     total           cantidad total.
+#     distribution    reparto, del mejor puesto al peor.
+#       place   puesto. to: para un rango, por ejemplo place 5 + to 8.
+#       amount  premio de CADA equipo de ese puesto.
+#       team    id del equipo, en cuanto se sepa quien lo ocupa.
+#
+#   phases      las fases por las que pasa, en orden. Se dibuja la seccion
+#               "Formato" con una tarjeta por fase.
+#     key       qualifier | groupStage | swissStage | playoffs | finals
+#     format    igual que el campo format de arriba
+#     teamCount cuantos equipos entran en esa fase
+#     bestOf    1, 3, 5... sale como Bo1 / Bo3 / Bo5
+#     advance   cuantos pasan a la siguiente fase
+#
+#   participants  el cuadro de equipos. Sin esto no se dibuja la seccion.
+#     team      id de un equipo de teams.yaml
+#     via       invited | qualifier | regional | defending  (se traduce solo)
 
 - id: season-one
   name: Nexus Series Season One
+  series: Season One
   status: upcoming
   startDate: 2026-09-12
   endDate: 2026-10-18
   region: International
   format: doubleElimination
-  teamCount: 16
+  teamCount: 8
+  organizer: Nexus Series
+  venue: hybrid
+  location: Madrid, Spain
+  prizePool:
+    currency: USD
+    total: 50000
+    distribution:
+      - place: 1
+        amount: 22000
+      - place: 2
+        amount: 11000
+      - place: 3
+        amount: 7000
+      - place: 4
+        amount: 4500
+      - place: 5
+        to: 6
+        amount: 2000
+      - place: 7
+        to: 8
+        amount: 750
+  phases:
+    - key: groupStage
+      format: roundRobin
+      teamCount: 8
+      bestOf: 3
+      advance: 8
+    - key: playoffs
+      format: doubleElimination
+      teamCount: 8
+      bestOf: 3
+    - key: finals
+      format: singleElimination
+      teamCount: 2
+      bestOf: 5
+  participants:
+    - team: kite
+      via: defending
+    - team: meridian
+      via: invited
+    - team: northgate
+      via: invited
+    - team: vantage
+      via: invited
+    - team: solaris
+      via: regional
+    - team: halcyon
+      via: regional
+    - team: aurora
+      via: qualifier
+    - team: ridgeback
+      via: qualifier
 
 - id: latam-qualifier
   name: LATAM Qualifier
+  series: Season One
   status: live
   startDate: 2026-08-20
   endDate: 2026-08-30
   region: LATAM
-  format: swiss
-  teamCount: 24
+  format: roundRobin
+  teamCount: 6
+  organizer: Nexus Series
+  venue: online
+  phases:
+    - key: groupStage
+      format: roundRobin
+      teamCount: 6
+      bestOf: 3
+      advance: 2
+    - key: playoffs
+      format: singleElimination
+      teamCount: 2
+      bestOf: 5
+      advance: 2
+  participants:
+    - team: aurora
+      via: regional
+    - team: ridgeback
+      via: regional
+    - team: solaris
+      via: regional
+    - team: caliza
+      via: qualifier
+    - team: marejada
+      via: qualifier
+    - team: altiplano
+      via: qualifier
 
 - id: summer-invitational
   name: Summer Invitational
@@ -39,3 +150,51 @@
   region: International
   format: singleElimination
   teamCount: 8
+  organizer: Nexus Series
+  venue: online
+  prizePool:
+    currency: USD
+    total: 25000
+    distribution:
+      - place: 1
+        amount: 12000
+        team: kite
+      - place: 2
+        amount: 6000
+        team: meridian
+      - place: 3
+        amount: 3500
+        team: northgate
+      - place: 4
+        amount: 2000
+        team: vantage
+      - place: 5
+        to: 8
+        amount: 375
+  phases:
+    - key: playoffs
+      format: singleElimination
+      teamCount: 8
+      bestOf: 3
+      advance: 2
+    - key: finals
+      format: singleElimination
+      teamCount: 2
+      bestOf: 5
+  participants:
+    - team: kite
+      via: invited
+    - team: meridian
+      via: invited
+    - team: northgate
+      via: invited
+    - team: vantage
+      via: invited
+    - team: solaris
+      via: invited
+    - team: halcyon
+      via: invited
+    - team: aurora
+      via: invited
+    - team: driftwood
+      via: invited

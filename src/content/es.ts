@@ -1,5 +1,8 @@
 import type { Dictionary } from "@types";
 
+/** 1.º, 2.º, 3.º. Solo se usa para los puestos del reparto de premios. */
+const place = (n: number): string => `${n}.º`;
+
 /**
  * Spanish. `headlineClamp` is lower than English on purpose: the translated
  * headline is wider and would break the two-line rule at 1280px otherwise.
@@ -99,13 +102,61 @@ export const es: Dictionary = {
     },
     stage: {
       groupStage: "Fase de grupos",
+      lowerRound: "Cuadro inferior",
       quarterfinal: "Cuartos de final",
       semifinal: "Semifinal",
+      upperFinal: "Final del cuadro superior",
+      lowerFinal: "Final del cuadro inferior",
       final: "Final",
+      grandFinal: "Gran final",
       thirdPlace: "Tercer puesto",
     },
     teamCount: (n) => `${n} equipos`,
     timeZoneNote: "Todos los horarios en UTC.",
+    section: {
+      overview: "Resumen",
+      format: "Formato",
+      participants: "Participantes",
+      standings: "Clasificación",
+      bracket: "Cuadro",
+      matches: "Partidos",
+    },
+    info: {
+      organizer: "Organiza",
+      venue: "Tipo",
+      location: "Sede",
+      dates: "Fechas",
+      prizePool: "Premios",
+      teams: "Equipos",
+      format: "Formato",
+      broadcast: "Retransmisión",
+    },
+    venue: { online: "En línea", offline: "Presencial", hybrid: "En línea y presencial" },
+    qualification: {
+      invited: "Invitado",
+      qualifier: "Clasificatorio",
+      regional: "Plaza regional",
+      defending: "Campeón vigente",
+    },
+    phase: {
+      qualifier: "Clasificatorio",
+      groupStage: "Fase de grupos",
+      swissStage: "Fase suiza",
+      playoffs: "Eliminatorias",
+      finals: "Finales",
+    },
+    bracketSide: { upper: "Cuadro superior", lower: "Cuadro inferior", final: "Gran final" },
+    prizeHead: { place: "Puesto", prize: "Premio", team: "Equipo" },
+    standingsHead: { team: "Equipo", series: "Series", maps: "Mapas", diff: "Dif." },
+    bestOf: (n) => `Bo${n}`,
+    advance: (n) => `Pasan ${n}`,
+    round: (n) => `Ronda ${n}`,
+    place,
+    placeRange: (from, to) => `${place(from)} - ${place(to)}`,
+    tbd: "Por definir",
+    roster: "Plantilla",
+    allTournaments: "Todos los torneos",
+    viewTournament: "Ver torneo",
   },
   footer: { rights: "Todos los derechos reservados." },
 };

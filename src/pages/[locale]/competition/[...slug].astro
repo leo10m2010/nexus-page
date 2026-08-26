@@ -1,0 +1,29 @@
+---
+import { getCollection } from "astro:content";
+import CompetitionPage from "@components/CompetitionPage.astro";
+import TournamentPage from "@components/TournamentPage.astro";
+import { DEFAULT_LOCALE, locales } from "@lib/i18n";
+import { showCompetition } from "@config/features";
+
+/* The same two pages as the root route, once per translated locale. The
+   default locale is served from the root, so it is not generated here. */
+export async function getStaticPaths() {
+  if (!showCompetition) return [];
+
+  const tournaments = await getCollection("tournaments");
+  const slugs = [null, ...tournaments.map((entry) => entry.data.id)];
+
+  return locales
+    .filter((locale) => locale !== DEFAULT_LOCALE)
+    .flatMap((locale) =>
+      slugs.map((id) => ({
+        params: { locale, slug: id ?? undefined },
+        props: { id },
+      })),
+    );
+}
+
+const { id } = Astro.props;
+---
+
+{id ? <TournamentPage id={id} /> : <CompetitionPage />}

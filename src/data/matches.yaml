@@ -2,65 +2,276 @@
 #
 # DATOS DE EJEMPLO. Reemplazalos por los reales antes de publicar.
 #
-# Un partido aparece en el CALENDARIO si no tiene "score",
-# y en RESULTADOS en cuanto se lo pones. No hay que moverlo de sitio.
+# Un partido aparece en RESULTADOS en cuanto le pones "score", y en el
+# CALENDARIO mientras no lo tenga. No hay que moverlo de sitio.
 #
-# Campos:
+# CAMPOS OBLIGATORIOS
 #   id          identificador interno, unico.
 #   tournament  el id de un torneo de tournaments.yaml
-#   stage       groupStage | quarterfinal | semifinal | final | thirdPlace
+#   stage       groupStage | lowerRound | quarterfinal | semifinal |
+#               upperFinal | lowerFinal | final | grandFinal | thirdPlace
 #               (se traduce solo a los tres idiomas)
 #   startsAt    fecha y hora con zona horaria. La Z final significa UTC.
 #               Ejemplo: 2026-09-12T18:00:00Z
-#               La web muestra la hora local de cada visitante.
-#   home / away el id de un equipo de teams.yaml
+#
+# CAMPOS OPCIONALES
+#   home / away el id de un equipo de teams.yaml. Si lo dejas sin poner,
+#               el hueco sale como "Por definir": asi puedes publicar el
+#               cuadro entero antes de saber quien lo llena.
 #   score       [marcador_home, marcador_away]. BORRA esta linea entera
 #               mientras el partido no se haya jugado.
+#   bestOf      1, 3, 5... sale como Bo1 / Bo3 / Bo5.
+#   bracket     upper | lower | final. Solo hace falta para dibujar el cuadro.
+#               Un partido sin "bracket" no sale en el cuadro, pero si en la
+#               lista de partidos.
+#   round       la columna dentro de ese lado del cuadro. 1 = primera ronda.
+#   group       letra del grupo: A, B... Los partidos con "group" alimentan
+#               la tabla de clasificacion de esa fase.
 
-# --- Por jugar: salen en el calendario ---
-- id: s1-qf1
+# =====================================================================
+# NEXUS SERIES SEASON ONE - cuadro de doble eliminacion, 8 equipos.
+# Los cuartos ya tienen equipos; el resto son huecos por definir.
+# =====================================================================
+
+# --- Cuadro superior ---
+- id: s1-ub1
   tournament: season-one
   stage: quarterfinal
   startsAt: 2026-09-12T18:00:00Z
   home: aurora
   away: kite
+  bestOf: 3
+  bracket: upper
+  round: 1
 
-- id: s1-qf2
+- id: s1-ub2
   tournament: season-one
   stage: quarterfinal
   startsAt: 2026-09-12T21:00:00Z
   home: meridian
   away: vantage
+  bestOf: 3
+  bracket: upper
+  round: 1
 
-- id: s1-qf3
+- id: s1-ub3
   tournament: season-one
   stage: quarterfinal
   startsAt: 2026-09-13T18:00:00Z
   home: northgate
   away: solaris
+  bestOf: 3
+  bracket: upper
+  round: 1
 
-- id: s1-qf4
+- id: s1-ub4
   tournament: season-one
   stage: quarterfinal
   startsAt: 2026-09-13T21:00:00Z
   home: halcyon
   away: ridgeback
+  bestOf: 3
+  bracket: upper
+  round: 1
 
-- id: lq-sf1
-  tournament: latam-qualifier
+- id: s1-ub5
+  tournament: season-one
   stage: semifinal
-  startsAt: 2026-08-28T23:00:00Z
-  home: aurora
-  away: ridgeback
+  startsAt: 2026-09-19T18:00:00Z
+  bestOf: 3
+  bracket: upper
+  round: 2
 
-# --- Jugados: salen en resultados ---
-- id: si-final
-  tournament: summer-invitational
+- id: s1-ub6
+  tournament: season-one
+  stage: semifinal
+  startsAt: 2026-09-19T21:00:00Z
+  bestOf: 3
+  bracket: upper
+  round: 2
+
+- id: s1-ub7
+  tournament: season-one
+  stage: upperFinal
+  startsAt: 2026-09-26T20:00:00Z
+  bestOf: 3
+  bracket: upper
+  round: 3
+
+# --- Cuadro inferior ---
+- id: s1-lb1
+  tournament: season-one
+  stage: lowerRound
+  startsAt: 2026-09-19T15:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 1
+
+- id: s1-lb2
+  tournament: season-one
+  stage: lowerRound
+  startsAt: 2026-09-19T15:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 1
+
+- id: s1-lb3
+  tournament: season-one
+  stage: lowerRound
+  startsAt: 2026-09-26T15:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 2
+
+- id: s1-lb4
+  tournament: season-one
+  stage: lowerRound
+  startsAt: 2026-09-26T17:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 2
+
+- id: s1-lb5
+  tournament: season-one
+  stage: lowerRound
+  startsAt: 2026-10-03T18:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 3
+
+- id: s1-lb6
+  tournament: season-one
+  stage: lowerFinal
+  startsAt: 2026-10-10T18:00:00Z
+  bestOf: 3
+  bracket: lower
+  round: 4
+
+# --- Gran final ---
+- id: s1-gf
+  tournament: season-one
+  stage: grandFinal
+  startsAt: 2026-10-18T18:00:00Z
+  bestOf: 5
+  bracket: final
+  round: 1
+
+# =====================================================================
+# LATAM QUALIFIER - dos grupos de tres, todos contra todos.
+# Los partidos con "group" alimentan la tabla de cada grupo.
+# =====================================================================
+
+- id: lq-a1
+  tournament: latam-qualifier
+  stage: groupStage
+  group: A
+  startsAt: 2026-08-21T22:00:00Z
+  home: aurora
+  away: caliza
+  bestOf: 3
+  score: [2, 0]
+
+- id: lq-a2
+  tournament: latam-qualifier
+  stage: groupStage
+  group: A
+  startsAt: 2026-08-23T22:00:00Z
+  home: caliza
+  away: marejada
+  bestOf: 3
+  score: [1, 2]
+
+- id: lq-a3
+  tournament: latam-qualifier
+  stage: groupStage
+  group: A
+  startsAt: 2026-08-27T22:00:00Z
+  home: aurora
+  away: marejada
+  bestOf: 3
+
+- id: lq-b1
+  tournament: latam-qualifier
+  stage: groupStage
+  group: B
+  startsAt: 2026-08-22T22:00:00Z
+  home: ridgeback
+  away: solaris
+  bestOf: 3
+  score: [2, 1]
+
+- id: lq-b2
+  tournament: latam-qualifier
+  stage: groupStage
+  group: B
+  startsAt: 2026-08-24T22:00:00Z
+  home: solaris
+  away: altiplano
+  bestOf: 3
+  score: [2, 0]
+
+- id: lq-b3
+  tournament: latam-qualifier
+  stage: groupStage
+  group: B
+  startsAt: 2026-08-28T22:00:00Z
+  home: ridgeback
+  away: altiplano
+  bestOf: 3
+
+- id: lq-final
+  tournament: latam-qualifier
   stage: final
-  startsAt: 2026-06-21T19:00:00Z
+  startsAt: 2026-08-30T22:00:00Z
+  bestOf: 5
+
+# =====================================================================
+# SUMMER INVITATIONAL - eliminacion directa, 8 equipos, ya jugado.
+# =====================================================================
+
+- id: si-qf1
+  tournament: summer-invitational
+  stage: quarterfinal
+  startsAt: 2026-06-14T18:00:00Z
   home: kite
-  away: meridian
-  score: [3, 1]
+  away: driftwood
+  bestOf: 3
+  bracket: upper
+  round: 1
+  score: [2, 0]
+
+- id: si-qf2
+  tournament: summer-invitational
+  stage: quarterfinal
+  startsAt: 2026-06-14T21:00:00Z
+  home: northgate
+  away: halcyon
+  bestOf: 3
+  bracket: upper
+  round: 1
+  score: [2, 1]
+
+- id: si-qf3
+  tournament: summer-invitational
+  stage: quarterfinal
+  startsAt: 2026-06-15T18:00:00Z
+  home: meridian
+  away: aurora
+  bestOf: 3
+  bracket: upper
+  round: 1
+  score: [2, 1]
+
+- id: si-qf4
+  tournament: summer-invitational
+  stage: quarterfinal
+  startsAt: 2026-06-15T21:00:00Z
+  home: solaris
+  away: vantage
+  bestOf: 3
+  bracket: upper
+  round: 1
+  score: [1, 2]
 
 - id: si-sf1
   tournament: summer-invitational
@@ -68,6 +279,9 @@
   startsAt: 2026-06-19T18:00:00Z
   home: kite
   away: northgate
+  bestOf: 3
+  bracket: upper
+  round: 2
   score: [2, 0]
 
 - id: si-sf2
@@ -75,13 +289,28 @@
   stage: semifinal
   startsAt: 2026-06-19T21:00:00Z
   home: meridian
-  away: solaris
+  away: vantage
+  bestOf: 3
+  bracket: upper
+  round: 2
   score: [2, 1]
 
-- id: si-qf1
+- id: si-final
   tournament: summer-invitational
-  stage: quarterfinal
-  startsAt: 2026-06-14T18:00:00Z
+  stage: final
+  startsAt: 2026-06-21T19:00:00Z
+  home: kite
+  away: meridian
+  bestOf: 5
+  bracket: upper
+  round: 3
+  score: [3, 1]
+
+- id: si-third
+  tournament: summer-invitational
+  stage: thirdPlace
+  startsAt: 2026-06-21T16:00:00Z
   home: northgate
-  away: halcyon
+  away: vantage
+  bestOf: 3
   score: [2, 1]

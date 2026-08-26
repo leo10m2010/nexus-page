@@ -17,7 +17,7 @@ const teams = await getTeams();
     teams.length === 0 ? (
       <p class="lede reveal mt-8">{t.competition.empty}</p>
     ) : (
-      <ul class="mt-10 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+      <ul class="grid-hairline mt-10 grid sm:grid-cols-2 lg:grid-cols-4">
         {teams.map((team, i) => (
           <li
             class="reveal flex items-center gap-4 bg-elev px-6 py-6"

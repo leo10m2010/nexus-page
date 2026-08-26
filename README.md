@@ -111,6 +111,35 @@ export const features = {
 Vuelve a compilar y súbelo. Mientras esté en `false`, la página lleva además
 `noindex` por si algún día se publica por error.
 
+### La página de cada torneo
+
+`/competition/` es el índice. Cada torneo de `tournaments.yaml` tiene además su
+propia página en `/competition/<id>/`, con la estructura que usan las páginas de
+torneo del sector (Liquipedia y compañía), traducida al sistema visual de Nexus:
+sin bordes redondeados, retícula de líneas de un píxel, oro solo como acento.
+
+| Sección | Qué muestra | De dónde sale |
+| --- | --- | --- |
+| Cabecera | Nombre, estado, fechas, premios, equipos, formato, sede | `tournaments.yaml` |
+| Barra de secciones | Índice pegajoso que marca por dónde vas leyendo | las secciones que tengan datos |
+| Resumen | Reparto de premios + ficha con los datos del torneo | `prizePool` |
+| Formato | Una tarjeta por fase: sistema, equipos, Bo, cuántos pasan | `phases` |
+| Participantes | Los equipos, cómo entraron, su plantilla y su premio | `participants` + `players` |
+| Clasificación | Tabla de cada grupo: series, mapas, diferencia | se **calcula** de los partidos con `group` |
+| Cuadro | El bracket, con las llaves dibujadas | los partidos con `bracket` y `round` |
+| Partidos | Todos los partidos por día, jugados y por jugar | `matches.yaml` |
+
+**Una sección que no tiene datos no se dibuja, y tampoco aparece en la barra.**
+Un torneo con solo fechas y equipos sigue dando una página que se lee entera,
+no una llena de huecos. Por eso los tres torneos de ejemplo son distintos a
+propósito: Season One lleva cuadro de doble eliminación, LATAM Qualifier lleva
+grupos y no lleva cuadro, y Summer Invitational está terminado con premios ya
+repartidos.
+
+Nada de la clasificación está guardado: un resultado se escribe una sola vez,
+en `matches.yaml`, y la tabla se cuenta a partir de ahí. Así una tabla nunca
+puede contradecir al resultado del que salió.
+
 ### Editar los datos
 
 Todo está en `src/data/`, en tres archivos con comentarios explicando cada
@@ -118,16 +147,28 @@ campo:
 
 | Archivo | Contiene |
 | --- | --- |
-| `teams.yaml` | Equipos: nombre, abreviatura, región, logo opcional |
-| `tournaments.yaml` | Torneos: fechas, estado, formato, nº de equipos |
-| `matches.yaml` | Partidos: torneo, fase, fecha y hora, equipos, marcador |
+| `teams.yaml` | Equipos: nombre, abreviatura, región, logo y plantilla opcionales |
+| `tournaments.yaml` | Torneos: fechas, estado, formato, equipos, premios, fases, participantes |
+| `matches.yaml` | Partidos: torneo, fase, fecha y hora, equipos, marcador, cuadro |
 
 **Un partido pasa de calendario a resultados solo con ponerle `score`.** No hay
 que moverlo de sitio ni tocar código.
 
+**Un hueco del cuadro se publica sin equipos.** Si dejas `home` y `away` sin
+poner, el partido sale como "Por definir": puedes publicar el cuadro entero el
+día uno y solo ir rellenando nombres.
+
+Todo lo que no es obligatorio se puede dejar fuera. Los campos opcionales
+—premios, fases, participantes, plantillas, `bracket`, `group`— existen para
+encender secciones de la página del torneo; lo que no rellenes, no se dibuja.
+
 Los nombres de fase, formato y estado se traducen solos a los tres idiomas: en
 el YAML escribes la clave (`quarterfinal`, `swiss`, `live`) y la web pone
-"Cuartos de final", "Sistema suizo", "En directo".
+"Cuartos de final", "Sistema suizo", "En directo". Lo mismo con lo nuevo:
+`invited` es "Invitado", `hybrid` es "En línea y presencial", y una frase como
+"8 equipos · Bo3 · pasan 4" la escribe cada idioma por su cuenta a partir de los
+números. Por eso no hay texto libre para describir el formato: se rompería en
+los otros dos idiomas.
 
 ### Si te equivocas al editar
 
@@ -140,7 +181,10 @@ npm run check:data
 
 Comprueba que ningún partido apunte a un equipo o torneo que no existe, que no
 haya ids repetidos, que un equipo no juegue contra sí mismo y que un torneo no
-termine antes de empezar. Se ejecuta solo dentro de `npm run build`.
+termine antes de empezar. También, ahora que hay más que rellenar: que el
+reparto de premios sume exactamente el bote, que `teamCount` coincida con los
+participantes que has listado, y que un partido con `bracket` diga en qué ronda
+va. Se ejecuta solo dentro de `npm run build`.
 
 Los esquemas de `src/content.config.ts` validan cada archivo por separado.
 Ejemplo real de lo que verías al escribir mal un formato:
@@ -155,9 +199,9 @@ Te dice el archivo, la entrada, el campo y las opciones válidas.
 
 ### Los datos actuales son de ejemplo
 
-Los ocho equipos, los tres torneos y los nueve partidos están inventados para
-poder ver la página montada. Cada archivo lo avisa en la primera línea.
-Reemplázalos antes de publicar.
+Los doce equipos, los tres torneos y los veintinueve partidos están inventados
+para poder ver la página montada, plantillas incluidas. Cada archivo lo avisa
+en la primera línea. Reemplázalos antes de publicar.
 
 Los equipos sin `logo` se dibujan con un monograma de su abreviatura. Cuando
 tengas los logos reales, déjalos en `public/` y añade la ruta en `teams.yaml`.

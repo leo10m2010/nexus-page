@@ -1,0 +1,83 @@
+---
+import Section from "@ui/Section.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import type { Participant, Tournament } from "@lib/competition";
+import { formatMoney } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+/* The field. One card per team, in seeding order, with how it got in and,
+   once the tournament is over, where it finished. A team without a roster in
+   teams.yaml simply shows no roster: no invented names, no empty rows. */
+interface Props {
+  id: string;
+  tournament: Tournament;
+  participants: Participant[];
+}
+const { id, tournament, participants } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+const currency = tournament.prizePool?.currency;
+---
+
+<Section id={id} bordered>
+  <div class="flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.participants}</h2>
+    <p class="reveal text-sm text-muted">{c.teamCount(participants.length)}</p>
+  </div>
+
+  <ul class="grid-hairline mt-10 grid md:grid-cols-2 xl:grid-cols-4">
+    {
+      participants.map((entry, i) => (
+        <li class="reveal flex flex-col bg-elev p-6" style={`--reveal-delay:${(i % 4) * 60}ms`}>
+          <div class="flex items-start gap-4">
+            <TeamMark team={entry.team} size={44} />
+            <div class="min-w-0 flex-1">
+              <h3 class="display-sm truncate text-base">{entry.team.name}</h3>
+              <p class="mt-1 text-[0.8125rem] text-muted">
+                {entry.team.tag} <span class="px-1">/</span> {entry.team.region}
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            {entry.via && (
+              <span class="border border-line-strong px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
+                {c.qualification[entry.via]}
+              </span>
+            )}
+            {entry.payout && currency && (
+              <span class="border border-accent px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-accent-lift uppercase">
+                {c.place(entry.payout.place)}
+                <span class="px-1">/</span>
+                {formatMoney(entry.payout.amount, currency, locale)}
+              </span>
+            )}
+          </div>
+
+          {entry.team.players && (
+            <div class="mt-5 border-t border-line pt-4">
+              <h4 class="text-[0.625rem] tracking-[0.16em] text-muted uppercase">{c.roster}</h4>
+              <ul class="mt-3 flex flex-col gap-2">
+                {entry.team.players.map((player) => (
+                  <li class="flex items-baseline gap-2 text-[0.875rem]">
+                    {player.country && (
+                      <span class="w-6 shrink-0 font-display text-[0.625rem] font-bold tracking-[0.1em] text-muted">
+                        {player.country.toUpperCase()}
+                      </span>
+                    )}
+                    <span class="truncate text-ink">{player.handle}</span>
+                    {player.role && (
+                      <span class="ml-auto shrink-0 text-[0.75rem] text-muted">{player.role}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </li>
+      ))
+    }
+  </ul>
+</Section>

@@ -1,6 +1,7 @@
 ---
 import TeamMark from "@ui/TeamMark.astro";
 import type { ResolvedMatch } from "@lib/competition";
+import { useTranslations } from "@lib/i18n";
 
 /* Shared between the schedule and the results, so a fixture always reads the
    same way. `score` decides whether it shows a result or a kickoff slot. */
@@ -10,6 +11,7 @@ interface Props {
   trailing?: string;
 }
 const { match, trailing } = Astro.props;
+const t = useTranslations(Astro.currentLocale);
 const [homeScore, awayScore] = match.score ?? [];
 const homeWon = match.score ? homeScore! > awayScore! : false;
 const awayWon = match.score ? awayScore! > homeScore! : false;
@@ -19,7 +21,7 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
   <div class="flex min-w-0 flex-1 items-center gap-3">
     <TeamMark team={match.home} size={36} />
     <span class={`truncate text-[0.9375rem] ${homeWon ? "text-ink" : "text-muted"}`}>
-      {match.home.name}
+      {match.home?.name ?? t.competition.tbd}
     </span>
   </div>
 
@@ -37,7 +39,7 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
 
   <div class="flex min-w-0 flex-1 items-center justify-end gap-3">
     <span class={`truncate text-right text-[0.9375rem] ${awayWon ? "text-ink" : "text-muted"}`}>
-      {match.away.name}
+      {match.away?.name ?? t.competition.tbd}
     </span>
     <TeamMark team={match.away} size={36} />
   </div>

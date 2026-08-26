@@ -11,36 +11,124 @@
 #   region  texto libre: LATAM, EU, NA, CIS, SEA...
 #   logo    opcional. Ruta dentro de public/, por ejemplo /teams/aurora.svg
 #           Si no lo pones, se dibuja un monograma con el tag.
+#   players opcional. La plantilla, tal como sale en la ficha del torneo.
+#           Cada jugador lleva:
+#             handle   el nick. Es lo unico obligatorio.
+#             name     nombre real, opcional.
+#             role     texto libre: Capitan, Coach, Suplente...
+#             country  codigo de dos letras, opcional. Se muestra en mayusculas.
+#           Un equipo sin "players" sale igual, solo que sin plantilla.
 
 - id: aurora
   name: Aurora Collective
   tag: AUR
   region: LATAM
+  players:
+    - handle: rehue
+      name: Tomas Rehue
+      country: AR
+      role: Captain
+    - handle: kaleu
+      country: BR
+    - handle: nimbo
+      country: CL
+    - handle: sarco
+      country: AR
+    - handle: velasco
+      country: MX
+    - handle: tordo
+      name: Ignacio Tordo
+      country: AR
+      role: Coach
 
 - id: kite
   name: Kite Esports
   tag: KTE
   region: EU
+  players:
+    - handle: brann
+      name: Mikkel Brann
+      country: DK
+      role: Captain
+    - handle: soren
+      country: SE
+    - handle: quill
+      country: GB
+    - handle: mairu
+      country: FI
+    - handle: adalet
+      country: TR
 
 - id: meridian
   name: Meridian Nine
   tag: MN9
   region: NA
+  players:
+    - handle: locke
+      name: Devon Locke
+      country: US
+      role: Captain
+    - handle: pyre
+      country: CA
+    - handle: nixon
+      country: US
+    - handle: haverly
+      country: US
+    - handle: onda
+      country: MX
 
 - id: vantage
   name: Vantage Point
   tag: VPT
   region: CIS
+  players:
+    - handle: kirsa
+      country: KZ
+      role: Captain
+    - handle: dovlat
+      country: UZ
+    - handle: perun
+      country: BY
+    - handle: taiga
+      country: KZ
+    - handle: vernik
+      country: AM
 
 - id: northgate
   name: Northgate
   tag: NGT
   region: EU
+  players:
+    - handle: halden
+      name: Piotr Halden
+      country: PL
+      role: Captain
+    - handle: keve
+      country: HU
+    - handle: brisant
+      country: FR
+    - handle: ostmark
+      country: DE
+    - handle: lior
+      country: IL
 
 - id: solaris
   name: Solaris Athletic
   tag: SOL
   region: BR
+  players:
+    - handle: caetano
+      name: Rafael Caetano
+      country: BR
+      role: Captain
+    - handle: pipa
+      country: BR
+    - handle: zurdo
+      country: UY
+    - handle: mangue
+      country: BR
+    - handle: tuca
+      country: BR
 
 - id: halcyon
   name: Halcyon Division
@@ -51,3 +139,48 @@
   name: Ridgeback
   tag: RDG
   region: LATAM
+  players:
+    - handle: bruma
+      name: Sofia Bruma
+      country: CL
+      role: Captain
+    - handle: cardo
+      country: PE
+    - handle: leni
+      country: AR
+    - handle: pampa
+      country: AR
+    - handle: quiroz
+      country: CO
+
+- id: caliza
+  name: Caliza Gaming
+  tag: CLZ
+  region: LATAM
+  players:
+    - handle: navarro
+      country: MX
+      role: Captain
+    - handle: teque
+      country: MX
+    - handle: sombra
+      country: CO
+    - handle: hielo
+      country: CL
+    - handle: rifa
+      country: MX
+
+- id: marejada
+  name: Marejada
+  tag: MRJ
+  region: BR
+
+- id: altiplano
+  name: Altiplano
+  tag: ALT
+  region: LATAM
+
+- id: driftwood
+  name: Driftwood
+  tag: DWD
+  region: NA

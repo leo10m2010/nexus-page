@@ -1,13 +1,30 @@
 ---
+import { getCollection } from "astro:content";
 import CompetitionPage from "@components/CompetitionPage.astro";
+import TournamentPage from "@components/TournamentPage.astro";
 import { showCompetition } from "@config/features";
 
-/* Returning an empty list means Astro emits no file at all. While the flag is
-   off the page does not exist in dist/, so the URL cannot be reached even by
-   guessing it. It stays visible in `npm run dev`. */
-export function getStaticPaths() {
-  return showCompetition ? [{ params: { slug: undefined } }] : [];
+/* One route for the whole competition area: no slug is the index, a slug is
+   the tournament with that id. Adding a tournament to tournaments.yaml adds
+   its page; nothing here has to be touched.
+
+   Returning an empty list means Astro emits no file at all. While the flag is
+   off none of these pages exist in dist/, so the URLs cannot be reached even
+   by guessing them. They stay visible in `npm run dev`. */
+export async function getStaticPaths() {
+  if (!showCompetition) return [];
+
+  const tournaments = await getCollection("tournaments");
+  return [
+    { params: { slug: undefined }, props: { id: null } },
+    ...tournaments.map((entry) => ({
+      params: { slug: entry.data.id },
+      props: { id: entry.data.id },
+    })),
+  ];
 }
+
+const { id } = Astro.props;
 ---
 
-<CompetitionPage />
+{id ? <TournamentPage id={id} /> : <CompetitionPage />}

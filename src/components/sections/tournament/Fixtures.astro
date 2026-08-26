@@ -1,0 +1,82 @@
+---
+import Section from "@ui/Section.astro";
+import Scoreline from "@ui/Scoreline.astro";
+import type { ResolvedMatch } from "@lib/competition";
+import { dayKey, formatDay, formatTime } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+/* Every match of this tournament on one list, played and unplayed together,
+   in the order they happen. The bracket answers "who plays whom"; this
+   answers "what is on, and when". Slots with nobody in them yet are left out,
+   because an empty line is not something you can put in a calendar. */
+interface Props {
+  id: string;
+  matches: ResolvedMatch[];
+}
+const { id, matches } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+const playable = matches.filter((m) => m.home && m.away);
+
+const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).entries()].map(
+  ([day, date]) => ({
+    day,
+    date,
+    matches: playable.filter((m) => dayKey(m.startsAt) === day),
+  }),
+);
+---
+
+<Section id={id} bordered>
+  <div class="flex flex-wrap items-baseline justify-between gap-4">
+    <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.matches}</h2>
+    {days.length > 0 && <p class="reveal text-sm text-muted">{c.timeZoneNote}</p>}
+  </div>
+
+  {
+    days.length === 0 ? (
+      <p class="lede reveal mt-8">{c.empty}</p>
+    ) : (
+      <div class="mt-10 flex flex-col gap-10">
+        {days.map((group, i) => (
+          <div class="reveal" style={`--reveal-delay:${i * 60}ms`}>
+            <h3 class="display-sm text-sm text-accent-lift">{formatDay(group.date, locale)}</h3>
+
+            <ul class="mt-4 flex flex-col gap-px bg-line">
+              {group.matches.map((match) => (
+                <li class="bg-elev px-5 py-5 sm:px-7">
+                  <p class="mb-3 flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
+                    <span>{c.stage[match.stage]}</span>
+                    {match.group && (
+                      <>
+                        <span>/</span>
+                        <span>{match.group}</span>
+                      </>
+                    )}
+                    {match.bestOf && (
+                      <>
+                        <span>/</span>
+                        <span>{c.bestOf(match.bestOf)}</span>
+                      </>
+                    )}
+                    {/* A played match keeps its kickoff time here, since the
+                        scoreline itself has been taken over by the score. */}
+                    {match.score && (
+                      <span class="ml-auto normal-case tracking-normal">
+                        {formatTime(match.startsAt, locale)}
+                      </span>
+                    )}
+                  </p>
+                  <Scoreline match={match} trailing={formatTime(match.startsAt, locale)} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</Section>

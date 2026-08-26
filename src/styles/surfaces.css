@@ -22,3 +22,12 @@
     transparent 1px 14px
   );
 }
+
+/* Hairline grid.
+   The obvious way to draw one is a line-coloured backdrop showing through a
+   1px gap, but then a row that does not fill its last column leaves a bar of
+   line colour where a cell should be. Here every cell draws its own hairline
+   into the gap instead: two neighbours land on the same pixel and read as one
+   line, and an unfilled cell simply is not there. */
+.grid-hairline { gap: 1px; }
+.grid-hairline > * { outline: 1px solid var(--c-line); }
