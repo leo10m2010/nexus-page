@@ -46,7 +46,6 @@
 
 - id: season-one
   name: Nexus Series Season One
-  series: Season One
   status: upcoming
   startDate: 2026-09-12
   endDate: 2026-10-18
@@ -79,15 +78,11 @@
       format: roundRobin
       teamCount: 8
       bestOf: 3
-      advance: 8
+      advance: 4
     - key: playoffs
       format: doubleElimination
-      teamCount: 8
+      teamCount: 4
       bestOf: 3
-    - key: finals
-      format: singleElimination
-      teamCount: 2
-      bestOf: 5
   participants:
     - team: kite
       via: defending
@@ -127,7 +122,6 @@
       format: singleElimination
       teamCount: 2
       bestOf: 5
-      advance: 2
   participants:
     - team: aurora
       via: regional
@@ -176,11 +170,6 @@
       format: singleElimination
       teamCount: 8
       bestOf: 3
-      advance: 2
-    - key: finals
-      format: singleElimination
-      teamCount: 2
-      bestOf: 5
   participants:
     - team: kite
       via: invited

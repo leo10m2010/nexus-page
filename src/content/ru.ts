@@ -115,7 +115,6 @@ export const ru: Dictionary = {
     teamCount: (n) => `Команд: ${n}`,
     timeZoneNote: "Всё время указано в UTC.",
     section: {
-      overview: "Обзор",
       format: "Формат",
       participants: "Участники",
       standings: "Таблица",

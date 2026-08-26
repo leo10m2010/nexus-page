@@ -4,7 +4,7 @@ import Nav from "@layout/Nav.astro";
 import Footer from "@layout/Footer.astro";
 import SectionNav from "@ui/SectionNav.astro";
 import Header from "@sections/tournament/Header.astro";
-import Overview from "@sections/tournament/Overview.astro";
+import Prizes from "@sections/tournament/Prizes.astro";
 import Format from "@sections/tournament/Format.astro";
 import Participants from "@sections/tournament/Participants.astro";
 import Standings from "@sections/tournament/Standings.astro";
@@ -52,7 +52,7 @@ const phases = tournament.phases ?? [];
 const hasMatches = matches.some((m) => m.home && m.away);
 
 const sections = [
-  { id: "overview", label: c.section.overview, show: true },
+  { id: "prizes", label: c.info.prizePool, show: tournament.prizePool != null },
   { id: "format", label: c.section.format, show: phases.length > 0 },
   { id: "participants", label: c.section.participants, show: participants.length > 0 },
   { id: "standings", label: c.section.standings, show: groups.length > 0 },
@@ -78,7 +78,11 @@ const description = [
     <Header tournament={tournament} />
     <SectionNav items={sections} ariaLabel={tournament.name} />
 
-    <Overview id="overview" tournament={tournament} participants={participants} />
+    {
+      tournament.prizePool && (
+        <Prizes id="prizes" tournament={tournament} participants={participants} />
+      )
+    }
     {phases.length > 0 && <Format id="format" phases={phases} />}
     {
       participants.length > 0 && (

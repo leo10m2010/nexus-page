@@ -115,11 +115,10 @@ export interface Dictionary {
 
     /* ----------------- the page of a single tournament ----------------- */
 
-    /** Section headings, reused verbatim as the labels of the in-page tabs. */
-    section: Record<
-      "overview" | "format" | "participants" | "standings" | "bracket" | "matches",
-      string
-    >;
+    /** Section headings, reused verbatim as the labels of the in-page tabs.
+     *  The payout table is labelled `info.prizePool`, since that is what it
+     *  holds; a section called "overview" only said where it sat on the page. */
+    section: Record<"format" | "participants" | "standings" | "bracket" | "matches", string>;
     /** Rows of the fact panel that sits beside the overview. */
     info: Record<
       | "organizer"

@@ -28,10 +28,7 @@ const columns =
     {
       phases.map((phase, i) => (
         <li class="reveal bg-elev p-6 sm:p-8" style={`--reveal-delay:${i * 70}ms`}>
-          <p class="font-display text-[0.6875rem] font-bold tracking-[0.16em] text-muted tabular-nums">
-            {String(i + 1).padStart(2, "0")}
-          </p>
-          <h3 class="display-sm mt-3 text-xl">{c.phase[phase.key]}</h3>
+          <h3 class="display-sm text-xl">{c.phase[phase.key]}</h3>
           <p class="mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
 
           <ul class="mt-5 flex flex-wrap gap-2">
@@ -45,7 +42,8 @@ const columns =
                 {c.bestOf(phase.bestOf)}
               </li>
             )}
-            {phase.advance && (
+            {/* Everyone advancing is not a cut, it is just the next phase. */}
+            {phase.advance && phase.advance !== phase.teamCount && (
               <li class="border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
                 {c.advance(phase.advance)}
               </li>

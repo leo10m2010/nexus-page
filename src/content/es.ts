@@ -114,7 +114,6 @@ export const es: Dictionary = {
     teamCount: (n) => `${n} equipos`,
     timeZoneNote: "Todos los horarios en UTC.",
     section: {
-      overview: "Resumen",
       format: "Formato",
       participants: "Participantes",
       standings: "Clasificación",

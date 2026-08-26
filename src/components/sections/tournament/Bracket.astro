@@ -79,7 +79,10 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
                             {(["home", "away"] as const).map((seat) => (
                               <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
                                 <TeamMark team={match[seat]} size={20} />
-                                <span class="truncate">{match[seat]?.name ?? c.tbd}</span>
+                                {/* An empty line reads as a slot waiting to
+                                    be filled. Writing "to be decided" into
+                                    every one of them reads as noise. */}
+                                <span class="truncate">{match[seat]?.name}</span>
                                 <span class="bracket-score tabular-nums">
                                   {match.score ? match.score[seat === "home" ? 0 : 1] : "-"}
                                 </span>

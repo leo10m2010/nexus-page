@@ -1,0 +1,104 @@
+---
+import Section from "@ui/Section.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import type { Participant, Tournament } from "@lib/competition";
+import { formatMoney } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+/* The payout table, and nothing else.
+   This used to be an "Overview" with a fact panel beside it, and the panel
+   repeated five of the seven numbers already sitting in the masthead a screen
+   above. The masthead won: it is read first and it is the same data. */
+interface Props {
+  id: string;
+  tournament: Tournament;
+  participants: Participant[];
+}
+const { id, tournament, participants } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+const prize = tournament.prizePool!;
+const payouts = prize.distribution ?? [];
+const teamById = new Map(participants.map((p) => [p.team.id, p.team]));
+
+/* Before the tournament is played nobody holds a place, and a column of
+   "to be decided" is a column of nothing. It appears once a name does. */
+const named = payouts.some((row) => row.team);
+---
+
+<Section id={id} bordered>
+  {/* Two or three columns of money do not need 1400px to be read. The block
+      keeps the total over the column it totals, instead of at arm's length. */}
+  <div class="max-w-[46rem]">
+    <div class="flex flex-wrap items-baseline justify-between gap-4">
+      <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.info.prizePool}</h2>
+      <p class="display-sm reveal text-lg text-accent-lift tabular-nums">
+        {formatMoney(prize.total, prize.currency, locale)}
+      </p>
+    </div>
+
+    <div class="reveal mt-10 overflow-x-auto">
+      <table class="w-full min-w-[24rem] border-collapse text-left">
+        <thead>
+          <tr class="border-b border-line-strong">
+            <th scope="col" class="th">{c.prizeHead.place}</th>
+            <th scope="col" class="th text-right">{c.prizeHead.prize}</th>
+            {named && <th scope="col" class="th pl-8">{c.prizeHead.team}</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {
+            payouts.map((row) => {
+              const team = row.team ? (teamById.get(row.team) ?? null) : null;
+              return (
+                <tr class="border-b border-line last:border-0">
+                  <td
+                    class={`py-3.5 font-display text-[0.9375rem] font-bold ${
+                      row.place === 1 ? "text-accent-lift" : "text-ink"
+                    }`}
+                  >
+                    {row.to ? c.placeRange(row.place, row.to) : c.place(row.place)}
+                  </td>
+                  <td class="py-3.5 text-right text-[0.9375rem] text-ink tabular-nums">
+                    {formatMoney(row.amount, prize.currency, locale)}
+                  </td>
+                  {named && (
+                    <td class="py-3.5 pl-8">
+                      {team ? (
+                        <span class="flex items-center gap-2.5">
+                          <TeamMark team={team} size={24} />
+                          <span class="truncate text-[0.9375rem]">{team.name}</span>
+                        </span>
+                      ) : (
+                        /* A shared place is several teams, so naming one would
+                           be wrong even after the tournament is over. */
+                        <span class="text-[0.9375rem] text-muted" aria-hidden="true">
+                          &mdash;
+                        </span>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              );
+            })
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .th {
+    padding-block: 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+</style>
