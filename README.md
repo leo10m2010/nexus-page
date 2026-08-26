@@ -81,35 +81,38 @@ de Twitch en tres. Ahora cada URL aparece una sola vez.
 - **`npm run build` corre `astro check` antes de compilar**, así un error de
   tipos no llega a `dist/`. Para saltárselo en iteración rápida, `build:fast`.
 
-## Página de competición (sin publicar)
+## Página de competición
 
 Torneos, calendario, resultados y equipos, en `/competition/` y su equivalente
-en cada idioma. **Ahora mismo no se publica.**
+en cada idioma, más una página por torneo. **Se publica.**
 
-### Qué significa "oculta"
-
-Con `published: false` la página **no se genera**. No existe un archivo en
-`dist/`, así que nadie puede llegar a ella aunque escriba la URL exacta. No es
-una contraseña: es que no está.
-
-Un sitio estático no puede tener login de verdad. Si pusiéramos una contraseña
-en JavaScript, el HTML con todos los datos se descargaría igual y cualquiera lo
-leería en el código fuente. Por eso no está hecho así.
-
-Tú la ves en tu equipo con `npm run dev`, en `http://localhost:4321/competition/`.
-
-### Publicarla
+### Bajarla otra vez
 
 Abre `src/config/features.ts` y cambia una palabra:
 
 ```ts
 export const features = {
-  competition: { published: true },   // estaba en false
+  competition: { published: false },   // estaba en true
 };
 ```
 
-Vuelve a compilar y súbelo. Mientras esté en `false`, la página lleva además
-`noindex` por si algún día se publica por error.
+Con `published: false` las páginas **no se generan**. No existe el archivo en
+`dist/`, así que nadie puede llegar a ellas aunque escriba la URL exacta. No es
+una contraseña: es que no están.
+
+Un sitio estático no puede tener login de verdad. Si pusiéramos una contraseña
+en JavaScript, el HTML con todos los datos se descargaría igual y cualquiera lo
+leería en el código fuente. Por eso no está hecho así.
+
+Mientras el flag esté en `false` las páginas llevan además `noindex`, por si
+algún día se publican por error. Y las sigues viendo en tu equipo con
+`npm run dev`, en `http://localhost:4321/competition/`.
+
+### Ojo con los datos mientras estén publicadas
+
+Los equipos, torneos y partidos que hay ahora son inventados, y ya no llevan
+`noindex`: un buscador puede indexarlos. Reemplázalos por los reales, o baja el
+flag hasta que los tengas.
 
 ### La página de cada torneo
 

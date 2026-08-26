@@ -1,6 +1,6 @@
 ---
 import { sameAs, site, social } from "@config/site";
-import { localeMeta, locales, localePath, resolveLocale } from "@lib/i18n";
+import { localeMeta, locales, localizePath, resolveLocale } from "@lib/i18n";
 
 interface Props {
   title: string;
@@ -11,7 +11,13 @@ interface Props {
 
 const { title, description, noindex = false } = Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
-const canonical = new URL(localePath(locale), site.url);
+
+/* The canonical is this page's own address. It used to be the locale's home
+   page, which was harmless while each language was a single page and wrong the
+   moment there was more than one: every tournament would have been declaring
+   itself a duplicate of the homepage, and none of them would ever be indexed. */
+const path = Astro.url.pathname;
+const canonical = new URL(path, site.url);
 const ogImage = new URL(site.ogImage, site.url);
 
 const jsonLd = {
@@ -36,7 +42,7 @@ const jsonLd = {
     <link
       rel="alternate"
       hreflang={localeMeta[l].htmlLang}
-      href={new URL(localePath(l), site.url)}
+      href={new URL(localizePath(path, l), site.url)}
     />
   ))
 }

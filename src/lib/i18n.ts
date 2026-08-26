@@ -33,3 +33,16 @@ export function resolveLocale(locale: string | undefined): Locale {
 export function localePath(locale: Locale): string {
   return locale === DEFAULT_LOCALE ? "/" : `/${locale}/`;
 }
+
+/**
+ * The same page in another language.
+ *
+ * Switching language is a prefix swap, not a trip to the homepage: from
+ * /competition/season-one/ the Spanish version is /es/competition/season-one/.
+ * This is what the language menu links to and what the hreflang tags declare,
+ * so both always agree.
+ */
+export function localizePath(pathname: string, locale: Locale): string {
+  const withoutLocale = pathname.replace(new RegExp(`^/(${locales.join("|")})(?=/|$)`), "");
+  return `${localePath(locale)}${withoutLocale.replace(/^\//, "")}`;
+}
