@@ -1,57 +1,282 @@
 ---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
 import Button from "@ui/Button.astro";
-import MediaBackdrop from "@ui/MediaBackdrop.astro";
+import Eyebrow from "@ui/Eyebrow.astro";
 import { ctas } from "@config/site";
 import { NAV_HEIGHT } from "@config/nav";
 import { useTranslations } from "@lib/i18n";
 import { media } from "@lib/images";
 
-/* Full-bleed stage photography. The frame has a dark, quiet left side and the
-   stage right of centre, so the type lives in the lower band where the scrim
-   is strongest and the arena stays legible above it. */
+/* Poster composition: the copy sits high and stays put — kicker, then the
+   translated headline — while the figures are a large background layer of
+   their own, scaled up and anchored to the bottom edge so they crop at the
+   waist instead of floating whole in the middle of the frame. Text stays
+   legible because it no longer shares a grid cell with the image; the
+   image sits behind it as a backdrop. */
 const t = useTranslations(Astro.currentLocale);
 const { headline, headlineClamp, lede } = t.hero;
 ---
 
 <section
   id="home"
-  class="on-media relative isolate flex min-h-[100dvh] flex-col justify-end border-b border-line"
+  class="hero relative isolate flex min-h-[100dvh] flex-col overflow-hidden border-b border-line bg-bg"
 >
-  <MediaBackdrop
-    {...media.heroStage}
-    position="56% center"
-    scrim="stage"
-    sizes="100vw"
-    tint={12}
-    priority
-    class="-z-10"
-  />
+  <div class="hero-shape hero-shape--a pointer-events-none absolute -z-10" aria-hidden="true"></div>
+  <div class="hero-shape hero-shape--b pointer-events-none absolute -z-10" aria-hidden="true"></div>
 
+  {/* The figures, cropped at the waist on purpose: scaled well past the
+      section's own height and pinned close under the headline, so
+      `overflow-hidden` on the section crops the legs instead of the
+      composition showing the whole standing figures with dead space above
+      and below them. The frame is a rounded card, not a bare cutout — it is
+      also what the mouse-parallax script below grabs and tilts. */}
   <div
-    class="mx-auto w-full max-w-[1400px] px-5 pb-14 sm:px-8 sm:pb-20"
-    style={`padding-top:${NAV_HEIGHT + 20}px`}
+    class="hero-figures-layer pointer-events-none absolute inset-x-0 bottom-0 z-0 flex h-[50vh] max-h-[42rem] items-start justify-center pt-[1vh] sm:h-[64vh] sm:pt-[3vh] md:h-[76vh] md:pt-[2vh]"
+    aria-hidden="true"
   >
-    <h1 class="display reveal" style={`font-size:${headlineClamp}`}>
-      {
-        headline.map((line, i) => (
-          <>
-            {i > 0 && <br />}
-            {line.accent ? <span class="text-accent-lift">{line.text}</span> : line.text}
-          </>
-        ))
-      }
-    </h1>
-
-    <div class="mt-9 grid gap-8 lg:grid-cols-12 lg:items-end">
-      <p class="lede reveal lg:col-span-6" style="--reveal-delay:90ms">{lede}</p>
+    {/* A relative stack sized to the frame (the glow is absolute, so it
+        contributes nothing to that size), so the glow's `inset-0 m-auto`
+        centers on the frame's actual box — not on the layer's, which is
+        flex-aligned to the top and would put the two centres nowhere near
+        each other. */}
+    <div class="hero-figures-stack relative">
+      {/* The glow you dropped in (LUZ.png): a soft light bloom, screened
+          onto the dark background so only its brightness shows, not a
+          rectangle — centred behind the figures so the statues read as the
+          source of their own blue light instead of it looking pasted on
+          top of them. */}
+      <Image
+        src={media.heroGlow.src}
+        alt=""
+        widths={[480, 768, 1024]}
+        sizes="70vw"
+        format="webp"
+        quality={78}
+        loading="eager"
+        class="hero-glow pointer-events-none absolute left-1/2 top-1/2 -z-10 w-[95vw] max-w-[58rem] -translate-x-1/2 -translate-y-1/2 sm:w-[78vw] md:w-[66vw]"
+      />
 
       <div
-        class="reveal flex flex-wrap gap-3 lg:col-span-5 lg:col-start-8 lg:justify-end"
-        style="--reveal-delay:170ms"
+        data-parallax
+        class="hero-figures-frame relative w-[76vw] max-w-[54rem] overflow-hidden sm:w-[66vw] md:w-[56vw]"
       >
+        <Image
+          src={media.heroFigures.src}
+          alt={media.heroFigures.alt}
+          widths={[640, 960, 1280, 1920]}
+          sizes="(min-width: 768px) 46vw, 68vw"
+          format="webp"
+          quality={82}
+          loading="eager"
+          decoding="sync"
+          fetchpriority="high"
+          class="hero-figures h-full w-full object-cover"
+        />
+      </div>
+    </div>
+  </div>
+
+  {/* The reference solves "text over a busy image" with a solid ribbon
+      behind its tagline. This is the same fix in the site's own language: a
+      scrim fading to the section's own flat background colour, so the lede
+      and buttons read the same regardless of where a statue happens to
+      fall behind them, instead of overlapping the artwork unscrimmed. */}
+  <div class="hero-scrim pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[52%] sm:h-[42%] md:h-[38%]" aria-hidden="true"></div>
+
+  <div
+    class="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-5 sm:px-8"
+    style={`padding-top:${NAV_HEIGHT + 28}px`}
+  >
+    <div class="text-center md:text-left">
+      <Eyebrow text={t.roadmap.eyebrow} class="reveal" />
+      <h1
+        class="hero-headline display reveal mt-2"
+        style={`font-size:${headlineClamp}`}
+      >
+        {
+          headline.map((line, i) => (
+            <>
+              {i > 0 && <br />}
+              {line.accent ? <span class="text-accent-lift">{line.text}</span> : line.text}
+            </>
+          ))
+        }
+      </h1>
+    </div>
+
+    {/* No `.reveal` here on purpose: this row is pinned to the very bottom
+        of a 100dvh hero, and the scroll-reveal observer excludes its own
+        bottom ~12% (`rootMargin: "0px 0px -12% 0px"`) when deciding what
+        already counts as visible on load. Content anchored that close to
+        the edge was landing inside that excluded band and sitting at
+        opacity:0 until the reader scrolled — invisible CTAs on load. Hero
+        content is above the fold already; it does not need to earn a
+        scroll-triggered entrance. */}
+    <div class="mt-auto grid gap-8 pb-10 sm:pb-14 lg:grid-cols-12 lg:items-end">
+      <p class="lede lg:col-span-6">{lede}</p>
+
+      <div class="flex flex-wrap gap-3 lg:col-span-5 lg:col-start-8 lg:justify-end">
         <Button {...ctas.community} label={t.cta.community} />
         <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" />
       </div>
     </div>
   </div>
+
+  <a
+    href="#about"
+    class="scroll-cue absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-muted transition-colors hover:text-ink lg:flex"
+  >
+    <span class="font-display text-[0.6875rem] font-bold tracking-[0.16em] uppercase">{t.nav.about}</span>
+    <Icon name="ph:caret-down-bold" class="scroll-cue-icon size-4" />
+  </a>
 </section>
+
+<script>
+  /* Mouse parallax on the figures card. Consulted the project's GSAP
+     reference for the underlying technique before writing this by hand —
+     ease toward a target every frame rather than snapping straight to the
+     cursor, and drive only `transform` — then implemented it in plain JS to
+     keep the zero-dependency approach the rest of the site's motion uses
+     (reveal.ts is the same story: an effect, no library). A power2-out feel
+     without the library: lerp the current position a fraction of the way
+     to the target each frame. */
+  const hero = document.getElementById("home");
+  const frame = hero?.querySelector<HTMLElement>("[data-parallax]");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (hero && frame && !reduced) {
+    const strength = 14; // max px of travel in any direction
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let raf = 0;
+
+    const tick = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      frame.style.transform = `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px, 0)`;
+      if (Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = 0;
+      }
+    };
+
+    const start = () => {
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+
+    hero.addEventListener("pointermove", (e) => {
+      const rect = hero.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5; // -0.5..0.5
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      targetX = nx * strength * 2;
+      targetY = ny * strength;
+      start();
+    });
+
+    hero.addEventListener("pointerleave", () => {
+      targetX = 0;
+      targetY = 0;
+      start();
+    });
+  }
+</script>
+
+<style>
+  /* Two angular fields, the same cut-corner language as the roadmap cards,
+     scaled up to hold the frame. Gold at low opacity, not ESL's saturated
+     green: the brand's accent stays an accent even at poster scale. */
+  .hero-shape { background: var(--c-accent); }
+  .hero-shape--a {
+    top: -12%;
+    right: -8%;
+    width: 46vw;
+    height: 60vh;
+    opacity: 0.07;
+    clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
+  }
+  .hero-shape--b {
+    bottom: -18%;
+    left: -10%;
+    width: 34vw;
+    height: 50vh;
+    opacity: 0.05;
+    clip-path: polygon(0 0, 100% 40%, 40% 100%, 0 100%);
+  }
+
+  .hero-glow {
+    /* `screen`: only the bloom's brightness adds to the dark background, so
+       its own soft edges (already faded to transparent in the file) never
+       read as a rectangle — it behaves like light, not like a photo. The
+       source file is itself a muted navy blob, barely brighter than the
+       section's own dark background — screened as-is it all but disappears,
+       so `brightness`/`saturate` push it up first, into the same blue the
+       statues already glow with, before it gets blended in. */
+    mix-blend-mode: screen;
+    filter: brightness(2.4) saturate(1.4);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-glow { animation: glow-breathe 6s ease-in-out infinite; }
+  }
+
+  @keyframes glow-breathe {
+    /* Centering lives in the native `translate` property (from the
+       `-translate-x-1/2 -translate-y-1/2` utilities) — a separate CSS
+       property from `transform` since Tailwind v4 stopped folding
+       translate into the `transform` shorthand. Animating `transform`
+       here only ever touches `scale`; putting a translate() inside it
+       too would compose on top of the native one and double-shift the
+       glow off-centre every frame. */
+    0%, 100% { opacity: 0.75; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.08); }
+  }
+
+  .hero-headline {
+    /* Font-size is inline (headlineClamp): tuned per locale so a translated
+       headline never wraps past two lines at any width. A bigger fixed
+       clamp here is what caused each line to wrap a second time last time. */
+    line-height: 1.08;
+  }
+
+  .hero-scrim {
+    background: linear-gradient(to top, var(--c-bg) 15%, transparent 100%);
+  }
+
+  /* A frame, not a bare cutout: a corner radius soft enough to stay on the
+     angular side of the brand (this is the one curved shape on the whole
+     page, so it stays modest) instead of either a hard square or a fully
+     rounded card. */
+  .hero-figures-frame {
+    aspect-ratio: 3 / 2;
+    border-radius: 1.25rem;
+    box-shadow: 0 30px 60px -10px rgb(6 8 15 / 0.55);
+    will-change: transform;
+    /* Bigger now, so the top of the frame reaches into the headline's own
+       space instead of stopping short of it. A fade at that top edge, not a
+       hard line, is what keeps the letters readable through it: the figures
+       dissolve into the background right where they would otherwise cover
+       type, rather than a rounded card cutting them off with an edge. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 22%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 22%);
+  }
+
+  .scroll-cue-icon { transition: transform 0.2s var(--ease-out-quint); }
+  .scroll-cue:hover .scroll-cue-icon { transform: translateY(3px); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-cue-icon { animation: scroll-bounce 2s ease-in-out infinite; }
+  }
+
+  @keyframes scroll-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-cue-icon { animation: none; }
+  }
+</style>

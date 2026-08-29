@@ -4,6 +4,8 @@ import Nav from "@layout/Nav.astro";
 import Footer from "@layout/Footer.astro";
 import Hero from "@sections/Hero.astro";
 import Channels from "@sections/Channels.astro";
+import Roadmap from "@sections/Roadmap.astro";
+import TeamsShowcase from "@sections/TeamsShowcase.astro";
 import About from "@sections/About.astro";
 import Vision from "@sections/Vision.astro";
 import Partners from "@sections/Partners.astro";
@@ -18,9 +20,11 @@ const t = useTranslations(Astro.currentLocale);
 
 <Base title={`${site.name} | ${t.tagline}`} description={t.hero.lede}>
   <Nav />
-  <main>
+  <main id="main">
     <Hero />
     <Channels />
+    <Roadmap />
+    <TeamsShowcase />
     <About />
     <Vision />
     <Partners />

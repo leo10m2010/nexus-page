@@ -1,0 +1,182 @@
+---
+import TeamMark from "@ui/TeamMark.astro";
+import UniversalMark from "@ui/UniversalMark.astro";
+import { formatMoney } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+import type { Team, Tournament } from "@lib/competition";
+
+/** One stage of the roadmap: either a real tournament or a funded-but-undated
+   placeholder. `href` is what tells the card which one it is. */
+export interface Stage {
+  name: string;
+  href: string | null;
+  dates: string | null;
+  status: Tournament["status"] | null;
+  prizeTotal: number;
+  currency: string;
+  /** Only the real stage carries a field: nothing invented for a stage that
+     has no participants yet. */
+  teams: Team[] | null;
+  teamCount: number | null;
+}
+
+interface Props {
+  stage: Stage;
+  numeral: string;
+}
+
+const { stage, numeral } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+const Tag = stage.href ? "a" : "div";
+
+const VISIBLE_TEAMS = 7;
+const shownTeams = stage.teams?.slice(0, VISIBLE_TEAMS) ?? [];
+const overflow = Math.max(0, (stage.teamCount ?? 0) - shownTeams.length);
+---
+
+<Tag
+  href={stage.href ?? undefined}
+  class={`stage-card relative flex w-full flex-col gap-6 overflow-hidden bg-elev p-7 sm:p-8 ${stage.href ? "stage-card--live" : "stage-card--soon"}`}
+>
+  {/* The Dota 2 glyph again, small and faint, tucked into the cut corner
+      itself so it never reaches the text columns above it. Decoration only:
+      it repeats a mark already on the page, not a new one. Colour and
+      opacity are inline because a child component's own root does not carry
+      this component's scope id, so a scoped rule here could never reach it. */}
+  <UniversalMark
+    class="watermark pointer-events-none absolute -right-3 -bottom-4 h-20 w-20"
+    style="color:var(--c-accent);opacity:0.07"
+    aria-hidden="true"
+  />
+
+  <div class="relative flex items-start justify-between gap-4">
+    <span
+      class={`numeral grid h-9 w-9 shrink-0 place-items-center border font-display text-base font-bold ${
+        stage.href ? "border-accent bg-accent text-on-accent" : "border-accent/40 bg-bg text-accent"
+      }`}
+    >
+      {numeral}
+    </span>
+
+    {
+      stage.status ? (
+        <span class="inline-flex items-center bg-accent px-3 py-1.5 font-display text-[0.6875rem] font-bold tracking-[0.14em] text-on-accent uppercase">
+          {c.status[stage.status]}
+        </span>
+      ) : (
+        <span class="inline-flex items-center gap-2 border border-accent/40 px-3 py-1.5 font-display text-[0.6875rem] font-bold tracking-[0.14em] text-accent-lift uppercase">
+          <span class="size-1.5 shrink-0 bg-accent-lift/70" aria-hidden="true" />
+          {t.roadmap.comingSoon}
+        </span>
+      )
+    }
+  </div>
+
+  <h3 class="relative display-sm text-2xl">{stage.name}</h3>
+
+  {
+    shownTeams.length > 0 ? (
+      <div class="relative">
+        <p class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">{c.teams}</p>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          {shownTeams.map((team) => (
+            <TeamMark team={team} size={30} />
+          ))}
+          {overflow > 0 && (
+            <span class="grid h-[30px] min-w-[30px] place-items-center border border-line-strong px-1.5 font-display text-[0.6875rem] font-bold text-muted">
+              +{overflow}
+            </span>
+          )}
+        </div>
+      </div>
+    ) : (
+      /* A stage with no field yet still needs something to say here: an
+         empty middle is what reads as broken, not the absence of teams. */
+      <p class="relative text-[0.9375rem] text-muted">{t.roadmap.detailsTbd}</p>
+    )
+  }
+
+  <div class="relative mt-auto grid grid-cols-2 gap-4 border-t border-line pt-6">
+    <div>
+      <p class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">{c.info.dates}</p>
+      <p class="mt-1.5 font-display text-base font-bold text-ink">{stage.dates ?? t.roadmap.dateTbd}</p>
+    </div>
+    <div class="text-right">
+      <p class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">{c.info.prizePool}</p>
+      <p class="mt-1.5 font-display text-base font-bold text-accent-lift">
+        {stage.prizeTotal > 0 ? formatMoney(stage.prizeTotal, stage.currency, locale) : "—"}
+      </p>
+    </div>
+  </div>
+
+  {
+    stage.href && (
+      <span class="card-cta relative font-display text-[0.75rem] font-semibold tracking-[0.16em] text-accent-lift uppercase">
+        {t.competition.viewTournament}
+        <span aria-hidden="true" class="card-arrow">
+          &rarr;
+        </span>
+      </span>
+    )
+  }
+</Tag>
+
+<style>
+  /* The cut corner: the one shape flourish this card gets, on-brand because
+     it is a diagonal, not a curve. clip-path clips the watermark with it for
+     free, so the icon never needs its own mask. */
+  .stage-card {
+    clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+    transition: transform 0.35s var(--ease-out-quint), background-color 0.35s var(--ease-out-quint);
+  }
+
+  .card-arrow {
+    display: inline-block;
+    margin-left: 0.5rem;
+    transition: transform 0.3s var(--ease-out-quint);
+  }
+
+  /* Only a card that leads somewhere gets picked up: hovering a coming-soon
+     placeholder should not promise an interaction it cannot deliver. */
+  .stage-card--live:hover { background: var(--c-bg-elev-2); transform: translateY(-6px); }
+  .stage-card--live:hover .card-arrow { transform: translateX(0.25rem); }
+  .stage-card--live:active { transform: translateY(-2px) scale(0.985); transition-duration: 0.12s; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* The numeral pops in with a touch of overshoot: a spring settling, not a
+       linear fade, so the reveal reads as landing rather than just arriving. */
+    .numeral {
+      opacity: 0;
+      transform: scale(0.55);
+      transition: opacity 0.5s var(--ease-out-quint), transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition-delay: var(--reveal-delay, 0ms);
+    }
+    /* `.js-reveal`/`.reveal.is-in` belong to the ancestor wrapper Roadmap.astro
+       renders, not to this component, so they have to stay unscoped for the
+       selector to ever match: Astro scopes every simple selector it can, and
+       an ancestor from another component never carries this one's scope id. */
+    :global(.js-reveal) :global(.reveal.is-in) .numeral { opacity: 1; transform: scale(1); }
+
+    /* The one stage that is actually happening keeps breathing after it
+       lands: the placeholders stay still, which is the "diferencia" between
+       a confirmed date and a funded-but-unscheduled one. */
+    .stage-card--live .numeral { animation: numeral-pulse 2.4s ease-in-out 0.6s infinite; }
+
+    /* Same child-component scoping issue as the numeral: `.watermark` lives
+       on UniversalMark's own root, so it has to stay unscoped here too. */
+    :global(.watermark) { transition: transform 0.6s var(--ease-out-quint); }
+    .stage-card:hover :global(.watermark) { transform: rotate(6deg) scale(1.06); }
+  }
+
+  @keyframes numeral-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--c-accent) 45%, transparent); }
+    50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--c-accent) 0%, transparent); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .stage-card--live:hover { transform: none; }
+    .card-arrow { transition: none; }
+  }
+</style>

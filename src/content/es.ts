@@ -157,5 +157,21 @@ export const es: Dictionary = {
     allTournaments: "Todos los torneos",
     viewTournament: "Ver torneo",
   },
-  footer: { rights: "Todos los derechos reservados." },
+  footer: { rights: "Todos los derechos reservados.", navHeading: "Navegación", watchHeading: "En vivo" },
+
+  roadmap: {
+    eyebrow: "Temporada 2026",
+    heading: "Tres etapas. Una temporada.",
+    lede: "Nexus Series I está en preparación ahora mismo. Las etapas II y III ya tienen el premio confirmado; las fechas se anuncian más adelante.",
+    comingSoon: "Próximamente",
+    dateTbd: "Fecha por confirmar",
+    detailsTbd: "Formato y equipos por anunciar.",
+    totalPrizePool: "Premio total de la temporada",
+  },
+
+  teamsShowcase: {
+    eyebrow: "El cuadro",
+    heading: "Quién compite esta temporada.",
+    cta: "Ver todos los equipos",
+  },
 };

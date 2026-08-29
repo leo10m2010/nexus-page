@@ -29,288 +29,143 @@
 #               la tabla de clasificacion de esa fase.
 
 # =====================================================================
-# NEXUS SERIES SEASON ONE - cuadro de doble eliminacion, 8 equipos.
-# Los cuartos ya tienen equipos; el resto son huecos por definir.
+# NEXUS SERIES I - datos reales.
+# Fuente: https://liquipedia.net/dota2/NEXUS_SERIES/1 (horarios en PET,
+# convertidos aqui a UTC restando 5 horas).
+#
+# Grupo A y B: modificado GSL, top 2 de cada uno pasan a playoffs.
+# M1 y M2 de cada grupo ya tienen equipos; M3-M5 salen del resultado de esos
+# dos primeros partidos y todavia no estan decididos.
+# Playoffs: doble eliminacion a 4 equipos. Nadie ha clasificado aun.
 # =====================================================================
 
-# --- Cuadro superior ---
-- id: s1-ub1
+# --- Grupo A ---
+- id: s1-ga1
   tournament: season-one
-  stage: quarterfinal
-  startsAt: 2026-09-12T18:00:00Z
-  home: aurora
-  away: kite
+  stage: groupStage
+  group: A
+  startsAt: 2026-09-06T17:00:00Z
+  home: amaru-gaming
+  away: pibble-corp
   bestOf: 3
-  bracket: upper
-  round: 1
 
-- id: s1-ub2
+- id: s1-ga2
   tournament: season-one
-  stage: quarterfinal
-  startsAt: 2026-09-12T21:00:00Z
-  home: meridian
-  away: vantage
+  stage: groupStage
+  group: A
+  startsAt: 2026-09-06T20:00:00Z
+  home: chandogs
+  away: estar-backs
   bestOf: 3
-  bracket: upper
-  round: 1
 
-- id: s1-ub3
+- id: s1-ga3
   tournament: season-one
-  stage: quarterfinal
-  startsAt: 2026-09-13T18:00:00Z
-  home: northgate
-  away: solaris
+  stage: groupStage
+  group: A
+  startsAt: 2026-09-08T17:00:00Z
   bestOf: 3
-  bracket: upper
-  round: 1
 
-- id: s1-ub4
+- id: s1-ga4
   tournament: season-one
-  stage: quarterfinal
-  startsAt: 2026-09-13T21:00:00Z
-  home: halcyon
-  away: ridgeback
+  stage: groupStage
+  group: A
+  startsAt: 2026-09-08T20:00:00Z
   bestOf: 3
-  bracket: upper
-  round: 1
 
-- id: s1-ub5
+- id: s1-ga5
+  tournament: season-one
+  stage: groupStage
+  group: A
+  startsAt: 2026-09-08T23:00:00Z
+  bestOf: 3
+
+# --- Grupo B ---
+- id: s1-gb1
+  tournament: season-one
+  stage: groupStage
+  group: B
+  startsAt: 2026-09-07T17:00:00Z
+  home: rebeldes
+  away: teamdk
+  bestOf: 3
+
+- id: s1-gb2
+  tournament: season-one
+  stage: groupStage
+  group: B
+  startsAt: 2026-09-07T20:00:00Z
+  home: giordota-team
+  away: the-house-esports
+  bestOf: 3
+
+- id: s1-gb3
+  tournament: season-one
+  stage: groupStage
+  group: B
+  startsAt: 2026-09-09T17:00:00Z
+  bestOf: 3
+
+- id: s1-gb4
+  tournament: season-one
+  stage: groupStage
+  group: B
+  startsAt: 2026-09-09T20:00:00Z
+  bestOf: 3
+
+- id: s1-gb5
+  tournament: season-one
+  stage: groupStage
+  group: B
+  startsAt: 2026-09-09T23:00:00Z
+  bestOf: 3
+
+# --- Playoffs: cuadro superior ---
+- id: s1-ubsf1
   tournament: season-one
   stage: semifinal
-  startsAt: 2026-09-19T18:00:00Z
+  startsAt: 2026-09-11T20:00:00Z
   bestOf: 3
   bracket: upper
-  round: 2
+  round: 1
 
-- id: s1-ub6
+- id: s1-ubsf2
   tournament: season-one
   stage: semifinal
-  startsAt: 2026-09-19T21:00:00Z
+  startsAt: 2026-09-11T23:00:00Z
   bestOf: 3
   bracket: upper
-  round: 2
+  round: 1
 
-- id: s1-ub7
+- id: s1-ubf
   tournament: season-one
   stage: upperFinal
-  startsAt: 2026-09-26T20:00:00Z
+  startsAt: 2026-09-12T23:00:00Z
   bestOf: 3
   bracket: upper
-  round: 3
+  round: 2
 
-# --- Cuadro inferior ---
-- id: s1-lb1
+# --- Playoffs: cuadro inferior ---
+- id: s1-lbsf
   tournament: season-one
   stage: lowerRound
-  startsAt: 2026-09-19T15:00:00Z
+  startsAt: 2026-09-12T20:00:00Z
   bestOf: 3
   bracket: lower
   round: 1
 
-- id: s1-lb2
-  tournament: season-one
-  stage: lowerRound
-  startsAt: 2026-09-19T15:00:00Z
-  bestOf: 3
-  bracket: lower
-  round: 1
-
-- id: s1-lb3
-  tournament: season-one
-  stage: lowerRound
-  startsAt: 2026-09-26T15:00:00Z
-  bestOf: 3
-  bracket: lower
-  round: 2
-
-- id: s1-lb4
-  tournament: season-one
-  stage: lowerRound
-  startsAt: 2026-09-26T17:00:00Z
-  bestOf: 3
-  bracket: lower
-  round: 2
-
-- id: s1-lb5
-  tournament: season-one
-  stage: lowerRound
-  startsAt: 2026-10-03T18:00:00Z
-  bestOf: 3
-  bracket: lower
-  round: 3
-
-- id: s1-lb6
+- id: s1-lbf
   tournament: season-one
   stage: lowerFinal
-  startsAt: 2026-10-10T18:00:00Z
+  startsAt: 2026-09-14T17:00:00Z
   bestOf: 3
   bracket: lower
-  round: 4
+  round: 2
 
 # --- Gran final ---
 - id: s1-gf
   tournament: season-one
   stage: grandFinal
-  startsAt: 2026-10-18T18:00:00Z
+  startsAt: 2026-09-15T20:00:00Z
   bestOf: 5
   bracket: final
   round: 1
-
-# =====================================================================
-# LATAM QUALIFIER - dos grupos de tres, todos contra todos.
-# Los partidos con "group" alimentan la tabla de cada grupo.
-# =====================================================================
-
-- id: lq-a1
-  tournament: latam-qualifier
-  stage: groupStage
-  group: A
-  startsAt: 2026-08-21T22:00:00Z
-  home: aurora
-  away: caliza
-  bestOf: 3
-  score: [2, 0]
-
-- id: lq-a2
-  tournament: latam-qualifier
-  stage: groupStage
-  group: A
-  startsAt: 2026-08-23T22:00:00Z
-  home: caliza
-  away: marejada
-  bestOf: 3
-  score: [1, 2]
-
-- id: lq-a3
-  tournament: latam-qualifier
-  stage: groupStage
-  group: A
-  startsAt: 2026-08-27T22:00:00Z
-  home: aurora
-  away: marejada
-  bestOf: 3
-
-- id: lq-b1
-  tournament: latam-qualifier
-  stage: groupStage
-  group: B
-  startsAt: 2026-08-22T22:00:00Z
-  home: ridgeback
-  away: solaris
-  bestOf: 3
-  score: [2, 1]
-
-- id: lq-b2
-  tournament: latam-qualifier
-  stage: groupStage
-  group: B
-  startsAt: 2026-08-24T22:00:00Z
-  home: solaris
-  away: altiplano
-  bestOf: 3
-  score: [2, 0]
-
-- id: lq-b3
-  tournament: latam-qualifier
-  stage: groupStage
-  group: B
-  startsAt: 2026-08-28T22:00:00Z
-  home: ridgeback
-  away: altiplano
-  bestOf: 3
-
-- id: lq-final
-  tournament: latam-qualifier
-  stage: final
-  startsAt: 2026-08-30T22:00:00Z
-  bestOf: 5
-
-# =====================================================================
-# SUMMER INVITATIONAL - eliminacion directa, 8 equipos, ya jugado.
-# =====================================================================
-
-- id: si-qf1
-  tournament: summer-invitational
-  stage: quarterfinal
-  startsAt: 2026-06-14T18:00:00Z
-  home: kite
-  away: driftwood
-  bestOf: 3
-  bracket: upper
-  round: 1
-  score: [2, 0]
-
-- id: si-qf2
-  tournament: summer-invitational
-  stage: quarterfinal
-  startsAt: 2026-06-14T21:00:00Z
-  home: northgate
-  away: halcyon
-  bestOf: 3
-  bracket: upper
-  round: 1
-  score: [2, 1]
-
-- id: si-qf3
-  tournament: summer-invitational
-  stage: quarterfinal
-  startsAt: 2026-06-15T18:00:00Z
-  home: meridian
-  away: aurora
-  bestOf: 3
-  bracket: upper
-  round: 1
-  score: [2, 1]
-
-- id: si-qf4
-  tournament: summer-invitational
-  stage: quarterfinal
-  startsAt: 2026-06-15T21:00:00Z
-  home: solaris
-  away: vantage
-  bestOf: 3
-  bracket: upper
-  round: 1
-  score: [1, 2]
-
-- id: si-sf1
-  tournament: summer-invitational
-  stage: semifinal
-  startsAt: 2026-06-19T18:00:00Z
-  home: kite
-  away: northgate
-  bestOf: 3
-  bracket: upper
-  round: 2
-  score: [2, 0]
-
-- id: si-sf2
-  tournament: summer-invitational
-  stage: semifinal
-  startsAt: 2026-06-19T21:00:00Z
-  home: meridian
-  away: vantage
-  bestOf: 3
-  bracket: upper
-  round: 2
-  score: [2, 1]
-
-- id: si-final
-  tournament: summer-invitational
-  stage: final
-  startsAt: 2026-06-21T19:00:00Z
-  home: kite
-  away: meridian
-  bestOf: 5
-  bracket: upper
-  round: 3
-  score: [3, 1]
-
-- id: si-third
-  tournament: summer-invitational
-  stage: thirdPlace
-  startsAt: 2026-06-21T16:00:00Z
-  home: northgate
-  away: vantage
-  bestOf: 3
-  score: [2, 1]

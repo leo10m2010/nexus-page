@@ -10,7 +10,8 @@
 #   tag     abreviatura de 2 a 4 letras. Sale en el monograma y en los marcadores.
 #   region  texto libre: LATAM, EU, NA, CIS, SEA...
 #   logo    opcional. Ruta dentro de public/, por ejemplo /teams/aurora.svg
-#           Si no lo pones, se dibuja un monograma con el tag.
+#           Si no lo pones, se dibuja el icono de Dota 2 en tono neutro,
+#           en vez del logo del equipo.
 #   players opcional. La plantilla, tal como sale en la ficha del torneo.
 #           Cada jugador lleva:
 #             handle   el nick. Es lo unico obligatorio.
@@ -19,168 +20,120 @@
 #             country  codigo de dos letras, opcional. Se muestra en mayusculas.
 #           Un equipo sin "players" sale igual, solo que sin plantilla.
 
-- id: aurora
-  name: Aurora Collective
-  tag: AUR
-  region: LATAM
-  players:
-    - handle: rehue
-      name: Tomas Rehue
-      country: AR
-      role: Captain
-    - handle: kaleu
-      country: BR
-    - handle: nimbo
-      country: CL
-    - handle: sarco
-      country: AR
-    - handle: velasco
-      country: MX
-    - handle: tordo
-      name: Ignacio Tordo
-      country: AR
-      role: Coach
+# =====================================================================
+# NEXUS SERIES I - equipos reales, tal como estan invitados al torneo.
+# Fuente: https://liquipedia.net/dota2/NEXUS_SERIES/1
+# =====================================================================
 
-- id: kite
-  name: Kite Esports
-  tag: KTE
-  region: EU
+- id: amaru-gaming
+  name: Amaru Gaming
+  tag: AMA
+  region: South America
+  logo: /teams/amaru-gaming.webp
   players:
-    - handle: brann
-      name: Mikkel Brann
-      country: DK
-      role: Captain
-    - handle: soren
-      country: SE
-    - handle: quill
-      country: GB
-    - handle: mairu
-      country: FI
-    - handle: adalet
-      country: TR
+    - handle: K1
+    - handle: PiPi
+    - handle: Oscar
+    - handle: N1ght
+    - handle: Panda
 
-- id: meridian
-  name: Meridian Nine
-  tag: MN9
-  region: NA
+- id: chandogs
+  name: Chandogs
+  tag: CHD
+  region: South America
+  logo: /teams/chandogs.webp
   players:
-    - handle: locke
-      name: Devon Locke
-      country: US
-      role: Captain
-    - handle: pyre
-      country: CA
-    - handle: nixon
-      country: US
-    - handle: haverly
-      country: US
-    - handle: onda
-      country: MX
-
-- id: vantage
-  name: Vantage Point
-  tag: VPT
-  region: CIS
-  players:
-    - handle: kirsa
-      country: KZ
-      role: Captain
-    - handle: dovlat
-      country: UZ
-    - handle: perun
-      country: BY
-    - handle: taiga
-      country: KZ
-    - handle: vernik
-      country: AM
-
-- id: northgate
-  name: Northgate
-  tag: NGT
-  region: EU
-  players:
-    - handle: halden
-      name: Piotr Halden
-      country: PL
-      role: Captain
-    - handle: keve
-      country: HU
-    - handle: brisant
-      country: FR
-    - handle: ostmark
-      country: DE
-    - handle: lior
-      country: IL
-
-- id: solaris
-  name: Solaris Athletic
-  tag: SOL
-  region: BR
-  players:
-    - handle: caetano
-      name: Rafael Caetano
-      country: BR
-      role: Captain
-    - handle: pipa
-      country: BR
-    - handle: zurdo
-      country: UY
-    - handle: mangue
-      country: BR
-    - handle: tuca
-      country: BR
-
-- id: halcyon
-  name: Halcyon Division
-  tag: HCY
-  region: SEA
-
-- id: ridgeback
-  name: Ridgeback
-  tag: RDG
-  region: LATAM
-  players:
-    - handle: bruma
-      name: Sofia Bruma
-      country: CL
-      role: Captain
-    - handle: cardo
+    - handle: Ribau
       country: PE
-    - handle: leni
-      country: AR
-    - handle: pampa
-      country: AR
-    - handle: quiroz
+    - handle: S1RENM
+      country: PE
+    - handle: YiSuS
       country: CO
+    - handle: MonHty
+    - handle: Bastian
+      country: PE
 
-- id: caliza
-  name: Caliza Gaming
-  tag: CLZ
-  region: LATAM
+- id: estar-backs
+  name: Estar Backs
+  tag: EST
+  region: South America
+  logo: /teams/estar-backs.webp
   players:
-    - handle: navarro
-      country: MX
-      role: Captain
-    - handle: teque
-      country: MX
-    - handle: sombra
-      country: CO
-    - handle: hielo
-      country: CL
-    - handle: rifa
-      country: MX
+    - handle: payk
+    - handle: Mr.Jeans
+    - handle: Snufy
+      country: PE
+    - handle: Michael
+    - handle: Yadomi
 
-- id: marejada
-  name: Marejada
-  tag: MRJ
-  region: BR
+- id: giordota-team
+  name: GiorDota Team
+  tag: GDT
+  region: South America
+  logo: /teams/giordota-team.webp
+  players:
+    - handle: Zasa
+      country: PE
+    - handle: SHEOL
+      country: PE
+    - handle: bsK-
+      country: PE
+    - handle: Fer
+      country: PE
+    - handle: FeelinG
 
-- id: altiplano
-  name: Altiplano
-  tag: ALT
-  region: LATAM
+- id: pibble-corp
+  name: Pibble Corp
+  tag: PIB
+  region: South America
+  logo: /teams/pibble-corp.webp
+  players:
+    - handle: Lumiere
+    - handle: lalatronii
+    - handle: Ryu
+      country: PE
+    - handle: Mjz
+    - handle: Prada
 
-- id: driftwood
-  name: Driftwood
-  tag: DWD
-  region: NA
+- id: rebeldes
+  name: Rebeldes
+  tag: REB
+  region: South America
+  players:
+    - handle: hFn
+    - handle: SLATEMS
+    - handle: Frank
+    - handle: CoYoTao
+      country: BR
+    - handle: Frath
+      country: BR
+
+- id: teamdk
+  name: TeamDk
+  tag: TDK
+  region: South America
+  logo: /teams/teamdk.webp
+  players:
+    - handle: Fyoung-
+      country: BO
+    - handle: Benjimon
+      country: PE
+    - handle: TakeCareMia
+      country: PE
+    - handle: Zxca
+    - handle: SexyeYogye
+
+- id: the-house-esports
+  name: The House Esports
+  tag: THE
+  region: South America
+  logo: /teams/the-house-esports.webp
+  players:
+    - handle: Porty
+      country: PE
+    - handle: BroColi
+      country: PE
+    - handle: ArzenT
+    - handle: Smoker
+    - handle: Sunny
+      country: PE

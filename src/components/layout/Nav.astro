@@ -1,39 +1,60 @@
 ---
 import { Icon } from "astro-icon/components";
-import BrandLogo from "@ui/BrandLogo.astro";
+import BrandLogoMono from "@ui/BrandLogoMono.astro";
 import Button from "@ui/Button.astro";
 import ThemeToggle from "@layout/ThemeToggle.astro";
 import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
-import { useTranslations } from "@lib/i18n";
-
-const t = useTranslations(Astro.currentLocale);
 import { navItems, NAV_HEIGHT } from "@config/nav";
 import { ctas } from "@config/site";
 import { showCompetition } from "@config/features";
-import { localePath, resolveLocale } from "@lib/i18n";
+import { getRoadmapStages, ROMAN_NUMERALS } from "@lib/roadmap";
+import { formatMoney } from "@lib/format";
+import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
 
 /* Only linked while the page actually exists in the build. */
-const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}competition/`.replace("//", "/");
+const homePath = localePath(locale);
+const competitionHref = `${homePath}competition/`.replace("//", "/");
+
+/* `#home`, `#about`... only scroll when you are already on the homepage:
+   from /competition/season-one/ they are dead clicks, because that page has
+   no element with those ids. Prefixing with the homepage path outside the
+   homepage turns them back into a real link there, then a scroll. */
+const isHome = Astro.url.pathname === homePath;
+const sectionHref = (hash: string) => (isHome ? hash : `${homePath}${hash}`);
+
+/* The same season data the homepage roadmap reads, so hovering "Torneos"
+   never says something the page it links to would contradict. Every page
+   pays this cost at build time only: it is a handful of already-cached
+   content-collection reads, not a request. */
+const stages = showCompetition ? await getRoadmapStages(locale) : [];
 ---
 
+{/* Marks the very top of the document in normal flow (the header itself is
+    fixed, so it cannot be the thing an observer watches). Scrolling past it
+    is what tells the header to deepen. */}
+<div id="nav-sentinel" class="h-px w-px" aria-hidden="true"></div>
+
 <header
-  class="fixed inset-x-0 top-0 z-50 border-b border-line backdrop-blur-xl"
-  style={`height:${NAV_HEIGHT}px;background:var(--c-scrim)`}
+  class="site-header fixed inset-x-0 top-0 z-50 border-b border-line backdrop-blur-xl"
+  style={`height:${NAV_HEIGHT}px`}
 >
   <nav
     class="mx-auto flex h-full max-w-[1400px] items-center gap-6 px-5 sm:px-8"
     aria-label={t.a11y.primaryNav}
   >
-    <a href="#home" class="shrink-0" aria-label={t.a11y.backToTop}>
-      <BrandLogo height={24} />
+    <a href={sectionHref("#home")} class="brand shrink-0" aria-label={t.a11y.backToTop}>
+      <BrandLogoMono height={36} class="text-ink" />
     </a>
 
-    <ul class="ml-auto hidden items-center gap-8 lg:flex">
+    <ul class="ml-auto hidden items-center gap-4 xl:gap-8 lg:flex">
       {
         navItems.map((l) => (
           <li>
             <a
-              href={l.href}
+              href={sectionHref(l.href)}
               class="nav-link font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
             >
               {t.nav[l.key]}
@@ -43,13 +64,74 @@ const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}compet
       }
       {
         showCompetition && (
-          <li>
+          <li class="group relative">
             <a
               href={competitionHref}
-              class="nav-link font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
+              class="nav-link flex items-center gap-1.5 font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
             >
               {t.competition.navLabel}
+              <Icon
+                name="ph:caret-down-bold"
+                class="caret size-3 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+              />
             </a>
+
+            {/* The season, one hover away: BLAST and ESL both put live and
+                upcoming tournaments directly in the nav instead of behind a
+                plain link, so a visitor never has to guess whether anything
+                is on before clicking through. The padding-top is a hover
+                bridge — without it the pointer leaving the link for the
+                panel below closes the panel on the way there. */}
+            <div class="tournament-panel absolute left-1/2 top-full z-10 w-[23rem] -translate-x-1/2 pt-4">
+              <div class="border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
+                <p class="eyebrow">{t.roadmap.eyebrow}</p>
+                <ul class="mt-4 flex flex-col divide-y divide-line">
+                  {
+                    stages.map((stage, i) => {
+                      const StageTag = stage.href ? "a" : "div";
+                      return (
+                        <li>
+                          <StageTag
+                            href={stage.href ?? undefined}
+                            class={`flex items-center gap-3 py-3 ${stage.href ? "panel-row transition-colors" : ""}`}
+                          >
+                            <span
+                              class={`grid h-8 w-8 shrink-0 place-items-center border font-display text-xs font-bold ${
+                                stage.href
+                                  ? "border-accent bg-accent text-on-accent"
+                                  : "border-accent/40 bg-bg text-accent"
+                              }`}
+                            >
+                              {ROMAN_NUMERALS[i]}
+                            </span>
+                            <span class="min-w-0 flex-1">
+                              <span class="block truncate font-display text-sm font-bold text-ink">
+                                {stage.name}
+                              </span>
+                              <span class="block truncate text-xs text-muted">
+                                {stage.dates ?? t.roadmap.dateTbd}
+                              </span>
+                            </span>
+                            <span class="shrink-0 font-display text-xs font-bold text-accent-lift">
+                              {stage.prizeTotal > 0
+                                ? formatMoney(stage.prizeTotal, stage.currency, locale)
+                                : t.roadmap.comingSoon}
+                            </span>
+                          </StageTag>
+                        </li>
+                      );
+                    })
+                  }
+                </ul>
+                <a
+                  href={competitionHref}
+                  class="panel-cta mt-4 flex items-center justify-between border-t border-line pt-4 font-display text-[0.75rem] font-bold tracking-[0.12em] text-accent-lift uppercase"
+                >
+                  {t.competition.allTournaments}
+                  <span aria-hidden="true" class="panel-arrow">&rarr;</span>
+                </a>
+              </div>
+            </div>
           </li>
         )
       }
@@ -70,44 +152,53 @@ const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}compet
         data-menu-toggle
         data-label-open={t.a11y.openMenu}
         data-label-close={t.a11y.closeMenu}
-        class="grid size-10 place-items-center border border-line text-ink lg:hidden"
+        class="menu-toggle relative grid size-10 place-items-center border border-line text-ink lg:hidden"
         aria-label={t.a11y.openMenu}
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
-        <Icon name="ph:list-bold" class="size-5" />
+        <Icon name="ph:list-bold" class="icon-open size-5" />
+        <Icon name="ph:x-bold" class="icon-close size-5" />
       </button>
     </div>
   </nav>
 
-  <div id="mobile-menu" hidden class="border-t border-line bg-elev px-5 py-6 lg:hidden">
-    <ul class="flex flex-col gap-1">
-      {
-        navItems.map((l) => (
-          <li>
-            <a href={l.href} class="menu-link display-sm block py-3 text-2xl text-ink">
-              {t.nav[l.key]}
-            </a>
-          </li>
-        ))
-      }
-      {
-        showCompetition && (
-          <li>
-            <a href={competitionHref} class="menu-link display-sm block py-3 text-2xl text-ink">
-              {t.competition.navLabel}
-            </a>
-          </li>
-        )
-      }
-    </ul>
-    <Button {...ctas.partnership} label={t.cta.partnership} block class="menu-link mt-5" />
+  {/* Always in the DOM, collapsed to zero height by grid-rows: a `[fr]` track
+      is one of the few things that can transition smoothly, which `height:
+      auto` or `hidden` cannot. `inert` keeps a collapsed menu out of tab
+      order instead of leaving invisible links reachable by keyboard. */}
+  <div id="mobile-menu" class="mobile-menu grid lg:hidden" inert>
+    <div class="overflow-hidden">
+      <ul class="flex flex-col gap-1 border-t border-line bg-elev px-5 pt-6">
+        {
+          navItems.map((l) => (
+            <li>
+              <a href={sectionHref(l.href)} class="menu-link display-sm block py-3 text-2xl text-ink">
+                {t.nav[l.key]}
+              </a>
+            </li>
+          ))
+        }
+        {
+          showCompetition && (
+            <li>
+              <a href={competitionHref} class="menu-link display-sm block py-3 text-2xl text-ink">
+                {t.competition.navLabel}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+      <div class="bg-elev px-5 pb-6">
+        <Button {...ctas.partnership} label={t.cta.partnership} block class="menu-link mt-5" />
+      </div>
+    </div>
   </div>
 </header>
 
 <style>
   /* Underline grows from the left on hover: cheap, motivated feedback. */
-  .nav-link { position: relative; padding-block: 0.35rem; }
+  .nav-link { position: relative; padding-block: 0.35rem; white-space: nowrap; }
   .nav-link::after {
     content: "";
     position: absolute;
@@ -120,8 +211,71 @@ const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}compet
     transition: transform 0.3s var(--ease-out-quint);
   }
   .nav-link:hover::after { transform: scaleX(1); }
+
+  /* Closed by default via opacity + a slight rise, not `display`, so the
+     hover-out has something to animate back to instead of just vanishing. */
+  .tournament-panel {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease-out-quint), transform 0.2s var(--ease-out-quint);
+  }
+  .group:hover .tournament-panel,
+  .group:focus-within .tournament-panel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    pointer-events: auto;
+  }
+  .panel-row:hover { background: var(--c-bg-elev-2); }
+  .panel-arrow { display: inline-block; transition: transform 0.25s var(--ease-out-quint); }
+  .panel-cta:hover .panel-arrow { transform: translateX(3px); }
+
+  /* Sits translucent over the hero until the page actually scrolls, then
+     deepens to a solid, shadowed bar: the header earns its separation only
+     once there is content sliding underneath it to separate from. */
+  .site-header {
+    background: var(--c-scrim);
+    box-shadow: 0 12px 30px -18px transparent;
+    transition: background-color 0.35s var(--ease-out-quint), box-shadow 0.35s var(--ease-out-quint);
+  }
+  .site-header[data-scrolled="true"] {
+    background: var(--c-bg-elev);
+    box-shadow: 0 12px 30px -18px rgb(0 0 0 / 0.5);
+  }
+
+  .brand { transition: transform 0.25s var(--ease-out-quint); }
+  .brand:active { transform: scale(0.96); }
+
+  /* Hamburger becomes a close mark by cross-fading and rotating into it,
+     rather than the icon just being swapped instantly underneath the tap. */
+  .menu-toggle .icon-open,
+  .menu-toggle .icon-close {
+    position: absolute;
+    transition: opacity 0.25s var(--ease-out-quint), transform 0.25s var(--ease-out-quint);
+  }
+  .menu-toggle .icon-close { opacity: 0; transform: rotate(-45deg) scale(0.6); }
+  .menu-toggle[aria-expanded="true"] .icon-open { opacity: 0; transform: rotate(45deg) scale(0.6); }
+  .menu-toggle[aria-expanded="true"] .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
+
+  /* The `[fr]` grid-row trick: a track sized in fractions is one of the very
+     few "auto height" values a browser will actually transition, which is
+     why this is not just `hidden` swapped for `max-height`. */
+  .mobile-menu {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.35s var(--ease-out-quint);
+  }
+  .mobile-menu.is-open { grid-template-rows: 1fr; }
+
   @media (prefers-reduced-motion: reduce) {
     .nav-link::after { transition: none; }
+    .site-header { transition: none; }
+    .brand:active { transform: none; }
+    .menu-toggle .icon-open,
+    .menu-toggle .icon-close { transition: none; }
+    .mobile-menu { transition: none; }
+    .tournament-panel { transition: none; }
+    .caret { transition: none; }
+    .panel-arrow { transition: none; }
   }
 </style>
 
@@ -131,18 +285,31 @@ const competitionHref = `${localePath(resolveLocale(Astro.currentLocale))}compet
 
   const setMenu = (open: boolean) => {
     if (!menu || !btn) return;
-    menu.hidden = !open;
+    menu.classList.toggle("is-open", open);
+    // `inert` (not `hidden`) so the collapsed panel keeps transitioning
+    // instead of vanishing instantly, while staying out of tab order.
+    menu.toggleAttribute("inert", !open);
     btn.setAttribute("aria-expanded", String(open));
     const label = open ? btn.dataset.labelClose : btn.dataset.labelOpen;
     if (label) btn.setAttribute("aria-label", label);
   };
 
-  // `hidden` widens to boolean | "until-found", so compare explicitly.
-  btn?.addEventListener("click", () => setMenu(menu?.hidden !== false));
+  btn?.addEventListener("click", () => setMenu(btn.getAttribute("aria-expanded") !== "true"));
   menu?.querySelectorAll(".menu-link").forEach((a) =>
     a.addEventListener("click", () => setMenu(false)),
   );
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setMenu(false);
   });
+
+  /* The header deepens once the page has actually scrolled. A sentinel plus
+     IntersectionObserver, not a scroll listener, matching how reveal.ts
+     watches the page: cheaper, and it never runs on every scroll frame. */
+  const header = document.querySelector<HTMLElement>(".site-header");
+  const sentinel = document.getElementById("nav-sentinel");
+  if (header && sentinel && "IntersectionObserver" in window) {
+    new IntersectionObserver(
+      ([entry]) => header.dataset.scrolled = String(!entry!.isIntersecting),
+    ).observe(sentinel);
+  }
 </script>

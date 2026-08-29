@@ -158,5 +158,21 @@ export const ru: Dictionary = {
     allTournaments: "Все турниры",
     viewTournament: "Страница турнира",
   },
-  footer: { rights: "Все права защищены." },
+  footer: { rights: "Все права защищены.", navHeading: "Навигация", watchHeading: "Смотреть онлайн" },
+
+  roadmap: {
+    eyebrow: "Сезон 2026",
+    heading: "Три этапа. Один сезон.",
+    lede: "Nexus Series I сейчас находится в подготовке. Призовой фонд этапов II и III уже подтверждён, даты будут объявлены позже.",
+    comingSoon: "Скоро",
+    dateTbd: "Дата уточняется",
+    detailsTbd: "Формат и участники будут объявлены позже.",
+    totalPrizePool: "Общий призовой фонд сезона",
+  },
+
+  teamsShowcase: {
+    eyebrow: "Состав участников",
+    heading: "Кто соревнуется в этом сезоне.",
+    cta: "Смотреть все команды",
+  },
 };

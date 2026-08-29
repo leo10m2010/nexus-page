@@ -1,9 +1,10 @@
 ---
 import type { Team } from "@lib/competition";
+import UniversalMark from "@ui/UniversalMark.astro";
 
-/* A team either has a real logo file or it gets a monogram built from its tag.
-   The monogram is a plain square with letters, not an invented emblem: it
-   should read as a placeholder, not as somebody's actual brand.
+/* A team either has a real logo file or it gets the Dota 2 glyph in a
+   neutral tone. That glyph is a placeholder, not an invented emblem: it
+   should read as "no logo yet", not as somebody's actual brand.
 
    `null` is a slot in a bracket that nobody has qualified for yet. It gets a
    dashed square, so an empty line reads as waiting rather than as broken. */
@@ -37,10 +38,10 @@ const box = `width:${size}px;height:${size}px`;
   ) : (
     <span
       aria-hidden="true"
-      class={`grid shrink-0 place-items-center border border-line-strong bg-elev2 font-display font-bold tracking-[0.06em] text-muted ${klass}`}
-      style={`${box};font-size:${Math.round(size * 0.3)}px`}
+      class={`grid shrink-0 place-items-center border border-line-strong bg-elev2 ${klass}`}
+      style={box}
     >
-      {team.tag}
+      <UniversalMark style={`width:${Math.round(size * 0.55)}px;height:${Math.round(size * 0.55)}px`} />
     </span>
   )
 }

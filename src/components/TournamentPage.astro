@@ -4,8 +4,7 @@ import Nav from "@layout/Nav.astro";
 import Footer from "@layout/Footer.astro";
 import SectionNav from "@ui/SectionNav.astro";
 import Header from "@sections/tournament/Header.astro";
-import Prizes from "@sections/tournament/Prizes.astro";
-import Format from "@sections/tournament/Format.astro";
+import PrizesFormat from "@sections/tournament/PrizesFormat.astro";
 import Participants from "@sections/tournament/Participants.astro";
 import Standings from "@sections/tournament/Standings.astro";
 import Bracket from "@sections/tournament/Bracket.astro";
@@ -74,16 +73,15 @@ const description = [
   noindex={!features.competition.published}
 >
   <Nav />
-  <main>
+  <main id="main">
     <Header tournament={tournament} />
     <SectionNav items={sections} ariaLabel={tournament.name} />
 
     {
-      tournament.prizePool && (
-        <Prizes id="prizes" tournament={tournament} participants={participants} />
+      (tournament.prizePool || phases.length > 0) && (
+        <PrizesFormat tournament={tournament} participants={participants} phases={phases} />
       )
     }
-    {phases.length > 0 && <Format id="format" phases={phases} />}
     {
       participants.length > 0 && (
         <Participants id="participants" tournament={tournament} participants={participants} />

@@ -82,7 +82,26 @@ export interface Dictionary {
   vision: { heading: string; lede: string; pillars: Pillar[] };
   partners: { heading: string; lede: string; slotLabel: string };
   contact: { eyebrow: string; heading: [string, string]; lede: string };
-  footer: { rights: string };
+  footer: { rights: string; navHeading: string; watchHeading: string };
+  /** The three-stage season roadmap on the homepage. */
+  roadmap: {
+    eyebrow: string;
+    heading: string;
+    lede: string;
+    /** Badge on a stage that has a prize pool but no dates yet. */
+    comingSoon: string;
+    /** Shown instead of a date range on an undated stage. */
+    dateTbd: string;
+    /** Fills the space a team row would take, on a stage with no field yet. */
+    detailsTbd: string;
+    totalPrizePool: string;
+  };
+  /** The homepage's team logo strip. */
+  teamsShowcase: {
+    eyebrow: string;
+    heading: string;
+    cta: string;
+  };
   competition: {
     navLabel: string;
     eyebrow: string;

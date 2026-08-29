@@ -1,26 +1,133 @@
 ---
+import { Icon } from "astro-icon/components";
 import BrandLogo from "@ui/BrandLogo.astro";
 import SocialLinks from "@ui/SocialLinks.astro";
-import { site } from "@config/site";
-import { useTranslations } from "@lib/i18n";
+import { site, contactRoutes, channels } from "@config/site";
+import { navItems } from "@config/nav";
+import { showCompetition } from "@config/features";
+import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
+import type { ChannelCode } from "@types";
 
 const t = useTranslations(Astro.currentLocale);
+const locale = resolveLocale(Astro.currentLocale);
+const homePath = localePath(locale);
+const homeHref = Astro.url.pathname === homePath ? "#home" : `${homePath}#home`;
+const sectionHref = (hash: string) => (Astro.url.pathname === homePath ? hash : `${homePath}${hash}`);
+const competitionHref = `${homePath}competition/`.replace("//", "/");
 
 const year = new Date().getFullYear();
 ---
 
 <footer class="border-t border-line bg-elev">
-  <div
-    class="mx-auto flex max-w-[1400px] flex-col gap-8 px-5 py-10 sm:px-8 md:flex-row md:items-center md:justify-between"
-  >
-    <a href="#home" aria-label={t.a11y.backToTop}>
-      <BrandLogo height={22} />
-    </a>
+  <div class="mx-auto grid max-w-[1400px] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-8">
+    <div class="max-w-[28ch]">
+      <a href={homeHref} class="brand inline-block" aria-label={t.a11y.backToTop}>
+        <BrandLogo height={32} />
+      </a>
+      <p class="mt-5 text-[0.9375rem] text-muted">{site.tagline}</p>
+      <SocialLinks class="-ml-2.5 mt-6" />
+    </div>
 
-    <p class="text-sm text-muted">
+    <nav aria-label={t.footer.navHeading}>
+      <h3 class="eyebrow">{t.footer.navHeading}</h3>
+      <ul class="mt-5 flex flex-col gap-3">
+        {
+          navItems.map((l) => (
+            <li>
+              <a href={sectionHref(l.href)} class="footer-link text-[0.9375rem] text-muted">
+                {t.nav[l.key]}
+              </a>
+            </li>
+          ))
+        }
+        {
+          showCompetition && (
+            <li>
+              <a href={competitionHref} class="footer-link text-[0.9375rem] text-muted">
+                {t.competition.navLabel}
+              </a>
+            </li>
+          )
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h3 class="eyebrow">{t.contact.eyebrow}</h3>
+      <ul class="mt-5 flex flex-col gap-3">
+        {
+          contactRoutes.map((r) => (
+            <li>
+              <a
+                href={r.href}
+                class="footer-link inline-flex items-center gap-2 text-[0.9375rem] text-muted"
+                {...(r.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+              >
+                <Icon name={r.icon} class="size-4 shrink-0" />
+                {r.value}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="eyebrow">{t.footer.watchHeading}</h3>
+      <ul class="mt-5 flex flex-col gap-3">
+        {
+          channels.map((c) => (
+            <li>
+              <a
+                href={c.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="footer-link inline-flex items-center gap-2 text-[0.9375rem] text-muted"
+              >
+                <Icon name="simple-icons:twitch" class="size-4 shrink-0" />
+                {t.channels.languages[c.code.toLowerCase() as ChannelCode]}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-line">
+    <p class="mx-auto max-w-[1400px] px-5 py-6 text-sm text-muted sm:px-8">
       &copy; {year} {site.name}. {t.footer.rights}
     </p>
-
-    <SocialLinks />
   </div>
 </footer>
+
+<style>
+  .brand { transition: transform 0.25s var(--ease-out-quint); }
+  .brand:active { transform: scale(0.96); }
+
+  /* Underline grows from the left, same feedback as the primary nav so the
+     footer does not invent a second hover language. */
+  .footer-link {
+    position: relative;
+    width: fit-content;
+    transition: color 0.2s var(--ease-out-quint);
+  }
+  .footer-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -2px;
+    height: 1px;
+    background: var(--c-accent-lift);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s var(--ease-out-quint);
+  }
+  .footer-link:hover { color: var(--c-text); }
+  .footer-link:hover::after { transform: scaleX(1); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .brand:active { transform: none; }
+    .footer-link::after { transition: none; }
+  }
+</style>

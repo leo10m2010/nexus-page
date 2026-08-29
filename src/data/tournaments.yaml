@@ -44,38 +44,31 @@
 #     team      id de un equipo de teams.yaml
 #     via       invited | qualifier | regional | defending  (se traduce solo)
 
+# Datos reales. Fuente: https://liquipedia.net/dota2/NEXUS_SERIES/1
 - id: season-one
-  name: Nexus Series Season One
+  name: Nexus Series I
   status: upcoming
-  startDate: 2026-09-12
-  endDate: 2026-10-18
-  region: International
+  startDate: 2026-09-06
+  endDate: 2026-09-15
+  region: South America
   format: doubleElimination
   teamCount: 8
-  organizer: Nexus Series
-  venue: hybrid
-  location: Madrid, Spain
+  organizer: Nexus Media
+  venue: online
   prizePool:
     currency: USD
-    total: 50000
+    total: 10000
     distribution:
       - place: 1
-        amount: 22000
-      - place: 2
-        amount: 11000
-      - place: 3
         amount: 7000
-      - place: 4
-        amount: 4500
-      - place: 5
-        to: 6
+      - place: 2
         amount: 2000
-      - place: 7
-        to: 8
-        amount: 750
+      - place: 3
+        to: 4
+        amount: 500
   phases:
     - key: groupStage
-      format: roundRobin
+      format: doubleElimination
       teamCount: 8
       bestOf: 3
       advance: 4
@@ -84,106 +77,19 @@
       teamCount: 4
       bestOf: 3
   participants:
-    - team: kite
-      via: defending
-    - team: meridian
+    - team: amaru-gaming
       via: invited
-    - team: northgate
+    - team: chandogs
       via: invited
-    - team: vantage
+    - team: estar-backs
       via: invited
-    - team: solaris
-      via: regional
-    - team: halcyon
-      via: regional
-    - team: aurora
-      via: qualifier
-    - team: ridgeback
-      via: qualifier
-
-- id: latam-qualifier
-  name: LATAM Qualifier
-  series: Season One
-  status: live
-  startDate: 2026-08-20
-  endDate: 2026-08-30
-  region: LATAM
-  format: roundRobin
-  teamCount: 6
-  organizer: Nexus Series
-  venue: online
-  phases:
-    - key: groupStage
-      format: roundRobin
-      teamCount: 6
-      bestOf: 3
-      advance: 2
-    - key: playoffs
-      format: singleElimination
-      teamCount: 2
-      bestOf: 5
-  participants:
-    - team: aurora
-      via: regional
-    - team: ridgeback
-      via: regional
-    - team: solaris
-      via: regional
-    - team: caliza
-      via: qualifier
-    - team: marejada
-      via: qualifier
-    - team: altiplano
-      via: qualifier
-
-- id: summer-invitational
-  name: Summer Invitational
-  status: finished
-  startDate: 2026-06-05
-  endDate: 2026-06-21
-  region: International
-  format: singleElimination
-  teamCount: 8
-  organizer: Nexus Series
-  venue: online
-  prizePool:
-    currency: USD
-    total: 25000
-    distribution:
-      - place: 1
-        amount: 12000
-        team: kite
-      - place: 2
-        amount: 6000
-        team: meridian
-      - place: 3
-        amount: 3500
-        team: northgate
-      - place: 4
-        amount: 2000
-        team: vantage
-      - place: 5
-        to: 8
-        amount: 375
-  phases:
-    - key: playoffs
-      format: singleElimination
-      teamCount: 8
-      bestOf: 3
-  participants:
-    - team: kite
+    - team: pibble-corp
       via: invited
-    - team: meridian
+    - team: giordota-team
       via: invited
-    - team: northgate
+    - team: rebeldes
       via: invited
-    - team: vantage
+    - team: teamdk
       via: invited
-    - team: solaris
-      via: invited
-    - team: halcyon
-      via: invited
-    - team: aurora
-      via: invited
-    - team: driftwood
+    - team: the-house-esports
       via: invited

@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
 import TeamMark from "@ui/TeamMark.astro";
 import type { Participant, Tournament } from "@lib/competition";
@@ -32,7 +33,7 @@ const currency = tournament.prizePool?.currency;
       participants.map((entry, i) => (
         <li class="reveal flex flex-col bg-elev p-6" style={`--reveal-delay:${(i % 4) * 60}ms`}>
           <div class="flex items-start gap-4">
-            <TeamMark team={entry.team} size={44} />
+            <TeamMark team={entry.team} size={56} />
             <div class="min-w-0 flex-1">
               <h3 class="display-sm truncate text-base">{entry.team.name}</h3>
               <p class="mt-1 text-[0.8125rem] text-muted">
@@ -61,11 +62,13 @@ const currency = tournament.prizePool?.currency;
               <h4 class="text-[0.625rem] tracking-[0.16em] text-muted uppercase">{c.roster}</h4>
               <ul class="mt-3 flex flex-col gap-2">
                 {entry.team.players.map((player) => (
-                  <li class="flex items-baseline gap-2 text-[0.875rem]">
+                  <li class="flex items-center gap-2 text-[0.875rem]">
                     {player.country && (
-                      <span class="w-6 shrink-0 font-display text-[0.625rem] font-bold tracking-[0.1em] text-muted">
-                        {player.country.toUpperCase()}
-                      </span>
+                      <Icon
+                        name={`flag:${player.country.toLowerCase()}-4x3`}
+                        class="h-3 w-4 shrink-0"
+                        aria-label={player.country.toUpperCase()}
+                      />
                     )}
                     <span class="truncate text-ink">{player.handle}</span>
                     {player.role && (

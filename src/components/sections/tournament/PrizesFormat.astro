@@ -1,0 +1,172 @@
+---
+import Section from "@ui/Section.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import type { Participant, Tournament, Phase } from "@lib/competition";
+import { formatMoney } from "@lib/format";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+/* Prize pool and format used to be two separate full-width sections that
+   said very little each — a table, then three thin cards below it, both
+   fighting the reader for the same "how big is this tournament" question.
+   One bento answers it in one glance: the money on the wide cell, the
+   phases stacked beside it. Both keep their own anchor id, so the sticky
+   section nav still jumps to (roughly) the right half of the same block. */
+interface Props {
+  tournament: Tournament;
+  participants: Participant[];
+  phases: Phase[];
+}
+const { tournament, participants, phases } = Astro.props;
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+
+const prize = tournament.prizePool;
+const payouts = prize?.distribution ?? [];
+const teamById = new Map(participants.map((p) => [p.team.id, p.team]));
+const named = payouts.some((row) => row.team);
+
+/* The bento split only makes sense with both halves. A tournament that has
+   a prize pool but no phases yet (or the other way round) gets that one
+   half at full width instead of half a grid with an empty side. */
+const hasBoth = Boolean(prize) && phases.length > 0;
+---
+
+<Section bordered>
+{/* Grid placement (which column/row each cell claims) is set via CSS custom
+    properties read only inside a `min-width:1024px` rule below — not via
+    Tailwind's `lg:` prefix, because the number of phases is data-driven and
+    Tailwind can't see a class name built at runtime. Left as plain inline
+    style, the same placement would apply below 1024px too and shove every
+    cell into a five-column grid that does not exist there, wrecking the
+    single-column mobile stack. */}
+<div
+  class:list={[
+    "bento-prize-format grid gap-px bg-line",
+    { "bento-prize-format--prize-only": Boolean(prize) && !hasBoth, "bento-prize-format--phases-only": !prize && phases.length > 0 },
+  ]}
+  style={`--phase-count:${Math.max(phases.length, 1)}`}
+>
+  {
+    prize && (
+      <div id="prizes" class="bento-cell bento-prize reveal bg-elev p-8 sm:p-10">
+        <div class="flex flex-wrap items-baseline justify-between gap-4">
+          <h2 class="display text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.info.prizePool}</h2>
+          <p class="display-sm text-lg text-accent-lift tabular-nums">
+            {formatMoney(prize.total, prize.currency, locale)}
+          </p>
+        </div>
+
+        <div class="mt-8 overflow-x-auto">
+          <table class="w-full min-w-[24rem] border-collapse text-left">
+            <thead>
+              <tr class="border-b border-line-strong">
+                <th scope="col" class="th">{c.prizeHead.place}</th>
+                <th scope="col" class="th text-right">{c.prizeHead.prize}</th>
+                {named && <th scope="col" class="th pl-8">{c.prizeHead.team}</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {
+                payouts.map((row) => {
+                  const team = row.team ? (teamById.get(row.team) ?? null) : null;
+                  return (
+                    <tr class="border-b border-line last:border-0">
+                      <td
+                        class={`py-3.5 font-display text-[0.9375rem] font-bold ${
+                          row.place === 1 ? "text-accent-lift" : "text-ink"
+                        }`}
+                      >
+                        {row.to ? c.placeRange(row.place, row.to) : c.place(row.place)}
+                      </td>
+                      <td class="py-3.5 text-right text-[0.9375rem] text-ink tabular-nums">
+                        {formatMoney(row.amount, prize.currency, locale)}
+                      </td>
+                      {named && (
+                        <td class="py-3.5 pl-8">
+                          {team ? (
+                            <span class="flex items-center gap-2.5">
+                              <TeamMark team={team} size={24} />
+                              <span class="truncate text-[0.9375rem]">{team.name}</span>
+                            </span>
+                          ) : (
+                            <span class="text-[0.9375rem] text-muted" aria-hidden="true">
+                              &mdash;
+                            </span>
+                          )}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    phases.map((phase, i) => (
+      <div
+        {...(i === 0 ? { id: "format" } : {})}
+        class="bento-cell bento-phase reveal bg-elev p-8 sm:p-10"
+        style={`--reveal-delay:${100 + i * 70}ms; --phase-row:${i + 1}`}
+      >
+        <h3 class="display-sm text-xl">{c.phase[phase.key]}</h3>
+        <p class="mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
+
+        <ul class="mt-5 flex flex-wrap gap-2">
+          {phase.teamCount && (
+            <li class="border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
+              {c.teamCount(phase.teamCount)}
+            </li>
+          )}
+          {phase.bestOf && (
+            <li class="border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
+              {c.bestOf(phase.bestOf)}
+            </li>
+          )}
+          {phase.advance && phase.advance !== phase.teamCount && (
+            <li class="border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
+              {c.advance(phase.advance)}
+            </li>
+          )}
+        </ul>
+      </div>
+    ))
+  }
+</div>
+</Section>
+
+<style>
+  @media (min-width: 1024px) {
+    .bento-prize-format {
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(var(--phase-count), auto);
+    }
+    .bento-prize { grid-column: 1 / span 3; grid-row: 1 / span var(--phase-count); }
+    .bento-phase { grid-column: 4 / span 2; grid-row: var(--phase-row); }
+
+    /* Only a prize pool: it takes the whole row instead of leaving the
+       two right-hand columns as dead space. */
+    .bento-prize-format--prize-only .bento-prize { grid-column: 1 / span 5; }
+
+    /* Only phases: they get their own even row instead of being shoved
+       into the right-hand columns reserved for sharing with a prize cell. */
+    .bento-prize-format--phases-only { grid-template-columns: repeat(3, 1fr); }
+    .bento-prize-format--phases-only .bento-phase { grid-column: auto; grid-row: auto; }
+  }
+
+  .th {
+    padding-block: 0 0.75rem;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--c-text-muted);
+  }
+</style>
