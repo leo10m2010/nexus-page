@@ -188,19 +188,21 @@ body,
   background-color: var(--nx-accent-lift) !important;
 }
 
-[class*="ListCard"] {
+[class*="-ListCard-"] {
   background-color: var(--nx-elev) !important;
   border: 1px solid var(--nx-line) !important;
   border-radius: 0.75rem !important;
 }
-[class*="ListCard"]:hover {
+[class*="-ListCard-"]:hover {
   border-color: var(--nx-accent) !important;
 }
 [class*="ListCardTitle"] {
   color: var(--nx-text) !important;
+  border: none !important;
+  background: none !important;
 }
 
-[class*="GridCard"] {
+[class*="-GridCard-"] {
   background-color: var(--nx-elev) !important;
   border: 1px solid var(--nx-line) !important;
   flex: 0 0 420px !important;
@@ -210,11 +212,12 @@ body,
 [class*="GridCardLink"]:hover {
   background-color: var(--nx-elev) !important;
   color: var(--nx-text) !important;
+  border: none !important;
 }
-[class*="GridCard"]:hover {
+[class*="-GridCard-"]:hover {
   border-color: var(--nx-accent) !important;
 }
-[class*="GridCard"] [class*="StyledImage"] {
+[class*="-GridCard-"] [class*="StyledImage"] {
   height: 220px !important;
 }
 [class*="CardBody"] {
@@ -309,8 +312,7 @@ body,
 }
 
 [class*="DropdownList"],
-[class*="StyledMenuItem"],
-[class*="StyledWrapper"] {
+[class*="StyledMenuItem"] {
   background-color: var(--nx-elev-2) !important;
   color: var(--nx-text) !important;
   border: 1px solid var(--nx-line-strong) !important;
@@ -477,7 +479,7 @@ input[type="time"] {
     height: auto !important;
     padding: 0.5rem !important;
   }
-  [class*="GridCard"] {
+  [class*="-GridCard-"] {
     flex: 1 1 100% !important;
     height: auto !important;
     min-height: 220px !important;
