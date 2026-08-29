@@ -49,7 +49,7 @@ function formatDateOnly(value) {
 
 function flagUrl(code) {
   if (!code || code.length !== 2) return null;
-  return "https://flagcdn.com/24x18/" + code.toLowerCase() + ".png";
+  return "/admin/flags/" + code.toLowerCase() + ".svg";
 }
 
 var TeamPreview = createClass({
@@ -78,7 +78,12 @@ var TeamPreview = createClass({
               var flag = flagUrl(p.get("country"));
               return h("li", { key: i, className: "nx-roster-row" },
                 flag
-                  ? h("img", { className: "nx-flag-img", src: flag, alt: p.get("country") })
+                  ? h("img", {
+                      className: "nx-flag-img",
+                      src: flag,
+                      alt: p.get("country"),
+                      onError: function (e) { e.target.style.visibility = "hidden"; },
+                    })
                   : h("span", { className: "nx-flag-img nx-flag-img--empty" }),
                 h("span", { className: "nx-handle" }, p.get("handle") || "—"),
                 p.get("role") ? h("span", { className: "nx-role" }, p.get("role")) : null
