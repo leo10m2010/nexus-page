@@ -1,15 +1,10 @@
 import type { MediaRef } from "@types";
-import arenaStage from "@assets/arena-stage.png";
 import broadcastBooth from "@assets/broadcast-booth.png";
 import teamPractice from "@assets/team-practice.png";
 import heroFigures from "@assets/perso.png";
 import heroGlow from "@assets/LUZ.png";
 
 export const media = {
-  heroStage: {
-    src: arenaStage,
-    alt: "Competitors facing each other at gaming stations on a lit tournament stage, seen from behind the audience.",
-  },
   broadcastBooth: {
     src: broadcastBooth,
     alt: "Two casters in headsets at a commentary desk overlooking a packed arena during a live broadcast.",
