@@ -473,4 +473,9 @@ input[type="time"] {
     height: auto !important;
     padding: 0.5rem !important;
   }
+  [class*="GridCard"] {
+    flex: 1 1 100% !important;
+    height: auto !important;
+    min-height: 220px !important;
+  }
 }
