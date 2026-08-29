@@ -21,7 +21,7 @@ prizePool:
       amount: 500
 phases:
   - key: groupStage
-    format: doubleElimination
+    format: roundRobin
     teamCount: 8
     bestOf: 3
     advance: 4
