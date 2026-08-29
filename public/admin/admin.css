@@ -464,7 +464,29 @@ input[type="time"] {
   font-size: 0.6875rem !important;
 }
 
+/* Equipos: Tag y Región lado a lado (prueba acotada de layout tipo bento) */
+[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="tag-field-2"]) {
+  float: left;
+  width: calc(50% - 0.5rem);
+  margin-right: 1rem;
+  box-sizing: border-box;
+}
+[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="region-field-3"]) {
+  float: left;
+  width: calc(50% - 0.5rem);
+  box-sizing: border-box;
+}
+[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="logo-field-4"]) {
+  clear: both;
+}
+
 @media (max-width: 900px) {
+  [class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="tag-field-2"]),
+  [class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="region-field-3"]) {
+    float: none !important;
+    width: 100% !important;
+    margin-right: 0 !important;
+  }
   [class*="EditorContainer"] {
     min-width: 0 !important;
     width: 100% !important;
