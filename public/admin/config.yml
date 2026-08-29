@@ -9,6 +9,10 @@ local_backend: true
 
 publish_mode: simple
 
+logo_url: "/logos/white.svg"
+site_url: "https://nexusseries.org"
+display_url: "https://nexusseries.org"
+
 media_folder: "public/uploads"
 public_folder: "/uploads"
 

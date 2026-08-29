@@ -1,0 +1,242 @@
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter+Tight:wght@400;500;600&display=swap");
+
+:root {
+  --nx-bg: #06080f;
+  --nx-elev: #0b1020;
+  --nx-elev-2: #101830;
+  --nx-line: rgb(238 237 238 / 0.12);
+  --nx-line-strong: rgb(238 237 238 / 0.22);
+  --nx-text: #eeedee;
+  --nx-muted: #9aa3b8;
+  --nx-accent: #ae7c32;
+  --nx-accent-lift: #d2a355;
+  --nx-on-accent: #06080f;
+}
+
+* {
+  font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+h1, h2, h3,
+[class*="FieldLabel"],
+[class*="ListCardTitle"],
+[class*="CollectionTopHeading"],
+[class*="ToolbarButton"],
+[class*="PublishButton"],
+[class*="LoginButton"],
+[class*="AppHeaderNavLink"],
+[class*="SidebarHeading"],
+[class*="NestedObjectLabel"] {
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif !important;
+}
+
+body,
+[class*="StyledAuthenticationPage"],
+[class*="AppMainContainer"] {
+  background-color: var(--nx-bg) !important;
+  color: var(--nx-text) !important;
+}
+
+[class*="StyledAuthenticationPage"] {
+  background-image: radial-gradient(60% 60% at 50% 30%, var(--nx-elev-2) 0%, var(--nx-bg) 70%) !important;
+}
+
+[class*="LoginButton"] {
+  background-color: var(--nx-accent) !important;
+  color: var(--nx-on-accent) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 700 !important;
+}
+[class*="LoginButton"]:hover {
+  background-color: var(--nx-accent-lift) !important;
+}
+
+[class*="AppHeader-css"],
+[class*="AppHeaderContent"] {
+  background-color: var(--nx-elev) !important;
+  border-bottom: 1px solid var(--nx-line) !important;
+}
+
+[class*="AppHeaderNavLink"] {
+  color: var(--nx-muted) !important;
+}
+[class*="AppHeaderNavLink"].header-link-active,
+[class*="AppHeaderNavLink"][class*="buttonActive"] {
+  color: var(--nx-text) !important;
+  box-shadow: inset 0 -2px 0 var(--nx-accent) !important;
+}
+
+[class*="AppHeaderButton"],
+[class*="AppHeaderActions"] svg {
+  color: var(--nx-muted) !important;
+}
+
+[class*="SidebarContainer"] {
+  background-color: var(--nx-elev) !important;
+  border-right: 1px solid var(--nx-line) !important;
+}
+
+[class*="SidebarHeading"],
+[class*="CollectionTopHeading"] {
+  color: var(--nx-text) !important;
+}
+
+[class*="SearchContainer"],
+[class*="InputContainer"] {
+  background-color: var(--nx-elev-2) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+}
+[class*="SearchInput"] {
+  background-color: transparent !important;
+  color: var(--nx-text) !important;
+}
+[class*="SearchInput"]::placeholder {
+  color: var(--nx-muted) !important;
+}
+
+[class*="SidebarNavLink"] {
+  color: var(--nx-muted) !important;
+}
+[class*="SidebarNavLink"].sidebar-active {
+  color: var(--nx-text) !important;
+  background-color: var(--nx-elev-2) !important;
+  box-shadow: inset 3px 0 0 var(--nx-accent) !important;
+}
+
+[class*="CollectionTopContainer"],
+[class*="CollectionMain"],
+[class*="CollectionContainer"] {
+  background-color: var(--nx-bg) !important;
+}
+
+[class*="CollectionTopNewButton"],
+[class*="AppHeaderQuickNewButton"],
+[class*="AddButton"] {
+  background-color: var(--nx-accent) !important;
+  color: var(--nx-on-accent) !important;
+  border-radius: 0.5rem !important;
+}
+[class*="CollectionTopNewButton"]:hover,
+[class*="AppHeaderQuickNewButton"]:hover,
+[class*="AddButton"]:hover {
+  background-color: var(--nx-accent-lift) !important;
+}
+
+[class*="ListCard"] {
+  background-color: var(--nx-elev) !important;
+  border: 1px solid var(--nx-line) !important;
+  border-radius: 0.75rem !important;
+}
+[class*="ListCard"]:hover {
+  border-color: var(--nx-accent) !important;
+}
+[class*="ListCardTitle"] {
+  color: var(--nx-text) !important;
+}
+
+[class*="EditorContainer"],
+[class*="ControlPaneContainer"],
+[class*="PreviewPaneContainer"],
+[class*="Editor-"],
+[class*="ToolbarContainer"] {
+  background-color: var(--nx-bg) !important;
+}
+
+[class*="ToolbarContainer"] {
+  border-bottom: 1px solid var(--nx-line) !important;
+}
+
+[class*="ControlContainer"] input,
+[class*="ControlContainer"] textarea,
+[class*="ControlContainer"] select,
+[class*="WidgetContainer"] input,
+[class*="WidgetContainer"] textarea {
+  background-color: var(--nx-elev) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+  color: var(--nx-text) !important;
+  border-radius: 0.5rem !important;
+}
+
+[class*="-control"],
+[class*="-container"],
+[class*="-menu"],
+[class*="-option"],
+[class*="-singleValue"],
+[class*="-indicatorContainer"],
+[class*="-placeholder"] {
+  background-color: var(--nx-elev) !important;
+  color: var(--nx-text) !important;
+  border-color: var(--nx-line-strong) !important;
+}
+[class*="-menu"] {
+  background-color: var(--nx-elev-2) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+}
+[class*="-option"]:hover {
+  background-color: var(--nx-elev-2) !important;
+}
+
+[class*="ControlTopbar"] + div {
+  background-color: var(--nx-elev) !important;
+}
+
+[class*="DateTimeControl"] {
+  background-color: var(--nx-elev) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+  border-radius: 0.5rem !important;
+}
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  color-scheme: dark;
+  background-color: var(--nx-elev) !important;
+  color: var(--nx-text) !important;
+  border: none !important;
+}
+
+[class*="FieldLabel"] {
+  color: var(--nx-muted) !important;
+}
+[class*="ControlHint"] {
+  color: var(--nx-muted) !important;
+}
+
+[class*="TopBarContainer"] {
+  background-color: var(--nx-elev-2) !important;
+  border: 1px solid var(--nx-line) !important;
+  border-radius: 0.5rem !important;
+  color: var(--nx-text) !important;
+}
+[class*="TopBarContainer"] svg {
+  color: var(--nx-muted) !important;
+}
+
+[class*="ListItem"],
+[class*="NestedObjectLabel"] {
+  background-color: var(--nx-elev-2) !important;
+  border: 1px solid var(--nx-line) !important;
+  color: var(--nx-text) !important;
+}
+
+[class*="PublishButton"],
+[class*="PublishedToolbarButton"] {
+  background-color: var(--nx-accent) !important;
+  color: var(--nx-on-accent) !important;
+}
+[class*="PublishButton"]:hover,
+[class*="PublishedToolbarButton"]:hover {
+  background-color: var(--nx-accent-lift) !important;
+}
+
+[class*="BackArrow"],
+[class*="BackCollection"] {
+  color: var(--nx-muted) !important;
+}
+
+[class*="AvatarDropdownButton"] {
+  background-color: var(--nx-elev-2) !important;
+}
+
+[class*="PreviewPaneFrame"] {
+  background-color: var(--nx-bg) !important;
+}
