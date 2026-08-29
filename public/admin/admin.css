@@ -192,6 +192,42 @@ body,
   color: var(--nx-text) !important;
 }
 
+[class*="GridCard"] {
+  background-color: var(--nx-elev) !important;
+  border: 1px solid var(--nx-line) !important;
+}
+[class*="GridCardLink"],
+[class*="GridCardLink"]:hover {
+  background-color: var(--nx-elev) !important;
+  color: var(--nx-text) !important;
+}
+[class*="GridCard"]:hover {
+  border-color: var(--nx-accent) !important;
+}
+[class*="CardBody"] {
+  color: var(--nx-text) !important;
+}
+[class*="CardBody"]::after {
+  box-shadow: inset 0 -15px 24px var(--nx-elev) !important;
+}
+[class*="CardHeading"] {
+  color: var(--nx-text) !important;
+}
+[class*="CollectionLabel"] {
+  color: var(--nx-muted) !important;
+}
+[class*="StyledImage"] {
+  background-color: var(--nx-elev-2) !important;
+}
+
+[class*="ViewControlsButton"] {
+  color: var(--nx-muted) !important;
+}
+[class*="ViewControlsButton"]:hover,
+[class*="ViewControlsButton"]:focus-visible {
+  color: var(--nx-accent-lift) !important;
+}
+
 [class*="EditorContainer"],
 [class*="ControlPaneContainer"],
 [class*="PreviewPaneContainer"],

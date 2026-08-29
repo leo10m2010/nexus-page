@@ -66,11 +66,175 @@ collections:
             name: "role"
             widget: "string"
             required: false
-          - label: "País (código de 2 letras, ej: PE)"
+          - label: "País"
             name: "country"
-            widget: "string"
+            widget: "select"
             required: false
-            pattern: ["^[A-Za-z]{2}$", "Código ISO de 2 letras, ej: PE, BR, CO"]
+            options:
+              - { label: "Afganistán", value: "AF" }
+              - { label: "Albania", value: "AL" }
+              - { label: "Alemania", value: "DE" }
+              - { label: "Andorra", value: "AD" }
+              - { label: "Angola", value: "AO" }
+              - { label: "Arabia Saudita", value: "SA" }
+              - { label: "Argelia", value: "DZ" }
+              - { label: "Argentina", value: "AR" }
+              - { label: "Armenia", value: "AM" }
+              - { label: "Australia", value: "AU" }
+              - { label: "Austria", value: "AT" }
+              - { label: "Azerbaiyán", value: "AZ" }
+              - { label: "Bahamas", value: "BS" }
+              - { label: "Bangladés", value: "BD" }
+              - { label: "Barbados", value: "BB" }
+              - { label: "Baréin", value: "BH" }
+              - { label: "Bélgica", value: "BE" }
+              - { label: "Belice", value: "BZ" }
+              - { label: "Benín", value: "BJ" }
+              - { label: "Bielorrusia", value: "BY" }
+              - { label: "Bolivia", value: "BO" }
+              - { label: "Bosnia y Herzegovina", value: "BA" }
+              - { label: "Botsuana", value: "BW" }
+              - { label: "Brasil", value: "BR" }
+              - { label: "Brunéi", value: "BN" }
+              - { label: "Bulgaria", value: "BG" }
+              - { label: "Burkina Faso", value: "BF" }
+              - { label: "Burundi", value: "BI" }
+              - { label: "Bután", value: "BT" }
+              - { label: "Cabo Verde", value: "CV" }
+              - { label: "Camboya", value: "KH" }
+              - { label: "Camerún", value: "CM" }
+              - { label: "Canadá", value: "CA" }
+              - { label: "Catar", value: "QA" }
+              - { label: "Chad", value: "TD" }
+              - { label: "Chile", value: "CL" }
+              - { label: "China", value: "CN" }
+              - { label: "Chipre", value: "CY" }
+              - { label: "Colombia", value: "CO" }
+              - { label: "Comoras", value: "KM" }
+              - { label: "Corea del Norte", value: "KP" }
+              - { label: "Corea del Sur", value: "KR" }
+              - { label: "Costa de Marfil", value: "CI" }
+              - { label: "Costa Rica", value: "CR" }
+              - { label: "Croacia", value: "HR" }
+              - { label: "Cuba", value: "CU" }
+              - { label: "Dinamarca", value: "DK" }
+              - { label: "Ecuador", value: "EC" }
+              - { label: "Egipto", value: "EG" }
+              - { label: "El Salvador", value: "SV" }
+              - { label: "Emiratos Árabes Unidos", value: "AE" }
+              - { label: "Eritrea", value: "ER" }
+              - { label: "Eslovaquia", value: "SK" }
+              - { label: "Eslovenia", value: "SI" }
+              - { label: "España", value: "ES" }
+              - { label: "Estados Unidos", value: "US" }
+              - { label: "Estonia", value: "EE" }
+              - { label: "Etiopía", value: "ET" }
+              - { label: "Filipinas", value: "PH" }
+              - { label: "Finlandia", value: "FI" }
+              - { label: "Fiyi", value: "FJ" }
+              - { label: "Francia", value: "FR" }
+              - { label: "Gabón", value: "GA" }
+              - { label: "Gambia", value: "GM" }
+              - { label: "Georgia", value: "GE" }
+              - { label: "Ghana", value: "GH" }
+              - { label: "Granada", value: "GD" }
+              - { label: "Grecia", value: "GR" }
+              - { label: "Guatemala", value: "GT" }
+              - { label: "Guyana", value: "GY" }
+              - { label: "Haití", value: "HT" }
+              - { label: "Honduras", value: "HN" }
+              - { label: "Hungría", value: "HU" }
+              - { label: "India", value: "IN" }
+              - { label: "Indonesia", value: "ID" }
+              - { label: "Irak", value: "IQ" }
+              - { label: "Irán", value: "IR" }
+              - { label: "Irlanda", value: "IE" }
+              - { label: "Islandia", value: "IS" }
+              - { label: "Israel", value: "IL" }
+              - { label: "Italia", value: "IT" }
+              - { label: "Jamaica", value: "JM" }
+              - { label: "Japón", value: "JP" }
+              - { label: "Jordania", value: "JO" }
+              - { label: "Kazajistán", value: "KZ" }
+              - { label: "Kenia", value: "KE" }
+              - { label: "Kirguistán", value: "KG" }
+              - { label: "Kuwait", value: "KW" }
+              - { label: "Laos", value: "LA" }
+              - { label: "Letonia", value: "LV" }
+              - { label: "Líbano", value: "LB" }
+              - { label: "Liberia", value: "LR" }
+              - { label: "Libia", value: "LY" }
+              - { label: "Liechtenstein", value: "LI" }
+              - { label: "Lituania", value: "LT" }
+              - { label: "Luxemburgo", value: "LU" }
+              - { label: "Macedonia del Norte", value: "MK" }
+              - { label: "Madagascar", value: "MG" }
+              - { label: "Malasia", value: "MY" }
+              - { label: "Malaui", value: "MW" }
+              - { label: "Maldivas", value: "MV" }
+              - { label: "Malí", value: "ML" }
+              - { label: "Malta", value: "MT" }
+              - { label: "Marruecos", value: "MA" }
+              - { label: "Mauricio", value: "MU" }
+              - { label: "Mauritania", value: "MR" }
+              - { label: "México", value: "MX" }
+              - { label: "Moldavia", value: "MD" }
+              - { label: "Mónaco", value: "MC" }
+              - { label: "Mongolia", value: "MN" }
+              - { label: "Montenegro", value: "ME" }
+              - { label: "Mozambique", value: "MZ" }
+              - { label: "Myanmar", value: "MM" }
+              - { label: "Namibia", value: "NA" }
+              - { label: "Nepal", value: "NP" }
+              - { label: "Nicaragua", value: "NI" }
+              - { label: "Níger", value: "NE" }
+              - { label: "Nigeria", value: "NG" }
+              - { label: "Noruega", value: "NO" }
+              - { label: "Nueva Zelanda", value: "NZ" }
+              - { label: "Omán", value: "OM" }
+              - { label: "Países Bajos", value: "NL" }
+              - { label: "Pakistán", value: "PK" }
+              - { label: "Panamá", value: "PA" }
+              - { label: "Papúa Nueva Guinea", value: "PG" }
+              - { label: "Paraguay", value: "PY" }
+              - { label: "Perú", value: "PE" }
+              - { label: "Polonia", value: "PL" }
+              - { label: "Portugal", value: "PT" }
+              - { label: "Reino Unido", value: "GB" }
+              - { label: "República Checa", value: "CZ" }
+              - { label: "República Dominicana", value: "DO" }
+              - { label: "Ruanda", value: "RW" }
+              - { label: "Rumania", value: "RO" }
+              - { label: "Rusia", value: "RU" }
+              - { label: "Senegal", value: "SN" }
+              - { label: "Serbia", value: "RS" }
+              - { label: "Singapur", value: "SG" }
+              - { label: "Siria", value: "SY" }
+              - { label: "Somalia", value: "SO" }
+              - { label: "Sri Lanka", value: "LK" }
+              - { label: "Sudáfrica", value: "ZA" }
+              - { label: "Sudán", value: "SD" }
+              - { label: "Suecia", value: "SE" }
+              - { label: "Suiza", value: "CH" }
+              - { label: "Surinam", value: "SR" }
+              - { label: "Tailandia", value: "TH" }
+              - { label: "Taiwán", value: "TW" }
+              - { label: "Tanzania", value: "TZ" }
+              - { label: "Tayikistán", value: "TJ" }
+              - { label: "Togo", value: "TG" }
+              - { label: "Trinidad y Tobago", value: "TT" }
+              - { label: "Túnez", value: "TN" }
+              - { label: "Turkmenistán", value: "TM" }
+              - { label: "Turquía", value: "TR" }
+              - { label: "Ucrania", value: "UA" }
+              - { label: "Uganda", value: "UG" }
+              - { label: "Uruguay", value: "UY" }
+              - { label: "Uzbekistán", value: "UZ" }
+              - { label: "Venezuela", value: "VE" }
+              - { label: "Vietnam", value: "VN" }
+              - { label: "Yemen", value: "YE" }
+              - { label: "Zambia", value: "ZM" }
+              - { label: "Zimbabue", value: "ZW" }
       - label: "ID interno"
         name: "id"
         widget: "string"
@@ -251,7 +415,7 @@ collections:
     delete: true
     slug: "{{fields.id}}"
     identifier_field: "id"
-    summary: "{{fields.home}} vs {{fields.away}}"
+    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}} {{fields.group}}"
     sortable_fields: ["id"]
     fields:
       - label: "Torneo"
