@@ -7,12 +7,15 @@
   function ensureTiles() {
     var list = document.querySelector('[class*="SidebarNavList"]');
     if (!list) return;
-    var sample = list.querySelector('[data-testid="equipos"]') || list.querySelector('[class*="SidebarNavLink"]');
-    if (!sample) return;
+    var sampleLink = list.querySelector('[data-testid="equipos"]') || list.querySelector('[class*="SidebarNavLink"]');
+    var sampleItem = sampleLink && sampleLink.closest("li");
+    if (!sampleLink || !sampleItem) return;
 
     TILES.forEach(function (spec) {
       if (document.getElementById(spec.id)) return;
-      var tile = sample.cloneNode(true);
+      var item = sampleItem.cloneNode(true);
+      var tile = item.querySelector('[class*="SidebarNavLink"]') || item;
+
       tile.id = spec.id;
       tile.setAttribute("data-testid", spec.testid);
       tile.removeAttribute("aria-current");
@@ -27,7 +30,7 @@
         e.preventDefault();
         window.location.href = spec.href;
       });
-      list.appendChild(tile);
+      list.appendChild(item);
     });
   }
 
