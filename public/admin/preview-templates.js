@@ -168,6 +168,56 @@ var MatchPreview = createClass({
   },
 });
 
+var BracketPreview = createClass({
+  render: function () {
+    var entry = this.props.entry;
+    var data = entry.get("data");
+    var score = data.get("score");
+    var home = data.get("home");
+    var away = data.get("away");
+    var hasScore = score && score.size === 2;
+    var homeScore = hasScore ? score.get(0) : null;
+    var awayScore = hasScore ? score.get(1) : null;
+    var homeWins = hasScore && homeScore > awayScore;
+    var awayWins = hasScore && awayScore > homeScore;
+
+    function slot(name, isWinner, isLoser, scoreValue) {
+      return h(
+        "div",
+        {
+          className:
+            "nx-bracket-slot" +
+            (isWinner ? " nx-bracket-slot--winner" : "") +
+            (isLoser ? " nx-bracket-slot--loser" : ""),
+        },
+        h("span", { className: "nx-bracket-team" }, name || "Por definir"),
+        hasScore ? h("span", { className: "nx-bracket-score" }, scoreValue) : null,
+        isWinner ? h("span", { className: "nx-bracket-tag" }, "AVANZA") : null
+      );
+    }
+
+    return h(
+      "div",
+      { className: "nx-preview" },
+      h(
+        "p",
+        { className: "nx-match-stage" },
+        (STAGE_LABELS[data.get("stage")] || data.get("stage") || "Etapa") +
+          (data.get("bestOf") ? " · Bo" + data.get("bestOf") : "")
+      ),
+      h(
+        "div",
+        { className: "nx-bracket-cross" },
+        slot(home, homeWins, awayWins, homeScore),
+        h("div", { className: "nx-bracket-connector" }),
+        slot(away, awayWins, homeWins, awayScore)
+      ),
+      h("p", { className: "nx-match-date" }, formatDate(data.get("startsAt")) || "Fecha por definir")
+    );
+  },
+});
+
 CMS.registerPreviewTemplate("equipos", TeamPreview);
 CMS.registerPreviewTemplate("torneos", TournamentPreview);
 CMS.registerPreviewTemplate("partidos", MatchPreview);
+CMS.registerPreviewTemplate("brackets", BracketPreview);

@@ -413,11 +413,14 @@ collections:
     format: "yaml"
     create: true
     delete: true
+    filter: { field: "phase", value: "groupStage" }
     slug: "{{fields.id}}"
     identifier_field: "id"
-    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}} {{fields.group}} · {{fields.startsAt | date('D MMM, HH:mm')}}"
+    summary: "{{fields.home}} vs {{fields.away}} — Grupo {{fields.group}} · {{fields.startsAt | date('D MMM, HH:mm')}}"
     sortable_fields: ["id"]
     fields:
+      - { label: "Fase (no tocar)", name: "phase", widget: "hidden", default: "groupStage" }
+      - { label: "Etapa (no tocar)", name: "stage", widget: "hidden", default: "groupStage" }
       - label: "Torneo"
         name: "tournament"
         widget: "relation"
@@ -425,19 +428,9 @@ collections:
         search_fields: ["name"]
         value_field: "id"
         display_fields: ["name"]
-      - label: "Etapa"
-        name: "stage"
-        widget: "select"
-        options:
-          - { label: "Fase de grupos", value: "groupStage" }
-          - { label: "Ronda inferior", value: "lowerRound" }
-          - { label: "Cuartos de final", value: "quarterfinal" }
-          - { label: "Semifinal", value: "semifinal" }
-          - { label: "Final del bracket superior", value: "upperFinal" }
-          - { label: "Final del bracket inferior", value: "lowerFinal" }
-          - { label: "Final", value: "final" }
-          - { label: "Gran final", value: "grandFinal" }
-          - { label: "Tercer puesto", value: "thirdPlace" }
+      - label: "Grupo"
+        name: "group"
+        widget: "string"
       - label: "Fecha y hora (en UTC)"
         name: "startsAt"
         widget: "datetime"
@@ -473,6 +466,46 @@ collections:
         widget: "number"
         value_type: "int"
         required: false
+      - label: "ID interno"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones"]
+        hint: "No lo cambies después de guardar por primera vez."
+
+  - name: "brackets"
+    label: "Brackets"
+    label_singular: "Cruce"
+    folder: "src/data/matches"
+    extension: "yaml"
+    format: "yaml"
+    create: true
+    delete: true
+    filter: { field: "phase", value: "bracket" }
+    slug: "{{fields.id}}"
+    identifier_field: "id"
+    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}} · {{fields.startsAt | date('D MMM, HH:mm')}}"
+    sortable_fields: ["id"]
+    fields:
+      - { label: "Fase (no tocar)", name: "phase", widget: "hidden", default: "bracket" }
+      - label: "Torneo"
+        name: "tournament"
+        widget: "relation"
+        collection: "torneos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+      - label: "Etapa"
+        name: "stage"
+        widget: "select"
+        options:
+          - { label: "Ronda inferior", value: "lowerRound" }
+          - { label: "Cuartos de final", value: "quarterfinal" }
+          - { label: "Semifinal", value: "semifinal" }
+          - { label: "Final del bracket superior", value: "upperFinal" }
+          - { label: "Final del bracket inferior", value: "lowerFinal" }
+          - { label: "Final", value: "final" }
+          - { label: "Gran final", value: "grandFinal" }
+          - { label: "Tercer puesto", value: "thirdPlace" }
       - label: "Bracket"
         name: "bracket"
         widget: "select"
@@ -486,9 +519,43 @@ collections:
         widget: "number"
         value_type: "int"
         required: false
-      - label: "Grupo"
-        name: "group"
-        widget: "string"
+      - label: "Fecha y hora (en UTC)"
+        name: "startsAt"
+        widget: "datetime"
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        picker_utc: true
+      - label: "Equipo local"
+        name: "home"
+        widget: "relation"
+        collection: "equipos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+        required: false
+        hint: "Déjalo vacío hasta que se sepa quién avanza a este cruce."
+      - label: "Equipo visitante"
+        name: "away"
+        widget: "relation"
+        collection: "equipos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+        required: false
+        hint: "Déjalo vacío hasta que se sepa quién avanza a este cruce."
+      - label: "Marcador (mapas ganados: local, visitante)"
+        name: "score"
+        widget: "list"
+        required: false
+        min: 2
+        max: 2
+        field: { label: "Mapas", name: "maps", widget: "number", value_type: "int" }
+        hint: "Al completar el marcador, la vista previa marca automáticamente quién avanza."
+      - label: "Mejor de (Bo)"
+        name: "bestOf"
+        widget: "number"
+        value_type: "int"
         required: false
       - label: "ID interno"
         name: "id"
