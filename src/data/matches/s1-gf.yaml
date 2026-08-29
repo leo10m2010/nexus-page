@@ -1,7 +1,7 @@
 id: s1-gf
 tournament: season-one
 stage: grandFinal
-startsAt: 2026-09-15T20:00:00Z
+startsAt: "2026-09-15T20:00:00Z"
 bestOf: 5
 bracket: final
 round: 1

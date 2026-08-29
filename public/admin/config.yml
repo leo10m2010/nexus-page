@@ -415,7 +415,7 @@ collections:
     delete: true
     slug: "{{fields.id}}"
     identifier_field: "id"
-    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}} {{fields.group}} · {{fields.startsAt}}"
+    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}} {{fields.group}} · {{fields.startsAt | date('D MMM, HH:mm')}}"
     sortable_fields: ["id"]
     fields:
       - label: "Torneo"

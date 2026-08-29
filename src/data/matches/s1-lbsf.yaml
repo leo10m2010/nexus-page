@@ -1,7 +1,7 @@
 id: s1-lbsf
 tournament: season-one
 stage: lowerRound
-startsAt: 2026-09-12T20:00:00Z
+startsAt: "2026-09-12T20:00:00Z"
 bestOf: 3
 bracket: lower
 round: 1

@@ -2,5 +2,5 @@ id: s1-gb4
 tournament: season-one
 stage: groupStage
 group: B
-startsAt: 2026-09-09T20:00:00Z
+startsAt: "2026-09-09T20:00:00Z"
 bestOf: 3
