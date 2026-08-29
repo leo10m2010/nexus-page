@@ -145,20 +145,6 @@ const overflow = Math.max(0, (stage.teamCount ?? 0) - shownTeams.length);
   .stage-card--live:active { transform: translateY(-2px) scale(0.985); transition-duration: 0.12s; }
 
   @media (prefers-reduced-motion: no-preference) {
-    /* The numeral pops in with a touch of overshoot: a spring settling, not a
-       linear fade, so the reveal reads as landing rather than just arriving. */
-    .numeral {
-      opacity: 0;
-      transform: scale(0.55);
-      transition: opacity 0.5s var(--ease-out-quint), transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-      transition-delay: var(--reveal-delay, 0ms);
-    }
-    /* `.js-reveal`/`.reveal.is-in` belong to the ancestor wrapper Roadmap.astro
-       renders, not to this component, so they have to stay unscoped for the
-       selector to ever match: Astro scopes every simple selector it can, and
-       an ancestor from another component never carries this one's scope id. */
-    :global(.js-reveal) :global(.reveal.is-in) .numeral { opacity: 1; transform: scale(1); }
-
     /* The one stage that is actually happening keeps breathing after it
        lands: the placeholders stay still, which is the "diferencia" between
        a confirmed date and a funded-but-unscheduled one. */

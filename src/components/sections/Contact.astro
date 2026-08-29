@@ -11,13 +11,6 @@ const id = "contact";
 ---
 
 <Section id={id} bordered class="relative" innerClass="grid gap-14 lg:grid-cols-12 lg:gap-16">
-  <div
-    aria-hidden="true"
-    class="pointer-events-none absolute inset-0 -z-10"
-    style="background: radial-gradient(60% 70% at 82% 20%, color-mix(in srgb, var(--c-brand) 26%, transparent) 0%, transparent 70%)"
-  >
-  </div>
-
   <div class="lg:col-span-5">
     <Eyebrow text={eyebrow} class="reveal" />
     <h2 class="display reveal mt-5 text-[clamp(2rem,4.2vw,3.5rem)]">
@@ -26,10 +19,18 @@ const id = "contact";
     <p class="lede reveal mt-6" style="--reveal-delay:80ms">{lede}</p>
   </div>
 
-  <ul class="lg:col-span-7 lg:pt-4">
+  {/* `min-w-0`: this `<ul>` is a grid item (the section's `innerClass` grid
+      is active at every width, not just from `lg:`), and a grid item's
+      default `min-width: auto` resolves to its content's min-content size.
+      That content includes a `truncate` span further down whose text can't
+      wrap — without this, the grid item refuses to shrink below that text's
+      full width, `truncate` never gets a chance to engage, and the whole
+      grid (the whole page, at narrow widths) is forced wider than the
+      viewport instead. */}
+  <ul class="min-w-0 lg:col-span-7 lg:pt-4">
     {
-      contactRoutes.map((r, i) => (
-        <li class="reveal border-t border-line last:border-b" style={`--reveal-delay:${i * 80}ms`}>
+      contactRoutes.map((r) => (
+        <li class="border-t border-line last:border-b">
           <a
             class="route group flex items-center gap-5 py-6"
             href={r.href}

@@ -18,11 +18,8 @@ const teams = await getTeams();
       <p class="lede reveal mt-8">{t.competition.empty}</p>
     ) : (
       <ul class="grid-hairline mt-10 grid sm:grid-cols-2 lg:grid-cols-4">
-        {teams.map((team, i) => (
-          <li
-            class="reveal flex items-center gap-4 bg-elev px-6 py-6"
-            style={`--reveal-delay:${(i % 4) * 60}ms`}
-          >
+        {teams.map((team) => (
+          <li class="min-w-0 flex items-center gap-4 bg-elev px-6 py-6">
             <TeamMark team={team} size={56} />
             <span class="min-w-0">
               <span class="display-sm block truncate text-base">{team.name}</span>

@@ -11,16 +11,11 @@ const id = "vision";
 const [lead, ...rest] = pillars;
 
 /* Three pillars, three cells, deliberately unequal weight. The lead cell is
-   photographic; the other two carry texture and colour so the grid has real
-   background variety rather than three identical text tiles. */
-const restStyles = [
-  { klass: "chevron-field", style: "" },
-  {
-    klass: "",
-    style:
-      "background-image: radial-gradient(80% 90% at 88% 100%, color-mix(in srgb, var(--c-accent) 22%, transparent) 0%, transparent 70%)",
-  },
-];
+   photographic; the other two carry texture so the grid has real background
+   variety rather than three identical text tiles — just the one texture,
+   not a second radial-gradient blob repeating the same trick Roadmap and
+   Contact each already do once with more purpose. */
+const restStyles = ["chevron-field", ""];
 ---
 
 <Section id={id} bordered>
@@ -29,8 +24,7 @@ const restStyles = [
 
   <div class="mt-14 grid gap-px bg-line lg:grid-cols-5 lg:grid-rows-2">
     <article
-      class="on-media reveal relative flex min-h-[420px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-3 lg:row-span-2"
-      style="--reveal-delay:60ms"
+      class="on-media relative flex min-h-[420px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-3 lg:row-span-2"
     >
       <MediaBackdrop
         {...media.broadcastBooth}
@@ -50,8 +44,7 @@ const restStyles = [
     {
       rest.map((p, i) => (
         <article
-          class={`reveal relative flex min-h-[212px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-2 ${restStyles[i]!.klass}`}
-          style={`--reveal-delay:${120 + i * 60}ms; ${restStyles[i]!.style}`}
+          class={`relative flex min-h-[212px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-2 ${restStyles[i]!}`}
         >
           {i === 1 && (
             <NexusMark class="pointer-events-none absolute -bottom-8 -right-6 h-40 opacity-[0.07]" />

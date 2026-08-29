@@ -32,7 +32,7 @@ const { headline, headlineClamp, lede } = t.hero;
       and below them. The frame is a rounded card, not a bare cutout — it is
       also what the mouse-parallax script below grabs and tilts. */}
   <div
-    class="hero-figures-layer pointer-events-none absolute inset-x-0 bottom-0 z-0 flex h-[50vh] max-h-[42rem] items-start justify-center pt-[1vh] sm:h-[64vh] sm:pt-[3vh] md:h-[76vh] md:pt-[2vh]"
+    class="hero-figures-layer pointer-events-none absolute inset-x-0 bottom-0 z-0 flex h-[50dvh] min-h-[16rem] max-h-[42rem] items-start justify-center pt-[1dvh] sm:h-[64dvh] sm:pt-[3dvh] md:h-[76dvh] md:pt-[2dvh]"
     aria-hidden="true"
   >
     {/* A relative stack sized to the frame (the glow is absolute, so it
@@ -144,8 +144,13 @@ const { headline, headlineClamp, lede } = t.hero;
   const hero = document.getElementById("home");
   const frame = hero?.querySelector<HTMLElement>("[data-parallax]");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Touch scrolling fires `pointermove` too (the finger's clientX/clientY
+  // keep changing as it drags), which made the figures visibly slide/tilt
+  // while someone was just trying to scroll past the hero. Fine pointer +
+  // hover capability is what actually means "a mouse is driving this."
+  const hasMouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-  if (hero && frame && !reduced) {
+  if (hero && frame && !reduced && hasMouse) {
     const strength = 14; // max px of travel in any direction
     let targetX = 0;
     let targetY = 0;
@@ -194,7 +199,7 @@ const { headline, headlineClamp, lede } = t.hero;
     top: -12%;
     right: -8%;
     width: 46vw;
-    height: 60vh;
+    height: 60dvh;
     opacity: 0.07;
     clip-path: polygon(30% 0, 100% 0, 100% 100%, 0 100%);
   }
@@ -202,7 +207,7 @@ const { headline, headlineClamp, lede } = t.hero;
     bottom: -18%;
     left: -10%;
     width: 34vw;
-    height: 50vh;
+    height: 50dvh;
     opacity: 0.05;
     clip-path: polygon(0 0, 100% 40%, 40% 100%, 0 100%);
   }
@@ -230,9 +235,12 @@ const { headline, headlineClamp, lede } = t.hero;
        translate into the `transform` shorthand. Animating `transform`
        here only ever touches `scale`; putting a translate() inside it
        too would compose on top of the native one and double-shift the
-       glow off-centre every frame. */
-    0%, 100% { opacity: 0.75; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.08); }
+       glow off-centre every frame.
+       Kept subtle on purpose: the parallax tilt is already a second
+       moving thing in this hero, so the breathing range is small enough
+       to read as "alive" without competing with it for attention. */
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
   }
 
   .hero-headline {
@@ -266,17 +274,4 @@ const { headline, headlineClamp, lede } = t.hero;
 
   .scroll-cue-icon { transition: transform 0.2s var(--ease-out-quint); }
   .scroll-cue:hover .scroll-cue-icon { transform: translateY(3px); }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .scroll-cue-icon { animation: scroll-bounce 2s ease-in-out infinite; }
-  }
-
-  @keyframes scroll-bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(4px); }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .scroll-cue-icon { animation: none; }
-  }
 </style>

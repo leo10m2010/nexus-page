@@ -24,14 +24,14 @@ const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 
   <div class="grid-hairline mt-10 grid lg:grid-cols-2">
     {
-      groups.map((group, i) => (
-        <div class="reveal bg-elev p-6 sm:p-8" style={`--reveal-delay:${i * 70}ms`}>
+      groups.map((group) => (
+        <div class="min-w-0 bg-elev p-6 sm:p-8">
           <h3 class="display-sm text-sm text-accent-lift">
             {c.stage.groupStage} <span class="px-1 text-muted">/</span> {group.name}
           </h3>
 
           <div class="mt-5 overflow-x-auto">
-            <table class="w-full min-w-[26rem] border-collapse text-left">
+            <table class="w-full min-w-[20rem] border-collapse text-left">
               <thead>
                 <tr class="border-b border-line-strong">
                   <th scope="col" class="th w-8 text-right">#</th>

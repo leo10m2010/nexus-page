@@ -54,8 +54,8 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
 
   <div class="mt-10 flex flex-col gap-12">
     {
-      sides.map((side, s) => (
-        <div class="reveal" style={`--reveal-delay:${s * 70}ms`}>
+      sides.map((side) => (
+        <div>
           {sides.length > 1 && (
             <h3 class="display-sm mb-5 text-sm text-accent-lift">{c.bracketSide[side.side]}</h3>
           )}

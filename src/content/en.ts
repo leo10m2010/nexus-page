@@ -48,7 +48,7 @@ export const en: Dictionary = {
     eyebrow: "About us",
     heading: "Built to connect competition across regions.",
     body: [
-      "Nexus Series is an esports competition platform built to connect regions, organizations and players through structured international competition.",
+      "Nexus Series started from a simple gap: too many strong regional teams with nowhere neutral to prove themselves against each other. We run our own bracket and our own broadcast — live in English, Spanish and Russian — instead of routing that fight through someone else's platform.",
       "Our goal is to create a professional competitive environment capable of growing across regions while maintaining strong standards of organization, integrity and competitive excellence.",
     ],
   },
@@ -59,15 +59,15 @@ export const en: Dictionary = {
     pillars: [
       {
         title: "Competition",
-        body: "Structured environments designed to support serious and professional competition.",
+        body: "Every stage runs on a published bracket and format — group stage into single- or double-elimination, best-of-three minimum — decided before a single match is played, not adjusted around who's still in it.",
       },
       {
         title: "Connection",
-        body: "Creating new opportunities for teams and communities to compete across regions.",
+        body: "Nexus Series I already fields teams from multiple regions competing under one bracket instead of staying siloed in regional-only circuits — that's the model each season builds on.",
       },
       {
         title: "Growth",
-        body: "Building a platform capable of expanding alongside the competitive esports ecosystem.",
+        body: "The roadmap runs in three stages a season, and each one is funded before it's announced — nothing gets added to the schedule without a prize pool behind it already.",
       },
     ],
   },

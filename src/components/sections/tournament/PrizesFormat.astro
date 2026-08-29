@@ -59,7 +59,7 @@ const hasBoth = Boolean(prize) && phases.length > 0;
         </div>
 
         <div class="mt-8 overflow-x-auto">
-          <table class="w-full min-w-[24rem] border-collapse text-left">
+          <table class="w-full min-w-[20rem] border-collapse text-left">
             <thead>
               <tr class="border-b border-line-strong">
                 <th scope="col" class="th">{c.prizeHead.place}</th>
@@ -112,8 +112,8 @@ const hasBoth = Boolean(prize) && phases.length > 0;
     phases.map((phase, i) => (
       <div
         {...(i === 0 ? { id: "format" } : {})}
-        class="bento-cell bento-phase reveal bg-elev p-8 sm:p-10"
-        style={`--reveal-delay:${100 + i * 70}ms; --phase-row:${i + 1}`}
+        class="bento-cell bento-phase bg-elev p-8 sm:p-10"
+        style={`--phase-row:${i + 1}`}
       >
         <h3 class="display-sm text-xl">{c.phase[phase.key]}</h3>
         <p class="mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
@@ -142,6 +142,15 @@ const hasBoth = Boolean(prize) && phases.length > 0;
 </Section>
 
 <style>
+  /* `.bento-prize-format` is a grid item's ancestor (`grid` is unconditional,
+     the column/row template only kicks in past 1024px) — a grid item's
+     `min-width: auto` default resolves to its content's min-content size,
+     and the table inside each cell has its own `overflow-x-auto` on a
+     *nested* wrapper, not on the cell itself, so that scroll region doesn't
+     stop the cell from being forced as wide as the table wants. Without
+     this, the cell — and the page — overflow below 1024px. */
+  .bento-cell { min-width: 0; }
+
   @media (min-width: 1024px) {
     .bento-prize-format {
       grid-template-columns: repeat(5, 1fr);

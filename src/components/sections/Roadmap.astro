@@ -55,14 +55,12 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
   <div class="mt-14 grid gap-4 md:grid-cols-3">
     {
       stages.map((stage, i) => (
-        <div class="reveal" style={`--reveal-delay:${140 + i * 70}ms`}>
-          <StageCard stage={stage} numeral={ROMAN_NUMERALS[i]!} />
-        </div>
+        <StageCard stage={stage} numeral={ROMAN_NUMERALS[i]!} />
       ))
     }
   </div>
 
-  <div class="reveal mt-14 flex flex-wrap items-center gap-3 border-t border-line pt-8" style="--reveal-delay:380ms">
+  <div class="mt-14 flex flex-wrap items-center gap-3 border-t border-line pt-8">
     <Icon name="ph:trophy-fill" class="size-5 shrink-0 text-accent-lift" />
     <p class="text-[0.9375rem] text-muted">
       {t.roadmap.totalPrizePool}
@@ -79,15 +77,6 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
       color-mix(in srgb, var(--c-accent) 30%, transparent) 0%,
       transparent 72%
     );
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .gold-glow { animation: gold-drift 18s ease-in-out infinite alternate; }
-  }
-
-  @keyframes gold-drift {
-    from { transform: translateX(-50%) translateY(-3%) scale(1); }
-    to { transform: translateX(-50%) translateY(5%) scale(1.12); }
   }
 
   /* `:global()`, not a plain scoped selector: NexusWordmark is a child

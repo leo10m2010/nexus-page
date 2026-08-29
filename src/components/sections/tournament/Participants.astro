@@ -30,8 +30,8 @@ const currency = tournament.prizePool?.currency;
 
   <ul class="grid-hairline mt-10 grid md:grid-cols-2 xl:grid-cols-4">
     {
-      participants.map((entry, i) => (
-        <li class="reveal flex flex-col bg-elev p-6" style={`--reveal-delay:${(i % 4) * 60}ms`}>
+      participants.map((entry) => (
+        <li class="min-w-0 flex flex-col bg-elev p-6">
           <div class="flex items-start gap-4">
             <TeamMark team={entry.team} size={56} />
             <div class="min-w-0 flex-1">

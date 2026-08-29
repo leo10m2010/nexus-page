@@ -142,8 +142,12 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
       <ThemeToggle />
 
       {/* The wrapper owns visibility: `.btn` sets display and is declared after
-          Tailwind's `hidden`, so the utility would lose on the anchor itself. */}
-      <span class="hidden sm:block">
+          Tailwind's `hidden`, so the utility would lose on the anchor itself.
+          Matches the hamburger's own breakpoint (not `sm:`): the mobile menu
+          already carries its own copy of this CTA, so showing this one too
+          anywhere below `lg` just crowds the header with a redundant button
+          next to the hamburger that already opens it. */}
+      <span class="hidden lg:block">
         <Button {...ctas.partnership} label={t.cta.partnership} class="!py-[0.6875rem]" />
       </span>
 
