@@ -33,3 +33,15 @@
   background: transparent;
 }
 .btn-ghost:hover { border-color: var(--c-accent); color: var(--c-accent-lift); }
+
+.btn-arrow {
+  display: inline-block;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s var(--ease-out-quint), transform 0.25s var(--ease-out-quint);
+}
+.btn:hover .btn-arrow { opacity: 1; transform: translateX(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-arrow { transition: none; }
+}

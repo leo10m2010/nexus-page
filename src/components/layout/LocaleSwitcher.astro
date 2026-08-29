@@ -41,9 +41,6 @@ const path = Astro.url.pathname;
           >
             <Icon name={`flag:${localeMeta[l].flag}-4x3`} class="h-3 w-4 shrink-0 rounded-[2px]" />
             <span class="min-w-0 flex-1 truncate">{localeMeta[l].name}</span>
-            <span class="shrink-0 font-display text-[0.6875rem] font-bold tracking-[0.1em] opacity-70">
-              {localeMeta[l].code}
-            </span>
           </a>
         </li>
       ))
