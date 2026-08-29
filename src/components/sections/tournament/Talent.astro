@@ -9,9 +9,15 @@ interface Props {
   tournament: Tournament;
 }
 const { id, tournament } = Astro.props;
+
+const PLATFORM_COLORS: Record<string, string> = {
+  "simple-icons:kick": "#53fc18",
+};
+
 const talent = (tournament.broadcastTalent ?? []).map((person) => ({
   ...person,
   displayUrl: person.href.replace(/^https?:\/\//, "").replace(/\/$/, ""),
+  brandColor: PLATFORM_COLORS[person.icon] ?? null,
 }));
 
 const locale = resolveLocale(Astro.currentLocale);
@@ -34,7 +40,8 @@ const c = t.competition;
           >
             <Icon
               name={person.icon}
-              class="size-7 shrink-0 text-muted transition-colors group-hover:text-accent-lift"
+              class={`size-7 shrink-0 ${person.brandColor ? "" : "text-muted transition-colors group-hover:text-accent-lift"}`}
+              style={person.brandColor ? `color:${person.brandColor}` : undefined}
             />
             <span class="min-w-0">
               <span class="display-sm block truncate text-base">{person.name}</span>

@@ -13,6 +13,7 @@ export interface RoadmapStage {
   currency: string;
   teams: Team[] | null;
   teamCount: number | null;
+  icon: string | null;
 }
 
 export const ROMAN_NUMERALS = ["I", "II", "III"];
@@ -32,6 +33,7 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
           currency: tour.prizePool?.currency ?? "USD",
           teams: participants.map((p) => p.team),
           teamCount: tour.teamCount,
+          icon: stage.icon ?? null,
         };
       }
       return {
@@ -43,6 +45,7 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
         currency: stage.prizePool?.currency ?? "USD",
         teams: null,
         teamCount: null,
+        icon: stage.icon ?? null,
       };
     }),
   );

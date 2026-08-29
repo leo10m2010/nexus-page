@@ -15,6 +15,7 @@ export interface Stage {
 
   teams: Team[] | null;
   teamCount: number | null;
+  icon: string | null;
 }
 
 interface Props {
@@ -45,13 +46,23 @@ const overflow = Math.max(0, (stage.teamCount ?? 0) - shownTeams.length);
   />
 
   <div class="relative flex items-start justify-between gap-4">
-    <span
-      class={`numeral grid h-9 w-9 shrink-0 place-items-center rounded-control border font-display text-base font-bold ${
-        stage.href ? "border-accent bg-accent text-on-accent" : "border-accent/40 bg-bg text-accent"
-      }`}
-    >
-      {numeral}
-    </span>
+    {stage.icon ? (
+      <img
+        src={stage.icon}
+        alt=""
+        width="36"
+        height="36"
+        class="numeral h-9 w-9 shrink-0 rounded-control"
+      />
+    ) : (
+      <span
+        class={`numeral grid h-9 w-9 shrink-0 place-items-center rounded-control border font-display text-base font-bold ${
+          stage.href ? "border-accent bg-accent text-on-accent" : "border-accent/40 bg-bg text-accent"
+        }`}
+      >
+        {numeral}
+      </span>
+    )}
 
     {
       stage.status ? (

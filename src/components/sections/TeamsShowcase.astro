@@ -17,7 +17,7 @@ const teamsHref = `${localePath(locale)}competition/#teams`.replace("//", "/");
   teams.length > 0 && (
     <Section id="teams-showcase" bordered>
       <div class="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
-        <div class="max-w-[26ch]">
+        <div class="min-w-0 max-w-[26ch]">
           <Eyebrow text={t.teamsShowcase.eyebrow} class="reveal" />
           <h2 class="display reveal mt-4 text-[clamp(1.75rem,3.4vw,2.75rem)]" style="--reveal-delay:40ms">
             {t.teamsShowcase.heading}
