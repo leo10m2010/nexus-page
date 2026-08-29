@@ -50,9 +50,9 @@ const overflow = Math.max(0, (stage.teamCount ?? 0) - shownTeams.length);
       <img
         src={stage.icon}
         alt=""
-        width="36"
+        width="25"
         height="36"
-        class="numeral h-9 w-9 shrink-0 rounded-control border border-accent"
+        class="numeral h-9 w-auto shrink-0 object-contain"
       />
     ) : (
       <span
