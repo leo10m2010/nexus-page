@@ -9,8 +9,6 @@ const t = useTranslations(Astro.currentLocale);
 const { heading, lede, pillars } = t.vision;
 const id = "vision";
 const [lead, ...rest] = pillars;
-
-const restStyles = ["chevron-field", ""];
 ---
 
 <Section id={id} bordered>
@@ -39,7 +37,7 @@ const restStyles = ["chevron-field", ""];
     {
       rest.map((p, i) => (
         <article
-          class={`relative flex min-h-[212px] flex-col justify-end overflow-hidden rounded-card border border-line-strong bg-elev p-8 sm:p-10 lg:col-span-2 ${restStyles[i]!}`}
+          class="relative flex min-h-[212px] flex-col justify-end overflow-hidden rounded-card border border-line-strong bg-elev p-8 sm:p-10 lg:col-span-2"
         >
           {i === 1 && (
             <NexusMark class="pointer-events-none absolute -bottom-8 -right-6 h-40 opacity-[0.07]" />

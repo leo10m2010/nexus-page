@@ -10,14 +10,6 @@
   border: 1px solid var(--c-line);
 }
 
-.chevron-field {
-  background-image: repeating-linear-gradient(
-    135deg,
-    var(--c-line) 0 1px,
-    transparent 1px 14px
-  );
-}
-
 .card-tile {
   border: 1px solid var(--c-line-strong);
   background-color: var(--c-bg-elev);
