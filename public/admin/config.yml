@@ -1,0 +1,319 @@
+backend:
+  name: github
+  repo: leo10m2010/nexus-page
+  branch: main
+  base_url: https://nexusseries.org
+  auth_endpoint: api/auth
+
+local_backend: true
+
+publish_mode: simple
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: "es"
+
+collections:
+  - name: "equipos"
+    label: "Equipos"
+    label_singular: "Equipo"
+    folder: "src/data/teams"
+    extension: "yaml"
+    format: "yaml"
+    create: true
+    delete: true
+    slug: "{{fields.id}}"
+    identifier_field: "name"
+    summary: "{{name}} ({{tag}})"
+    fields:
+      - label: "ID interno (no cambiar después de crear el equipo)"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: amaru-gaming"]
+        hint: "Se usa como nombre de archivo. Si lo cambias más tarde, se crea un archivo nuevo en vez de renombrar el existente."
+      - label: "Nombre"
+        name: "name"
+        widget: "string"
+      - label: "Tag (2 a 4 letras)"
+        name: "tag"
+        widget: "string"
+        pattern: ["^.{2,4}$", "Entre 2 y 4 caracteres"]
+      - label: "Región"
+        name: "region"
+        widget: "string"
+      - label: "Logo"
+        name: "logo"
+        widget: "image"
+        required: false
+        media_folder: "/public/teams"
+        public_folder: "/teams"
+        hint: "Se recomienda subir el logo ya recortado cuadrado, no más de ~200x200px."
+      - label: "Jugadores"
+        name: "players"
+        widget: "list"
+        required: false
+        summary: "{{fields.handle}}"
+        fields:
+          - label: "Handle (nombre en juego)"
+            name: "handle"
+            widget: "string"
+          - label: "Nombre real"
+            name: "name"
+            widget: "string"
+            required: false
+          - label: "Rol"
+            name: "role"
+            widget: "string"
+            required: false
+          - label: "País (código de 2 letras, ej: PE)"
+            name: "country"
+            widget: "string"
+            required: false
+            pattern: ["^[A-Za-z]{2}$", "Código ISO de 2 letras, ej: PE, BR, CO"]
+
+  - name: "torneos"
+    label: "Torneos"
+    label_singular: "Torneo"
+    folder: "src/data/tournaments"
+    extension: "yaml"
+    format: "yaml"
+    create: true
+    delete: true
+    slug: "{{fields.id}}"
+    identifier_field: "name"
+    summary: "{{name}} — {{status}}"
+    fields:
+      - label: "ID interno (no cambiar después de crear el torneo)"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: season-one"]
+        hint: "Se usa como nombre de archivo y en la URL del torneo (/competition/ID/)."
+      - label: "Nombre"
+        name: "name"
+        widget: "string"
+      - label: "Estado"
+        name: "status"
+        widget: "select"
+        options:
+          - { label: "Próximo", value: "upcoming" }
+          - { label: "En vivo", value: "live" }
+          - { label: "Finalizado", value: "finished" }
+      - label: "Fecha de inicio"
+        name: "startDate"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: "Fecha de fin"
+        name: "endDate"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - label: "Región"
+        name: "region"
+        widget: "string"
+      - label: "Formato"
+        name: "format"
+        widget: "select"
+        options:
+          - { label: "Doble eliminación", value: "doubleElimination" }
+          - { label: "Eliminación simple", value: "singleElimination" }
+          - { label: "Round robin", value: "roundRobin" }
+          - { label: "Suizo", value: "swiss" }
+      - label: "Cantidad de equipos"
+        name: "teamCount"
+        widget: "number"
+        value_type: "int"
+      - label: "Organizador"
+        name: "organizer"
+        widget: "string"
+        required: false
+      - label: "Modalidad"
+        name: "venue"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Online", value: "online" }
+          - { label: "Presencial", value: "offline" }
+          - { label: "Híbrido", value: "hybrid" }
+      - label: "Ubicación (si es presencial)"
+        name: "location"
+        widget: "string"
+        required: false
+      - label: "Serie / temporada"
+        name: "series"
+        widget: "string"
+        required: false
+      - label: "Premios"
+        name: "prizePool"
+        widget: "object"
+        required: false
+        fields:
+          - { label: "Moneda (3 letras, ej: USD)", name: "currency", widget: "string" }
+          - { label: "Total", name: "total", widget: "number" }
+          - label: "Distribución de premios"
+            name: "distribution"
+            widget: "list"
+            required: false
+            summary: "Puesto {{fields.place}} — {{fields.amount}}"
+            fields:
+              - { label: "Puesto", name: "place", widget: "number", value_type: "int" }
+              - { label: "Hasta el puesto (para rangos, ej 5º-8º)", name: "to", widget: "number", value_type: "int", required: false }
+              - { label: "Monto", name: "amount", widget: "number" }
+              - label: "Equipo ganador (si ya se sabe)"
+                name: "team"
+                widget: "relation"
+                collection: "equipos"
+                search_fields: ["name"]
+                value_field: "id"
+                display_fields: ["name"]
+                required: false
+      - label: "Fases"
+        name: "phases"
+        widget: "list"
+        required: false
+        summary: "{{fields.key}}"
+        fields:
+          - label: "Etapa"
+            name: "key"
+            widget: "select"
+            options:
+              - { label: "Clasificatoria", value: "qualifier" }
+              - { label: "Fase de grupos", value: "groupStage" }
+              - { label: "Fase suiza", value: "swissStage" }
+              - { label: "Playoffs", value: "playoffs" }
+              - { label: "Finales", value: "finals" }
+          - label: "Formato"
+            name: "format"
+            widget: "select"
+            options:
+              - { label: "Doble eliminación", value: "doubleElimination" }
+              - { label: "Eliminación simple", value: "singleElimination" }
+              - { label: "Round robin", value: "roundRobin" }
+              - { label: "Suizo", value: "swiss" }
+          - { label: "Cantidad de equipos", name: "teamCount", widget: "number", value_type: "int", required: false }
+          - { label: "Mejor de (Bo)", name: "bestOf", widget: "number", value_type: "int", required: false }
+          - { label: "Avanzan", name: "advance", widget: "number", value_type: "int", required: false }
+      - label: "Participantes"
+        name: "participants"
+        widget: "list"
+        required: false
+        summary: "{{fields.team}}"
+        fields:
+          - label: "Equipo"
+            name: "team"
+            widget: "relation"
+            collection: "equipos"
+            search_fields: ["name"]
+            value_field: "id"
+            display_fields: ["name"]
+          - label: "Vía de clasificación"
+            name: "via"
+            widget: "select"
+            required: false
+            options:
+              - { label: "Invitado", value: "invited" }
+              - { label: "Clasificatoria", value: "qualifier" }
+              - { label: "Regional", value: "regional" }
+              - { label: "Defensor del título", value: "defending" }
+      - label: "Talento de transmisión"
+        name: "broadcastTalent"
+        widget: "list"
+        required: false
+        summary: "{{fields.name}}"
+        fields:
+          - { label: "Nombre", name: "name", widget: "string" }
+          - { label: "Rol", name: "role", widget: "string" }
+          - { label: "Icono (identificador de simple-icons, ej: simple-icons:kick)", name: "icon", widget: "string" }
+          - { label: "URL del canal", name: "href", widget: "string" }
+
+  - name: "partidos"
+    label: "Partidos"
+    label_singular: "Partido"
+    folder: "src/data/matches"
+    extension: "yaml"
+    format: "yaml"
+    create: true
+    delete: true
+    slug: "{{fields.id}}"
+    identifier_field: "id"
+    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}}"
+    fields:
+      - label: "ID interno (no cambiar después de crear el partido)"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones"]
+      - label: "Torneo"
+        name: "tournament"
+        widget: "relation"
+        collection: "torneos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+      - label: "Etapa"
+        name: "stage"
+        widget: "select"
+        options:
+          - { label: "Fase de grupos", value: "groupStage" }
+          - { label: "Ronda inferior", value: "lowerRound" }
+          - { label: "Cuartos de final", value: "quarterfinal" }
+          - { label: "Semifinal", value: "semifinal" }
+          - { label: "Final del bracket superior", value: "upperFinal" }
+          - { label: "Final del bracket inferior", value: "lowerFinal" }
+          - { label: "Final", value: "final" }
+          - { label: "Gran final", value: "grandFinal" }
+          - { label: "Tercer puesto", value: "thirdPlace" }
+      - label: "Fecha y hora (en UTC)"
+        name: "startsAt"
+        widget: "datetime"
+        format: "YYYY-MM-DDTHH:mm:ss[Z]"
+        date_format: "YYYY-MM-DD"
+        time_format: "HH:mm"
+        picker_utc: true
+      - label: "Equipo local"
+        name: "home"
+        widget: "relation"
+        collection: "equipos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+        required: false
+      - label: "Equipo visitante"
+        name: "away"
+        widget: "relation"
+        collection: "equipos"
+        search_fields: ["name"]
+        value_field: "id"
+        display_fields: ["name"]
+        required: false
+      - label: "Marcador (mapas ganados: local, visitante)"
+        name: "score"
+        widget: "list"
+        required: false
+        min: 2
+        max: 2
+        field: { label: "Mapas", name: "maps", widget: "number", value_type: "int" }
+      - label: "Mejor de (Bo)"
+        name: "bestOf"
+        widget: "number"
+        value_type: "int"
+        required: false
+      - label: "Bracket"
+        name: "bracket"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Superior", value: "upper" }
+          - { label: "Inferior", value: "lower" }
+          - { label: "Final", value: "final" }
+      - label: "Ronda"
+        name: "round"
+        widget: "number"
+        value_type: "int"
+        required: false
+      - label: "Grupo"
+        name: "group"
+        widget: "string"
+        required: false
