@@ -243,6 +243,9 @@ body,
   border: 1px solid var(--nx-line-strong) !important;
   border-radius: 0.5rem !important;
 }
+[class*="DateTimeControl"] span {
+  color: var(--nx-muted) !important;
+}
 [class*="DateTimeControl"] button {
   background-color: var(--nx-elev-2) !important;
   color: var(--nx-text) !important;
@@ -353,6 +356,27 @@ input[type="time"] {
 
 [class*="PreviewPaneFrame"] {
   background-color: var(--nx-bg) !important;
+}
+
+[class*="DeleteButton"] {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--nx-muted) !important;
+  text-decoration: underline !important;
+  margin-left: 1.25rem !important;
+}
+[class*="DeleteButton"]:hover {
+  color: #f87171 !important;
+}
+
+[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for^="id-field"]) {
+  opacity: 0.6;
+  margin-top: 1.5rem !important;
+  padding-top: 1.25rem !important;
+  border-top: 1px dashed var(--nx-line-strong) !important;
+}
+[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for^="id-field"]) [class*="FieldLabel"] {
+  font-size: 0.6875rem !important;
 }
 
 @media (max-width: 900px) {

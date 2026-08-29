@@ -135,7 +135,7 @@ var MatchPreview = createClass({
         ),
         h("span", { className: "nx-match-team nx-match-team--away" }, data.get("away") || "Por definir")
       ),
-      h("p", { className: "nx-match-date" }, data.get("startsAt") || "Fecha por definir")
+      h("p", { className: "nx-match-date" }, data.get("startsAt") ? String(data.get("startsAt")) : "Fecha por definir")
     );
   },
 });

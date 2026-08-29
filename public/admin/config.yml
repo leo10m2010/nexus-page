@@ -30,12 +30,8 @@ collections:
     slug: "{{fields.id}}"
     identifier_field: "name"
     summary: "{{name}} ({{tag}})"
+    sortable_fields: ["name"]
     fields:
-      - label: "ID interno (no cambiar después de crear el equipo)"
-        name: "id"
-        widget: "string"
-        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: amaru-gaming"]
-        hint: "Se usa como nombre de archivo. Si lo cambias más tarde, se crea un archivo nuevo en vez de renombrar el existente."
       - label: "Nombre"
         name: "name"
         widget: "string"
@@ -52,7 +48,7 @@ collections:
         required: false
         media_folder: "/public/teams"
         public_folder: "/teams"
-        hint: "Se recomienda subir el logo ya recortado cuadrado, no más de ~200x200px."
+        hint: "Imagen cuadrada, lo más chica posible."
       - label: "Jugadores"
         name: "players"
         widget: "list"
@@ -75,6 +71,11 @@ collections:
             widget: "string"
             required: false
             pattern: ["^[A-Za-z]{2}$", "Código ISO de 2 letras, ej: PE, BR, CO"]
+      - label: "ID interno"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: amaru-gaming"]
+        hint: "No lo cambies después de guardar por primera vez."
 
   - name: "torneos"
     label: "Torneos"
@@ -87,12 +88,8 @@ collections:
     slug: "{{fields.id}}"
     identifier_field: "name"
     summary: "{{name}} — {{status}}"
+    sortable_fields: ["name"]
     fields:
-      - label: "ID interno (no cambiar después de crear el torneo)"
-        name: "id"
-        widget: "string"
-        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: season-one"]
-        hint: "Se usa como nombre de archivo y en la URL del torneo (/competition/ID/)."
       - label: "Nombre"
         name: "name"
         widget: "string"
@@ -238,6 +235,11 @@ collections:
           - { label: "Rol", name: "role", widget: "string" }
           - { label: "Icono (identificador de simple-icons, ej: simple-icons:kick)", name: "icon", widget: "string" }
           - { label: "URL del canal", name: "href", widget: "string" }
+      - label: "ID interno"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones, ej: season-one"]
+        hint: "No lo cambies después de guardar por primera vez. También forma parte de la URL del torneo."
 
   - name: "partidos"
     label: "Partidos"
@@ -249,12 +251,9 @@ collections:
     delete: true
     slug: "{{fields.id}}"
     identifier_field: "id"
-    summary: "{{fields.home}} vs {{fields.away}} — {{fields.stage}}"
+    summary: "{{fields.home}} vs {{fields.away}}"
+    sortable_fields: ["id"]
     fields:
-      - label: "ID interno (no cambiar después de crear el partido)"
-        name: "id"
-        widget: "string"
-        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones"]
       - label: "Torneo"
         name: "tournament"
         widget: "relation"
@@ -327,3 +326,8 @@ collections:
         name: "group"
         widget: "string"
         required: false
+      - label: "ID interno"
+        name: "id"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Solo minúsculas, números y guiones"]
+        hint: "No lo cambies después de guardar por primera vez."
