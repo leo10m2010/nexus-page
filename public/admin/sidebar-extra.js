@@ -15,11 +15,11 @@
     tile.classList.remove("sidebar-active");
     tile.setAttribute("href", "/admin/bracket-editor.html");
 
-    var textNode = null;
-    tile.querySelectorAll("*").forEach(function (el) {
-      if (el.children.length === 0 && el.textContent.trim()) textNode = el;
+    tile.childNodes.forEach(function (node) {
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+        node.textContent = "Ver bracket";
+      }
     });
-    if (textNode) textNode.textContent = "Ver bracket";
 
     tile.addEventListener("click", function (e) {
       e.preventDefault();
