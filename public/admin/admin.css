@@ -94,13 +94,71 @@ body,
   color: var(--nx-muted) !important;
 }
 
+[class*="SidebarNavList"] {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.625rem !important;
+}
+
 [class*="SidebarNavLink"] {
   color: var(--nx-muted) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.5rem !important;
+  padding: 1.125rem 0.5rem !important;
+  border-radius: 0.875rem !important;
+  border: 1px solid var(--nx-line) !important;
+  background-color: var(--nx-elev) !important;
+  background-image: linear-gradient(155deg, var(--nx-elev-2) 0%, var(--nx-elev) 55%) !important;
+  text-align: center !important;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+}
+[class*="SidebarNavLink"]:hover {
+  border-color: var(--nx-accent) !important;
+  color: var(--nx-text) !important;
 }
 [class*="SidebarNavLink"].sidebar-active {
-  color: var(--nx-text) !important;
+  color: var(--nx-accent-lift) !important;
   background-color: var(--nx-elev-2) !important;
-  box-shadow: inset 3px 0 0 var(--nx-accent) !important;
+  border-color: var(--nx-accent) !important;
+  box-shadow: none !important;
+}
+
+[class*="SidebarNavLink"] [class*="IconWrapper"] svg {
+  display: none !important;
+}
+[class*="SidebarNavLink"] [class*="IconWrapper"] {
+  width: 30px !important;
+  height: 30px !important;
+}
+[class*="SidebarNavLink"] [class*="IconWrapper"]::before {
+  content: "";
+  display: block;
+  width: 30px;
+  height: 30px;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+[data-testid="equipos"] [class*="IconWrapper"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5.5V11c0 5.25 3.4 9.14 8 10.5 4.6-1.36 8-5.25 8-10.5V5.5L12 2Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 4 5.5V11c0 5.25 3.4 9.14 8 10.5 4.6-1.36 8-5.25 8-10.5V5.5L12 2Z'/%3E%3C/svg%3E");
+}
+[data-testid="torneos"] [class*="IconWrapper"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2h10v6a5 5 0 0 1-4 4.9V16h3v2H8v-2h3v-3.1A5 5 0 0 1 7 8V2Z'/%3E%3Cpath d='M9 20h6v2H9z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 2h10v6a5 5 0 0 1-4 4.9V16h3v2H8v-2h3v-3.1A5 5 0 0 1 7 8V2Z'/%3E%3Cpath d='M9 20h6v2H9z'/%3E%3C/svg%3E");
+}
+[data-testid="partidos"] [class*="IconWrapper"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3v2H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1V3h-2v2H7V3H5Zm-1 6h16v10H4V9Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3v2H4a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1V3h-2v2H7V3H5Zm-1 6h16v10H4V9Z'/%3E%3C/svg%3E");
 }
 
 [class*="CollectionTopContainer"],
@@ -233,6 +291,16 @@ input[type="time"] {
 
 [class*="FieldLabel"] {
   color: var(--nx-muted) !important;
+  background-color: transparent !important;
+}
+
+[class*="BackStatus"] {
+  color: #6ee7a0 !important;
+}
+
+[class*="ToolbarSectionMeta"] a,
+[class*="ToolbarSubSection"] a {
+  color: var(--nx-accent-lift) !important;
 }
 [class*="ControlHint"] {
   color: var(--nx-muted) !important;
