@@ -5,7 +5,6 @@ import { ru } from "@content/ru";
 
 export const DEFAULT_LOCALE: Locale = "en";
 
-/** Display metadata for the switcher. `name` is written in its own language. */
 export const localeMeta: Record<Locale, { code: string; name: string; htmlLang: string; ogLocale: string }> = {
   en: { code: "EN", name: "English", htmlLang: "en", ogLocale: "en_US" },
   es: { code: "ES", name: "Español", htmlLang: "es", ogLocale: "es_ES" },
@@ -20,7 +19,6 @@ export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (locales as string[]).includes(value);
 }
 
-/** Falls back to the default rather than throwing, so a bad segment still renders. */
 export function useTranslations(locale: string | undefined): Dictionary {
   return dictionaries[isLocale(locale) ? locale : DEFAULT_LOCALE];
 }
@@ -29,19 +27,10 @@ export function resolveLocale(locale: string | undefined): Locale {
   return isLocale(locale) ? locale : DEFAULT_LOCALE;
 }
 
-/** The default locale is served from the root, the others from a prefix. */
 export function localePath(locale: Locale): string {
   return locale === DEFAULT_LOCALE ? "/" : `/${locale}/`;
 }
 
-/**
- * The same page in another language.
- *
- * Switching language is a prefix swap, not a trip to the homepage: from
- * /competition/season-one/ the Spanish version is /es/competition/season-one/.
- * This is what the language menu links to and what the hreflang tags declare,
- * so both always agree.
- */
 export function localizePath(pathname: string, locale: Locale): string {
   const withoutLocale = pathname.replace(new RegExp(`^/(${locales.join("|")})(?=/|$)`), "");
   return `${localePath(locale)}${withoutLocale.replace(/^\//, "")}`;

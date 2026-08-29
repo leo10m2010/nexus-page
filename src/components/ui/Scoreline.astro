@@ -3,11 +3,9 @@ import TeamMark from "@ui/TeamMark.astro";
 import type { ResolvedMatch } from "@lib/competition";
 import { useTranslations } from "@lib/i18n";
 
-/* Shared between the schedule and the results, so a fixture always reads the
-   same way. `score` decides whether it shows a result or a kickoff slot. */
 interface Props {
   match: ResolvedMatch;
-  /** Right-hand content: a time for upcoming, the score for played. */
+
   trailing?: string;
 }
 const { match, trailing } = Astro.props;

@@ -1,8 +1,5 @@
-/* -------------------------------- surface ------------------------------- */
-
 .rule { height: 1px; background: var(--c-line); }
 
-/* A hairline that carries the brand angle: navy fading into gold. */
 .rule-brand {
   height: 1px;
   background: linear-gradient(90deg, var(--c-brand-lift), var(--c-accent) 45%, transparent);
@@ -13,8 +10,6 @@
   border: 1px solid var(--c-line);
 }
 
-/* Chevron field: the 45deg cut of the N mark, repeated as texture.
-   Fixed, pointer-events-none, never on a scrolling container. */
 .chevron-field {
   background-image: repeating-linear-gradient(
     135deg,
@@ -23,11 +18,12 @@
   );
 }
 
-/* Hairline grid.
-   The obvious way to draw one is a line-coloured backdrop showing through a
-   1px gap, but then a row that does not fill its last column leaves a bar of
-   line colour where a cell should be. Here every cell draws its own hairline
-   into the gap instead: two neighbours land on the same pixel and read as one
-   line, and an unfilled cell simply is not there. */
-.grid-hairline { gap: 1px; }
-.grid-hairline > * { outline: 1px solid var(--c-line); }
+.card-tile {
+  border: 1px solid transparent;
+  background-color: var(--c-bg-elev);
+  background-image:
+    radial-gradient(80% 65% at 0% 0%, rgb(var(--c-brand-rgb) / 16%) 0%, transparent 45%),
+    linear-gradient(135deg, rgb(var(--c-brand-lift-rgb) / 65%), var(--c-line-strong) 65%);
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+}

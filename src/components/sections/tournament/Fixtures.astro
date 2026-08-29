@@ -6,10 +6,6 @@ import { dayKey, formatDay, formatTime } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 import { channels } from "@config/site";
 
-/* Every match of this tournament on one list, played and unplayed together,
-   in the order they happen. The bracket answers "who plays whom"; this
-   answers "what is on, and when". Slots with nobody in them yet are left out,
-   because an empty line is not something you can put in a calendar. */
 interface Props {
   id: string;
   matches: ResolvedMatch[];
@@ -35,7 +31,6 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
   <div class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4">
     <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.matches}</h2>
 
-    {/* Where to watch belongs beside what is on, not in a panel of its own. */}
     {
       days.length > 0 && (
         <div class="reveal flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -49,7 +44,7 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
                 href={channel.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="border border-line-strong px-2 py-1 font-display text-[0.6875rem] font-bold tracking-[0.14em] uppercase transition-colors hover:border-accent hover:text-accent-lift"
+                class="rounded-control border border-line-strong px-2 py-1 font-display text-[0.6875rem] font-bold tracking-[0.14em] uppercase transition-colors hover:border-accent hover:text-accent-lift"
               >
                 {channel.code}
               </a>
@@ -69,9 +64,9 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
           <div class="reveal" style={`--reveal-delay:${i * 60}ms`}>
             <h3 class="display-sm text-sm text-accent-lift">{formatDay(group.date, locale)}</h3>
 
-            <ul class="mt-4 flex flex-col gap-px bg-line">
+            <ul class="mt-4 flex flex-col gap-3">
               {group.matches.map((match) => (
-                <li class="bg-elev px-5 py-5 sm:px-7">
+                <li class="card-tile rounded-card px-5 py-5 sm:px-7">
                   <p class="mb-3 flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
                     <span>{c.stage[match.stage]}</span>
                     {match.group && (
@@ -86,8 +81,7 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
                         <span>{c.bestOf(match.bestOf)}</span>
                       </>
                     )}
-                    {/* A played match keeps its kickoff time here, since the
-                        scoreline itself has been taken over by the score. */}
+
                     {match.score && (
                       <span class="ml-auto normal-case tracking-normal">
                         {formatTime(match.startsAt, locale)}

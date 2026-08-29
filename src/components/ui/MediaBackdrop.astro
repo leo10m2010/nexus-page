@@ -2,20 +2,16 @@
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 
-/* A full-bleed photographic backdrop with a scrim sized to carry type.
-   Scrim values are hard-coded dark rather than tokenised on purpose: a scrim
-   exists to keep light text legible over a photo, and a photo does not flip
-   with the theme. Pair with `.on-media` on the content that sits above it. */
 interface Props {
   src: ImageMetadata;
   alt?: string;
   sizes?: string;
   priority?: boolean;
-  /** object-position, e.g. "58% center". Anchors the subject through crops. */
+
   position?: string;
-  /** `stage` keeps the top of the frame clear and darkens the lower half. */
+
   scrim?: "stage" | "bottom" | "even";
-  /** Navy wash strength over the photo, 0 to 100. */
+
   tint?: number;
   class?: string;
 }
@@ -33,7 +29,6 @@ const {
 
 const D = "6 8 15";
 const scrims: Record<string, string> = {
-  // Content sits in the lower band; the upper frame stays readable as a photo.
   stage: `linear-gradient(to bottom, rgb(${D} / 0.72) 0%, rgb(${D} / 0.12) 15%, transparent 26%),
           linear-gradient(to top, rgb(${D} / 0.96) 0%, rgb(${D} / 0.9) 20%, rgb(${D} / 0.68) 38%, rgb(${D} / 0.28) 60%, transparent 84%)`,
   bottom: `linear-gradient(to top, rgb(${D} / 0.95) 0%, rgb(${D} / 0.8) 26%, rgb(${D} / 0.4) 52%, rgb(${D} / 0.1) 76%)`,

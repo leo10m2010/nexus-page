@@ -10,11 +10,6 @@ const { heading, lede, pillars } = t.vision;
 const id = "vision";
 const [lead, ...rest] = pillars;
 
-/* Three pillars, three cells, deliberately unequal weight. The lead cell is
-   photographic; the other two carry texture so the grid has real background
-   variety rather than three identical text tiles — just the one texture,
-   not a second radial-gradient blob repeating the same trick Roadmap and
-   Contact each already do once with more purpose. */
 const restStyles = ["chevron-field", ""];
 ---
 
@@ -22,9 +17,9 @@ const restStyles = ["chevron-field", ""];
   <h2 class="display reveal max-w-[20ch] text-[clamp(2rem,4.6vw,3.75rem)]">{heading}</h2>
   <p class="lede reveal mt-7" style="--reveal-delay:80ms">{lede}</p>
 
-  <div class="mt-14 grid gap-px bg-line lg:grid-cols-5 lg:grid-rows-2">
+  <div class="mt-14 grid gap-4 lg:grid-cols-5 lg:grid-rows-2">
     <article
-      class="on-media relative flex min-h-[420px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-3 lg:row-span-2"
+      class="on-media relative flex min-h-[420px] flex-col justify-end overflow-hidden rounded-card border border-line-strong bg-elev p-8 sm:p-10 lg:col-span-3 lg:row-span-2"
     >
       <MediaBackdrop
         {...media.broadcastBooth}
@@ -44,7 +39,7 @@ const restStyles = ["chevron-field", ""];
     {
       rest.map((p, i) => (
         <article
-          class={`relative flex min-h-[212px] flex-col justify-end overflow-hidden bg-elev p-8 sm:p-10 lg:col-span-2 ${restStyles[i]!}`}
+          class={`relative flex min-h-[212px] flex-col justify-end overflow-hidden rounded-card border border-line-strong bg-elev p-8 sm:p-10 lg:col-span-2 ${restStyles[i]!}`}
         >
           {i === 1 && (
             <NexusMark class="pointer-events-none absolute -bottom-8 -right-6 h-40 opacity-[0.07]" />

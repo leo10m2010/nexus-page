@@ -9,6 +9,7 @@ import Participants from "@sections/tournament/Participants.astro";
 import Standings from "@sections/tournament/Standings.astro";
 import Bracket from "@sections/tournament/Bracket.astro";
 import Fixtures from "@sections/tournament/Fixtures.astro";
+import Talent from "@sections/tournament/Talent.astro";
 import { site } from "@config/site";
 import { features } from "@config/features";
 import { useTranslations, resolveLocale } from "@lib/i18n";
@@ -21,15 +22,6 @@ import {
   getTournament,
 } from "@lib/competition";
 
-/**
- * One tournament, in the order you would ask about it: what it is, how it
- * pays, how it is played, who is in it, how the groups stand, the bracket,
- * the matches.
- *
- * A section is only rendered when there is data behind it, and the tab bar is
- * built from the same list, so a tournament that only has dates and a field
- * still produces a page that reads as finished rather than as full of holes.
- */
 interface Props {
   id: string;
 }
@@ -49,6 +41,7 @@ const [participants, groups, bracket, matches] = await Promise.all([
 
 const phases = tournament.phases ?? [];
 const hasMatches = matches.some((m) => m.home && m.away);
+const talent = tournament.broadcastTalent ?? [];
 
 const sections = [
   { id: "prizes", label: c.info.prizePool, show: tournament.prizePool != null },
@@ -57,6 +50,7 @@ const sections = [
   { id: "standings", label: c.section.standings, show: groups.length > 0 },
   { id: "bracket", label: c.section.bracket, show: bracket.length > 0 },
   { id: "matches", label: c.section.matches, show: hasMatches },
+  { id: "talent", label: c.section.talent, show: talent.length > 0 },
 ].filter((s) => s.show);
 
 const description = [
@@ -90,6 +84,7 @@ const description = [
     {groups.length > 0 && <Standings id="standings" groups={groups} />}
     {bracket.length > 0 && <Bracket id="bracket" sides={bracket} />}
     {hasMatches && <Fixtures id="matches" matches={matches} />}
+    {talent.length > 0 && <Talent id="talent" tournament={tournament} />}
   </main>
   <Footer />
 </Base>

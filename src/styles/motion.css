@@ -1,9 +1,5 @@
-/* -------------------------------- motion -------------------------------- */
-
 @media (prefers-reduced-motion: no-preference) {
-  /* Progressive enhancement: content is visible by default and only hides
-     once the head script has confirmed JS is running. If the observer never
-     fires, or JS fails outright, the page still reads. */
+
   .js-reveal .reveal {
     opacity: 0;
     transform: translateY(22px);

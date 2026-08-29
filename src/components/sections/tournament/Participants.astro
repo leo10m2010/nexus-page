@@ -6,9 +6,6 @@ import type { Participant, Tournament } from "@lib/competition";
 import { formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
-/* The field. One card per team, in seeding order, with how it got in and,
-   once the tournament is over, where it finished. A team without a roster in
-   teams.yaml simply shows no roster: no invented names, no empty rows. */
 interface Props {
   id: string;
   tournament: Tournament;
@@ -28,10 +25,10 @@ const currency = tournament.prizePool?.currency;
     <p class="reveal text-sm text-muted">{c.teamCount(participants.length)}</p>
   </div>
 
-  <ul class="grid-hairline mt-10 grid md:grid-cols-2 xl:grid-cols-4">
+  <ul class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     {
       participants.map((entry) => (
-        <li class="min-w-0 flex flex-col bg-elev p-6">
+        <li class="card-tile min-w-0 flex flex-col rounded-card p-6">
           <div class="flex items-start gap-4">
             <TeamMark team={entry.team} size={56} />
             <div class="min-w-0 flex-1">
@@ -44,12 +41,12 @@ const currency = tournament.prizePool?.currency;
 
           <div class="mt-4 flex flex-wrap gap-2">
             {entry.via && (
-              <span class="border border-line-strong px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
+              <span class="rounded-control border border-line-strong px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
                 {c.qualification[entry.via]}
               </span>
             )}
             {entry.payout && currency && (
-              <span class="border border-accent px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-accent-lift uppercase">
+              <span class="rounded-control border border-accent px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-accent-lift uppercase">
                 {c.place(entry.payout.place)}
                 <span class="px-1">/</span>
                 {formatMoney(entry.payout.amount, currency, locale)}

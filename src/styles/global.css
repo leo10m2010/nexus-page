@@ -1,5 +1,3 @@
-/* Style entrypoint. Order matters: tokens define the variables every other
-   layer reads, and CSS @import must lead the file. */
 @import "tailwindcss";
 @import "./tokens.css";
 @import "./base.css";

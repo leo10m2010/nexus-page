@@ -5,14 +5,6 @@ import type { BracketRound, BracketSide, ResolvedMatch } from "@lib/competition"
 import { formatDate } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
-/* The bracket, drawn straight from matches.yaml: a match belongs to a column
-   because it says which bracket and which round it is in, not because of
-   where it sits in the file.
-
-   Elbows are only drawn where a round actually feeds the next one, which is
-   when the next round has half the matches. In the lower bracket, where a
-   round instead takes on the teams dropping out of the upper bracket, the
-   columns stand on their own and no line is invented between them. */
 interface Props {
   id: string;
   sides: BracketSide[];
@@ -23,7 +15,6 @@ const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const c = t.competition;
 
-/** Two matches per box, so the pair can carry the elbow that joins them. */
 const pairs = (matches: ResolvedMatch[]): ResolvedMatch[][] =>
   matches.reduce<ResolvedMatch[][]>((out, match, i) => {
     if (i % 2 === 0) out.push([match]);
@@ -37,8 +28,6 @@ const feeds = (round: BracketRound, next: BracketRound | undefined): boolean =>
 const heading = (round: BracketRound): string =>
   round.stage ? c.stage[round.stage] : c.round(round.round);
 
-/* A one-column side, like the grand final, already says its name above the
-   column. Repeating it on the column would be the same word twice. */
 const repeatsSide = (side: BracketSide, round: BracketRound): boolean =>
   sides.length > 1 && side.rounds.length === 1 && heading(round) === c.bracketSide[side.side];
 
@@ -79,9 +68,7 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
                             {(["home", "away"] as const).map((seat) => (
                               <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
                                 <TeamMark team={match[seat]} size={20} />
-                                {/* An empty line reads as a slot waiting to
-                                    be filled. Writing "to be decided" into
-                                    every one of them reads as noise. */}
+
                                 <span class="truncate">{match[seat]?.name}</span>
                                 <span class="bracket-score tabular-nums">
                                   {match.score ? match.score[seat === "home" ? 0 : 1] : "-"}
@@ -125,9 +112,6 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
 
   .bracket-body { display: flex; flex: 1; flex-direction: column; }
 
-  /* Every pair takes an equal share of the column, and its two matches sit at
-     a quarter and three quarters of it. That is what makes the midpoint of a
-     pair land exactly on the match it feeds in the next column. */
   .bracket-pair {
     position: relative;
     display: flex;
@@ -136,14 +120,11 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
     justify-content: space-around;
   }
 
-  /* The margin is what keeps two boxes apart in the first round, where the
-     column is full and space-around has no slack left to distribute. It is
-     equal top and bottom, so the centres stay at a quarter and three quarters
-     of the pair and the elbows still land on them. */
   .bracket-match {
     position: relative;
     margin-block: 0.4375rem;
     border: 1px solid var(--c-line);
+    border-radius: var(--radius-control);
     background: var(--c-bg-elev);
   }
 
@@ -174,8 +155,6 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
   .bracket-score { margin-left: auto; font-variant-numeric: tabular-nums; }
   .is-winner .bracket-score { color: var(--c-accent-lift); }
 
-  /* Connectors, drawn in the 2.5rem gap: a stub out of each match, a vertical
-     line joining the pair, and a stub from its midpoint into the next round. */
   .is-feeding .bracket-match::after,
   .is-feeding .bracket-pair::after,
   .is-feeding .bracket-pair.is-pair::before {

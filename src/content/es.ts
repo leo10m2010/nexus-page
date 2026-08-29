@@ -1,12 +1,7 @@
 import type { Dictionary } from "@types";
 
-/** 1.º, 2.º, 3.º. Solo se usa para los puestos del reparto de premios. */
 const place = (n: number): string => `${n}.º`;
 
-/**
- * Spanish. `headlineClamp` is lower than English on purpose: the translated
- * headline is wider and would break the two-line rule at 1280px otherwise.
- */
 export const es: Dictionary = {
   nav: { home: "Inicio", about: "Quiénes somos", vision: "Visión", contact: "Contacto" },
 
@@ -119,6 +114,7 @@ export const es: Dictionary = {
       standings: "Clasificación",
       bracket: "Cuadro",
       matches: "Partidos",
+      talent: "Talento en transmisión",
     },
     info: {
       organizer: "Organiza",

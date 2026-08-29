@@ -1,12 +1,3 @@
-/* ---------------------------------------------------------------
-   NEXUS SERIES - design tokens
-   Palette lock: navy #1d3c87 (structural brand) + gold #ae7c32
-   (single accent) + off-white #eeedee. Taken from the brand SVGs.
-   Shape lock: radius 0 everywhere. The mark is angular, the UI is too.
-   Theme: dual. Dark is the default (the primary logo is drawn for
-   dark, and the product lives on broadcast surfaces).
---------------------------------------------------------------- */
-
 :root {
   color-scheme: dark;
 
@@ -18,7 +9,9 @@
   --c-text: #eeedee;
   --c-text-muted: #9aa3b8;
   --c-brand: #1d3c87;
+  --c-brand-rgb: 29 60 135;
   --c-brand-lift: #4470d8;
+  --c-brand-lift-rgb: 68 112 216;
   --c-accent: #ae7c32;
   --c-accent-lift: #d2a355;
   --c-on-accent: #06080f;
@@ -39,7 +32,9 @@
   --c-text: #10131c;
   --c-text-muted: #4a5266;
   --c-brand: #1d3c87;
+  --c-brand-rgb: 29 60 135;
   --c-brand-lift: #1d3c87;
+  --c-brand-lift-rgb: 29 60 135;
   --c-accent: #8a6023;
   --c-accent-lift: #6f4c1b;
   --c-on-accent: #fafaf9;
@@ -60,7 +55,9 @@
     --c-text: #10131c;
     --c-text-muted: #4a5266;
     --c-brand: #1d3c87;
+    --c-brand-rgb: 29 60 135;
     --c-brand-lift: #1d3c87;
+    --c-brand-lift-rgb: 29 60 135;
     --c-accent: #8a6023;
     --c-accent-lift: #6f4c1b;
     --c-on-accent: #fafaf9;
@@ -88,5 +85,7 @@
   --font-body: "Inter Tight Variable", "Inter Tight", ui-sans-serif, system-ui, sans-serif;
 
   --radius-none: 0px;
+  --radius-control: 0.5rem;
+  --radius-card: 0.875rem;
   --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
 }

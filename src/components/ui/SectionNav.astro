@@ -1,10 +1,6 @@
 ---
 import { NAV_HEIGHT } from "@config/nav";
 
-/* In-page tab bar for a long document: the sections of a tournament page.
-   It sticks under the site header and marks which section you are reading,
-   which is the whole reason a page this long stays navigable. Anchors are
-   plain links, so it works with JavaScript off; only the marking is scripted. */
 interface Props {
   items: { id: string; label: string }[];
   ariaLabel: string;
@@ -69,8 +65,6 @@ const { items, ariaLabel } = Astro.props;
       }
     };
 
-    /* The band is the top third of the viewport: a section counts as the one
-       being read once its heading reaches it, not when it first peeks in. */
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries

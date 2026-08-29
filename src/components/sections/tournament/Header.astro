@@ -6,10 +6,6 @@ import { formatDateRange, formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale, DEFAULT_LOCALE } from "@lib/i18n";
 import { NAV_HEIGHT } from "@config/nav";
 
-/* The masthead of a tournament page. Everything here is a fact you would want
-   before deciding to read on: what it is, whether it is running, when, where,
-   for how much. The same facts appear again in the panel further down, in a
-   form you can scan row by row; up here they are one line of headline data. */
 interface Props {
   tournament: Tournament;
 }
@@ -21,8 +17,6 @@ const c = t.competition;
 
 const backHref = `${locale === DEFAULT_LOCALE ? "" : `/${locale}`}/competition/`;
 
-/* A place when there is one, otherwise how it is played. Each carries its own
-   label, so the cell never says "Location: Online". */
 const where = tournament.location
   ? { label: c.info.location, value: tournament.location }
   : tournament.venue
@@ -42,21 +36,17 @@ const facts = [
   where,
 ].filter((f): f is { label: string; value: string } => f.value !== null);
 
-/* "Season One" over a title that reads NEXUS SERIES SEASON ONE is the same
-   words twice. The label earns its place only when it adds one. */
 const series =
   tournament.series && !tournament.name.toLowerCase().includes(tournament.series.toLowerCase())
     ? tournament.series
     : null;
 
-/* A tournament without a prize pool has one fact fewer, and the strip has to
-   lose a column with it rather than end on an empty one. */
 const columns =
   { 4: "lg:grid-cols-4", 5: "lg:grid-cols-5" }[facts.length] ?? "lg:grid-cols-5";
 ---
 
 <Section class="relative overflow-hidden border-b border-line">
-  {/* The 45deg cut of the N mark, used as a quiet field behind the title. */}
+
   <div class="chevron-field pointer-events-none absolute inset-0 opacity-40" aria-hidden="true"></div>
 
   <div class="relative" style={`padding-top:${NAV_HEIGHT}px`}>

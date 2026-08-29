@@ -3,16 +3,12 @@ import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import NexusMark from "./NexusMark.astro";
 
-/* A framed media area. Pass an imported image from `src/assets/` and Astro
-   emits responsive WebP with intrinsic dimensions (no layout shift). With no
-   `src` it falls back to a quiet brand surface, so the layout still reads as
-   intentional while a photo is missing. */
 interface Props {
   src?: ImageMetadata;
   alt?: string;
   sizes?: string;
   priority?: boolean;
-  /** Navy wash strength over the photo, 0 to 100. Ties stock to the palette. */
+
   tint?: number;
   class?: string;
 }
@@ -42,8 +38,7 @@ const {
         decoding={priority ? "sync" : "async"}
         {...(priority ? { fetchpriority: "high" } : {})}
       />
-      {/* Navy wash only. A --c-bg scrim would invert with the theme and
-          haze the foot of a dark photo on the light palette. */}
+
       <div
         class="absolute inset-0"
         aria-hidden="true"

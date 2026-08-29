@@ -14,27 +14,15 @@ import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-/* Only linked while the page actually exists in the build. */
 const homePath = localePath(locale);
 const competitionHref = `${homePath}competition/`.replace("//", "/");
 
-/* `#home`, `#about`... only scroll when you are already on the homepage:
-   from /competition/season-one/ they are dead clicks, because that page has
-   no element with those ids. Prefixing with the homepage path outside the
-   homepage turns them back into a real link there, then a scroll. */
 const isHome = Astro.url.pathname === homePath;
 const sectionHref = (hash: string) => (isHome ? hash : `${homePath}${hash}`);
 
-/* The same season data the homepage roadmap reads, so hovering "Torneos"
-   never says something the page it links to would contradict. Every page
-   pays this cost at build time only: it is a handful of already-cached
-   content-collection reads, not a request. */
 const stages = showCompetition ? await getRoadmapStages(locale) : [];
 ---
 
-{/* Marks the very top of the document in normal flow (the header itself is
-    fixed, so it cannot be the thing an observer watches). Scrolling past it
-    is what tells the header to deepen. */}
 <div id="nav-sentinel" class="h-px w-px" aria-hidden="true"></div>
 
 <header
@@ -76,14 +64,8 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
               />
             </a>
 
-            {/* The season, one hover away: BLAST and ESL both put live and
-                upcoming tournaments directly in the nav instead of behind a
-                plain link, so a visitor never has to guess whether anything
-                is on before clicking through. The padding-top is a hover
-                bridge — without it the pointer leaving the link for the
-                panel below closes the panel on the way there. */}
             <div class="tournament-panel absolute left-1/2 top-full z-10 w-[23rem] -translate-x-1/2 pt-4">
-              <div class="border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
+              <div class="rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
                 <p class="eyebrow">{t.roadmap.eyebrow}</p>
                 <ul class="mt-4 flex flex-col divide-y divide-line">
                   {
@@ -96,7 +78,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
                             class={`flex items-center gap-3 py-3 ${stage.href ? "panel-row transition-colors" : ""}`}
                           >
                             <span
-                              class={`grid h-8 w-8 shrink-0 place-items-center border font-display text-xs font-bold ${
+                              class={`grid h-8 w-8 shrink-0 place-items-center rounded-control border font-display text-xs font-bold ${
                                 stage.href
                                   ? "border-accent bg-accent text-on-accent"
                                   : "border-accent/40 bg-bg text-accent"
@@ -141,12 +123,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
       <LocaleSwitcher />
       <ThemeToggle />
 
-      {/* The wrapper owns visibility: `.btn` sets display and is declared after
-          Tailwind's `hidden`, so the utility would lose on the anchor itself.
-          Matches the hamburger's own breakpoint (not `sm:`): the mobile menu
-          already carries its own copy of this CTA, so showing this one too
-          anywhere below `lg` just crowds the header with a redundant button
-          next to the hamburger that already opens it. */}
       <span class="hidden lg:block">
         <Button {...ctas.partnership} label={t.cta.partnership} class="!py-[0.6875rem]" />
       </span>
@@ -156,7 +132,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
         data-menu-toggle
         data-label-open={t.a11y.openMenu}
         data-label-close={t.a11y.closeMenu}
-        class="menu-toggle relative grid size-10 place-items-center border border-line text-ink lg:hidden"
+        class="menu-toggle relative grid size-10 place-items-center rounded-control border border-line text-ink lg:hidden"
         aria-label={t.a11y.openMenu}
         aria-expanded="false"
         aria-controls="mobile-menu"
@@ -167,10 +143,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
     </div>
   </nav>
 
-  {/* Always in the DOM, collapsed to zero height by grid-rows: a `[fr]` track
-      is one of the few things that can transition smoothly, which `height:
-      auto` or `hidden` cannot. `inert` keeps a collapsed menu out of tab
-      order instead of leaving invisible links reachable by keyboard. */}
   <div id="mobile-menu" class="mobile-menu grid lg:hidden" inert>
     <div class="overflow-hidden">
       <ul class="flex flex-col gap-1 border-t border-line bg-elev px-5 pt-6">
@@ -201,7 +173,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
 </header>
 
 <style>
-  /* Underline grows from the left on hover: cheap, motivated feedback. */
+
   .nav-link { position: relative; padding-block: 0.35rem; white-space: nowrap; }
   .nav-link::after {
     content: "";
@@ -216,8 +188,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
   }
   .nav-link:hover::after { transform: scaleX(1); }
 
-  /* Closed by default via opacity + a slight rise, not `display`, so the
-     hover-out has something to animate back to instead of just vanishing. */
   .tournament-panel {
     opacity: 0;
     transform: translate(-50%, -6px);
@@ -234,9 +204,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
   .panel-arrow { display: inline-block; transition: transform 0.25s var(--ease-out-quint); }
   .panel-cta:hover .panel-arrow { transform: translateX(3px); }
 
-  /* Sits translucent over the hero until the page actually scrolls, then
-     deepens to a solid, shadowed bar: the header earns its separation only
-     once there is content sliding underneath it to separate from. */
   .site-header {
     background: var(--c-scrim);
     box-shadow: 0 12px 30px -18px transparent;
@@ -250,8 +217,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
   .brand { transition: transform 0.25s var(--ease-out-quint); }
   .brand:active { transform: scale(0.96); }
 
-  /* Hamburger becomes a close mark by cross-fading and rotating into it,
-     rather than the icon just being swapped instantly underneath the tap. */
   .menu-toggle .icon-open,
   .menu-toggle .icon-close {
     position: absolute;
@@ -261,9 +226,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
   .menu-toggle[aria-expanded="true"] .icon-open { opacity: 0; transform: rotate(45deg) scale(0.6); }
   .menu-toggle[aria-expanded="true"] .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
 
-  /* The `[fr]` grid-row trick: a track sized in fractions is one of the very
-     few "auto height" values a browser will actually transition, which is
-     why this is not just `hidden` swapped for `max-height`. */
   .mobile-menu {
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.35s var(--ease-out-quint);
@@ -290,8 +252,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
   const setMenu = (open: boolean) => {
     if (!menu || !btn) return;
     menu.classList.toggle("is-open", open);
-    // `inert` (not `hidden`) so the collapsed panel keeps transitioning
-    // instead of vanishing instantly, while staying out of tab order.
     menu.toggleAttribute("inert", !open);
     btn.setAttribute("aria-expanded", String(open));
     const label = open ? btn.dataset.labelClose : btn.dataset.labelOpen;
@@ -306,9 +266,6 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
     if (e.key === "Escape") setMenu(false);
   });
 
-  /* The header deepens once the page has actually scrolled. A sentinel plus
-     IntersectionObserver, not a scroll listener, matching how reveal.ts
-     watches the page: cheaper, and it never runs on every scroll frame. */
   const header = document.querySelector<HTMLElement>(".site-header");
   const sentinel = document.getElementById("nav-sentinel");
   if (header && sentinel && "IntersectionObserver" in window) {

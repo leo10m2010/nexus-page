@@ -1,6 +1,5 @@
 ---
-/* The Nexus mark, inlined from public/logos/icono-normal.svg so the two
-   fills can follow the theme instead of being baked into the file. */
+
 interface Props {
   class?: string;
 }
@@ -21,9 +20,7 @@ const { class: klass = "" } = Astro.props;
 </svg>
 
 <style>
-  /* No width/height here on purpose: Astro scopes this rule with an extra
-     attribute selector, which outranks the Tailwind sizing utilities passed
-     in via `class`. Sizing stays with the caller. */
+
   .nexus-mark {
     --mark-brand: var(--c-brand-lift);
     --mark-body: var(--c-text);

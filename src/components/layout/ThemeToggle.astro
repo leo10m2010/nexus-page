@@ -8,7 +8,7 @@ const t = useTranslations(Astro.currentLocale);
 <button
   type="button"
   data-theme-toggle
-  class="grid size-10 place-items-center border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
+  class="grid size-10 place-items-center rounded-control border border-line text-muted transition-colors hover:border-line-strong hover:text-ink"
   aria-label={t.a11y.switchTheme}
 >
   <Icon name="ph:sun-bold" class="dark-only size-[18px]" />
@@ -16,7 +16,7 @@ const t = useTranslations(Astro.currentLocale);
 </button>
 
 <style>
-  /* Icon visibility mirrors the token strategy in tokens.css. */
+
   :global(:root) .dark-only { display: block; }
   :global(:root) .light-only { display: none; }
   :global(:root[data-theme="light"]) .dark-only { display: none; }

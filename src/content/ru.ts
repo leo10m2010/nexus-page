@@ -1,13 +1,7 @@
 import type { Dictionary } from "@types";
 
-/** 1-е, 2-е, 3-е. Используется только для призовых мест. */
 const place = (n: number): string => `${n}-е`;
 
-/**
- * Russian. Sentences are phrased so the copula is never omitted, which keeps
- * the page free of em-dashes without producing ungrammatical Russian.
- * Worth a native review before launch.
- */
 export const ru: Dictionary = {
   nav: { home: "Главная", about: "О нас", vision: "Видение", contact: "Контакты" },
 
@@ -120,6 +114,7 @@ export const ru: Dictionary = {
       standings: "Таблица",
       bracket: "Сетка",
       matches: "Матчи",
+      talent: "Ведущие эфира",
     },
     info: {
       organizer: "Организатор",

@@ -1,13 +1,11 @@
 import type { Dictionary } from "@types";
 
-/** 1st, 2nd, 3rd, 4th. Only ever used for prize places, so integers only. */
 const place = (n: number): string => {
   const teens = n % 100;
   const suffix = teens >= 11 && teens <= 13 ? "th" : (["th", "st", "nd", "rd"][n % 10] ?? "th");
   return `${n}${suffix}`;
 };
 
-/** Source language. Every string is carried over verbatim from nexusseries.org. */
 export const en: Dictionary = {
   nav: { home: "Home", about: "About us", vision: "Vision", contact: "Contact" },
 
@@ -120,6 +118,7 @@ export const en: Dictionary = {
       standings: "Standings",
       bracket: "Bracket",
       matches: "Matches",
+      talent: "Broadcast Talent",
     },
     info: {
       organizer: "Organizer",

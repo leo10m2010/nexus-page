@@ -1,8 +1,3 @@
-/* ------------------------------- on media -------------------------------- */
-
-/* Content sitting on top of photography. Photographs do not flip with the
-   theme, so neither can the type over them: these tokens pin to the
-   light-on-dark set in both modes. Scoped, never global. */
 .on-media {
   --c-text: #eeedee;
   --c-text-muted: #bcc3d2;

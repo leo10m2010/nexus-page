@@ -1,10 +1,5 @@
 import type { Channel, ContactRoute, CtaIntent, Cta, Link } from "@types";
 
-/**
- * Single source of truth for anything that identifies Nexus Series.
- * Nothing below should be retyped inside a component: if a handle or a URL
- * changes, it changes here once.
- */
 export const site = {
   name: "Nexus Series",
   url: "https://nexusseries.org",
@@ -24,17 +19,12 @@ export const social = {
   xHandle: "@nexusmedia77",
 } as const;
 
-/** Official broadcast channels, one per language. */
 export const channels: Channel[] = [
   { code: "ES", language: "Spanish", href: "https://www.twitch.tv/nexusmedia_es" },
   { code: "EN", language: "English", href: "https://www.twitch.tv/nexusmedia_en" },
   { code: "RU", language: "Russian", href: "https://www.twitch.tv/nexusmedia_ru" },
 ];
 
-/**
- * One entry per intent. The label comes from the active dictionary, so the
- * same action can never appear under two different names within a language.
- */
 export const ctas = {
   community: {
     intent: "community",
@@ -77,5 +67,4 @@ export const socialLinks: (Link & { icon: string })[] = [
   { icon: "simple-icons:twitch", label: "Twitch", href: channels[1]!.href, external: true },
 ];
 
-/** Everything the org needs to be discoverable, derived not retyped. */
 export const sameAs: string[] = [social.x, social.discord, ...channels.map((c) => c.href)];

@@ -13,8 +13,6 @@ import Contact from "@sections/Contact.astro";
 import { site } from "@config/site";
 import { useTranslations } from "@lib/i18n";
 
-/* One page body, rendered by every locale route. Sections read the active
-   dictionary from Astro.currentLocale, so nothing is threaded through props. */
 const t = useTranslations(Astro.currentLocale);
 ---
 

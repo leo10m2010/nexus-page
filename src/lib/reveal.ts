@@ -1,11 +1,3 @@
-/* Scroll reveal via IntersectionObserver. No scroll listeners, no library.
-   Elements reveal once and are then unobserved.
-
-   The `.reveal` hidden state is armed by an inline head script that adds
-   `.js-reveal` to <html>, so the page is readable when JS is off. The
-   watchdog below covers the other failure mode: JS ran, armed the hidden
-   state, but the observer never reports (offscreen or non-composited
-   documents do this). Either way the content cannot get stuck invisible. */
 const root = document.documentElement;
 const items = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
 

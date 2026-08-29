@@ -1,15 +1,3 @@
-/* --------------------------------- base --------------------------------- */
-
-/* Shape lock: radius 0 everywhere, to match the angular mark. Enforced by not
-   reaching for rounded utilities rather than by a global !important override.
-   Only UA-styled controls need an explicit reset. */
-button,
-input,
-select,
-textarea {
-  border-radius: 0;
-}
-
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 5.5rem;

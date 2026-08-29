@@ -1,11 +1,10 @@
 ---
-/* Page section shell: owns the anchor, the max width, the gutters and the
-   vertical rhythm, so sections only describe their own content. */
+
 interface Props {
   id?: string;
   labelledby?: string;
   ariaLabel?: string;
-  /** `none` lets a section run full bleed and manage its own padding. */
+
   spacing?: "none" | "tight" | "default";
   bordered?: boolean;
   class?: string;

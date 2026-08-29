@@ -22,17 +22,16 @@ const locale = Astro.currentLocale;
     days.length === 0 ? (
       <p class="lede reveal mt-8">{t.competition.empty}</p>
     ) : (
-      /* Grouped by day rather than one hairline per row: the date is the
-         organising idea, so it gets the heading and the rows sit under it. */
+
       <div class="mt-10 flex flex-col gap-10">
         {days.map((group) => (
           <div>
             <h3 class="display-sm text-sm text-accent-lift">
               {formatDay(group.date, locale)}
             </h3>
-            <ul class="mt-4 flex flex-col gap-px bg-line">
+            <ul class="mt-4 flex flex-col gap-3">
               {group.matches.map((match) => (
-                <li class="bg-elev px-5 py-5 sm:px-7">
+                <li class="card-tile rounded-card px-5 py-5 sm:px-7">
                   <p class="mb-3 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
                     {match.tournament.name} <span class="px-1">/</span>{" "}
                     {t.competition.stage[match.stage]}

@@ -1,0 +1,58 @@
+---
+import { Icon } from "astro-icon/components";
+import Section from "@ui/Section.astro";
+import type { Tournament } from "@lib/competition";
+import { useTranslations, resolveLocale } from "@lib/i18n";
+
+interface Props {
+  id: string;
+  tournament: Tournament;
+}
+const { id, tournament } = Astro.props;
+const talent = tournament.broadcastTalent ?? [];
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const c = t.competition;
+---
+
+<Section id={id} bordered>
+  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.talent}</h2>
+
+  <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      talent.map((person) => (
+        <li>
+          <a
+            href={person.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="card-tile group flex h-full flex-col overflow-hidden rounded-card"
+          >
+            {person.photo && (
+              <img
+                src={person.photo}
+                alt=""
+                width="640"
+                height="400"
+                loading="lazy"
+                decoding="async"
+                class="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            )}
+            <div class="flex items-center gap-3 p-5">
+              <Icon
+                name={person.icon}
+                class="size-5 shrink-0 text-muted transition-colors group-hover:text-accent-lift"
+              />
+              <span class="min-w-0">
+                <span class="display-sm block truncate text-base">{person.name}</span>
+                <span class="block text-[0.8125rem] text-muted">{person.role}</span>
+              </span>
+            </div>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>

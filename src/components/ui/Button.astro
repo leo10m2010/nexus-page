@@ -2,8 +2,6 @@
 import { Icon } from "astro-icon/components";
 import type { Link } from "@types";
 
-/* The only way a call to action is rendered. Variants live here so a CTA
-   cannot drift in padding, casing or hover behaviour between sections. */
 interface Props extends Link {
   variant?: "primary" | "ghost";
   icon?: string;

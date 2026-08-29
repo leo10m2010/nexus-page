@@ -15,15 +15,12 @@ const tournaments = await getTournaments();
     {t.competition.tournaments}
   </h2>
 
-  {/* The running tournament takes the wide cell. The grid has exactly as many
-      cells as there are tournaments. Each card is one link: the whole card is
-      the target, so there is no small "read more" to aim at. */}
-  <div class="grid-hairline mt-10 grid md:grid-cols-2">
+  <div class="mt-10 grid gap-4 md:grid-cols-2">
     {
       tournaments.map((tour, i) => (
         <a
           href={tournamentPath(tour.id, locale)}
-          class={`card flex flex-col justify-between gap-8 bg-elev p-8 transition-colors sm:p-10 ${
+          class={`card card-tile flex flex-col justify-between gap-8 rounded-card p-8 transition-colors sm:p-10 ${
             i === 0 ? "md:col-span-2" : ""
           }`}
         >
@@ -87,7 +84,7 @@ const tournaments = await getTournaments();
 </Section>
 
 <style>
-  .card:hover { background: var(--c-bg-elev-2); }
+  .card:hover { border-color: var(--c-accent); }
   .card-arrow {
     display: inline-block;
     margin-left: 0.5rem;

@@ -4,13 +4,6 @@ import { formatDateRange } from "@lib/format";
 import type { Team, Tournament } from "@lib/competition";
 import type { Locale } from "@types";
 
-/**
- * The three-stage season, shaped once and read by both the homepage section
- * and the header's tournament panel. Stage one resolves against
- * tournaments.yaml so neither place can say something the competition page
- * disagrees with; stages without a tournament yet carry no team data,
- * because nothing is invented for a field that has not been announced.
- */
 export interface RoadmapStage {
   name: string;
   href: string | null;

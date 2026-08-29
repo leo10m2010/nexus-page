@@ -1,30 +1,3 @@
-# EQUIPOS
-#
-# DATOS DE EJEMPLO. Todos los equipos de abajo son inventados para poder ver
-# la pagina montada. Reemplazalos por los reales antes de publicar.
-#
-# Campos:
-#   id      identificador interno, en minusculas y sin espacios.
-#           Es lo que escribes en matches.yaml para referirte al equipo.
-#   name    nombre visible.
-#   tag     abreviatura de 2 a 4 letras. Sale en el monograma y en los marcadores.
-#   region  texto libre: LATAM, EU, NA, CIS, SEA...
-#   logo    opcional. Ruta dentro de public/, por ejemplo /teams/aurora.svg
-#           Si no lo pones, se dibuja el icono de Dota 2 en tono neutro,
-#           en vez del logo del equipo.
-#   players opcional. La plantilla, tal como sale en la ficha del torneo.
-#           Cada jugador lleva:
-#             handle   el nick. Es lo unico obligatorio.
-#             name     nombre real, opcional.
-#             role     texto libre: Capitan, Coach, Suplente...
-#             country  codigo de dos letras, opcional. Se muestra en mayusculas.
-#           Un equipo sin "players" sale igual, solo que sin plantilla.
-
-# =====================================================================
-# NEXUS SERIES I - equipos reales, tal como estan invitados al torneo.
-# Fuente: https://liquipedia.net/dota2/NEXUS_SERIES/1
-# =====================================================================
-
 - id: amaru-gaming
   name: Amaru Gaming
   tag: AMA
@@ -32,10 +5,15 @@
   logo: /teams/amaru-gaming.webp
   players:
     - handle: K1
+      country: PE
     - handle: PiPi
+      country: PE
     - handle: Oscar
+      country: BO
     - handle: N1ght
+      country: PE
     - handle: Panda
+      country: PE
 
 - id: chandogs
   name: Chandogs
@@ -50,6 +28,7 @@
     - handle: YiSuS
       country: CO
     - handle: MonHty
+      country: PE
     - handle: Bastian
       country: PE
 
@@ -60,11 +39,15 @@
   logo: /teams/estar-backs.webp
   players:
     - handle: payk
+      country: PE
     - handle: Mr.Jeans
+      country: PE
     - handle: Snufy
       country: PE
     - handle: Michael
+      country: BO
     - handle: Yadomi
+      country: PE
 
 - id: giordota-team
   name: GiorDota Team
@@ -81,6 +64,7 @@
     - handle: Fer
       country: PE
     - handle: FeelinG
+      country: PE
 
 - id: pibble-corp
   name: Pibble Corp
@@ -89,11 +73,15 @@
   logo: /teams/pibble-corp.webp
   players:
     - handle: Lumiere
+      country: PE
     - handle: lalatronii
+      country: PE
     - handle: Ryu
       country: PE
     - handle: Mjz
+      country: PE
     - handle: Prada
+      country: PE
 
 - id: rebeldes
   name: Rebeldes
@@ -101,8 +89,11 @@
   region: South America
   players:
     - handle: hFn
+      country: BR
     - handle: SLATEMS
+      country: PE
     - handle: Frank
+      country: PE
     - handle: CoYoTao
       country: BR
     - handle: Frath
@@ -121,7 +112,9 @@
     - handle: TakeCareMia
       country: PE
     - handle: Zxca
+      country: PE
     - handle: SexyeYogye
+      country: PE
 
 - id: the-house-esports
   name: The House Esports
@@ -134,6 +127,8 @@
     - handle: BroColi
       country: PE
     - handle: ArzenT
+      country: PE
     - handle: Smoker
+      country: PE
     - handle: Sunny
       country: PE

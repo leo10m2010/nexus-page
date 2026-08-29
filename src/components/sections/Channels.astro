@@ -19,10 +19,10 @@ const t = useTranslations(Astro.currentLocale);
     {t.channels.intro}
   </p>
 
-  <ul class="reveal flex flex-wrap items-stretch gap-px bg-line" style="--reveal-delay:80ms">
+  <ul class="reveal flex flex-wrap items-stretch gap-2" style="--reveal-delay:80ms">
     {
       channels.map((c) => (
-        <li class="bg-elev">
+        <li class="overflow-hidden rounded-control border border-line-strong bg-elev">
           <a
             class="group flex items-baseline gap-2.5 px-5 py-3 transition-colors hover:bg-elev2"
             href={c.href}

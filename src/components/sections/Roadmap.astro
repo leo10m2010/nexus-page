@@ -11,32 +11,16 @@ import { useTranslations, resolveLocale } from "@lib/i18n";
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 
-/* Shared with the header's tournament panel via lib/roadmap.ts, so the two
-   can never disagree about what the current season looks like. */
 const stages = await getRoadmapStages(locale);
 const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
 ---
 
 <Section id="roadmap" bordered class="relative isolate overflow-hidden">
-  {/* The warm glow from the tournament-announcement graphic, carried onto the
-      page: a soft gold field that drifts slowly behind the section instead of
-      sitting still. Full-bleed via the escape-the-container trick, since the
-      section's own content column is capped at 1400px; `isolate` on the
-      section keeps the negative z-index from reaching outside it. */}
+
   <div class="gold-glow pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen" aria-hidden="true" />
 
-  {/* The other half of that same graphic language: a huge tilted wordmark
-      sitting behind the section, the way EPL runs its own name ghosted
-      behind a panel. The brand's own lettering, lifted straight from the
-      logo file — not typed in a display font — same as everywhere else
-      "NEXUS" appears as a graphic rather than as a word. */}
   <div class="wordmark pointer-events-none absolute inset-0 -z-10 flex items-center overflow-hidden select-none" aria-hidden="true">
-    {/* `--word-brand: currentColor` makes the X's usual blue diagonal follow
-        the same white as the rest of the letters — a flat mark for a ghost
-        texture, not the two-tone logo. Custom properties inherit through
-        the DOM regardless of component scoping, so this is the one thing
-        here that is safe to set directly on the child; width/opacity/
-        rotation are not (see the :global() note below). */}
+
     <NexusWordmark class="wordmark-svg text-ink" style="--word-brand: currentColor" />
   </div>
 
@@ -50,8 +34,6 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
     <p class="lede reveal max-w-[42ch]" style="--reveal-delay:90ms">{t.roadmap.lede}</p>
   </div>
 
-  {/* Each card cuts its own corner now, so it does not share a hairline
-      border with its neighbours the way a plain rectangular card would. */}
   <div class="mt-14 grid gap-4 md:grid-cols-3">
     {
       stages.map((stage, i) => (
@@ -79,13 +61,6 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
     );
   }
 
-  /* `:global()`, not a plain scoped selector: NexusWordmark is a child
-     component, so its root <svg> never carries this component's scope id —
-     a scoped `.wordmark-svg { ... }` rule silently matches nothing, which
-     is exactly how this shipped at full opacity, full size, no rotation:
-     the markup was right, this rule just never touched the element it
-     names, and only actually opening the rendered page (not just reading
-     the code) shows that. */
   :global(.wordmark-svg) {
     width: clamp(36rem, 96vw, 80rem);
     flex-shrink: 0;

@@ -5,11 +5,6 @@ import teamPractice from "@assets/team-practice.png";
 import heroFigures from "@assets/perso.png";
 import heroGlow from "@assets/LUZ.png";
 
-/**
- * Image registry. Sections reference a key, never a relative file path, so a
- * photo can be swapped in one place. Alt text describes what is in the frame
- * and does not claim the shot is a Nexus Series event.
- */
 export const media = {
   heroStage: {
     src: arenaStage,

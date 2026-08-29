@@ -1,50 +1,3 @@
-# TORNEOS
-#
-# DATOS DE EJEMPLO. Reemplazalos por los reales antes de publicar.
-#
-# Cada torneo de aqui genera su propia pagina en /competition/<id>/.
-#
-# CAMPOS OBLIGATORIOS
-#   id          identificador interno. Es lo que escribes en matches.yaml,
-#               y tambien la URL de la pagina del torneo.
-#   name        nombre visible.
-#   status      upcoming | live | finished
-#   startDate   fecha de inicio, formato AAAA-MM-DD
-#   endDate     fecha de fin, formato AAAA-MM-DD
-#   region      texto libre.
-#   format      doubleElimination | singleElimination | roundRobin | swiss
-#               (se traduce solo a los tres idiomas)
-#   teamCount   numero de equipos.
-#
-# CAMPOS OPCIONALES. Cada bloque que rellenas añade una seccion a la pagina
-# del torneo. Lo que no rellenas, no se dibuja.
-#
-#   series      etiqueta pequeña encima del titulo: "Season One", "Major"...
-#   organizer   quien lo organiza. Si no lo pones, sale Nexus Series.
-#   venue       online | offline | hybrid  (se traduce solo)
-#   location    solo tiene sentido si es presencial: "Madrid, España".
-#
-#   prizePool   premios.
-#     currency        codigo de tres letras: USD, EUR...
-#     total           cantidad total.
-#     distribution    reparto, del mejor puesto al peor.
-#       place   puesto. to: para un rango, por ejemplo place 5 + to 8.
-#       amount  premio de CADA equipo de ese puesto.
-#       team    id del equipo, en cuanto se sepa quien lo ocupa.
-#
-#   phases      las fases por las que pasa, en orden. Se dibuja la seccion
-#               "Formato" con una tarjeta por fase.
-#     key       qualifier | groupStage | swissStage | playoffs | finals
-#     format    igual que el campo format de arriba
-#     teamCount cuantos equipos entran en esa fase
-#     bestOf    1, 3, 5... sale como Bo1 / Bo3 / Bo5
-#     advance   cuantos pasan a la siguiente fase
-#
-#   participants  el cuadro de equipos. Sin esto no se dibuja la seccion.
-#     team      id de un equipo de teams.yaml
-#     via       invited | qualifier | regional | defending  (se traduce solo)
-
-# Datos reales. Fuente: https://liquipedia.net/dota2/NEXUS_SERIES/1
 - id: season-one
   name: Nexus Series I
   status: upcoming
@@ -76,6 +29,12 @@
       format: doubleElimination
       teamCount: 4
       bestOf: 3
+  broadcastTalent:
+    - name: Papita
+      role: Co-streamer
+      icon: simple-icons:kick
+      href: https://kick.com/PAPITA
+      photo: /talent/papita.webp
   participants:
     - team: amaru-gaming
       via: invited

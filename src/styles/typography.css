@@ -1,5 +1,3 @@
-/* ------------------------------ typography ------------------------------ */
-
 .display {
   font-family: var(--font-display);
   font-stretch: 118%;
@@ -7,23 +5,12 @@
   letter-spacing: -0.022em;
   line-height: 0.94;
   text-transform: uppercase;
-  /* A single uppercase word at this weight/stretch can be wider than a
-     narrow phone's content column on its own — measured with English
-     "Tournaments," at 320px, and worse with longer Russian compounds.
-     Normal wrapping can't help a word that doesn't fit by itself, so
-     without this the heading forces its container (and the page) wider
-     instead of wrapping; this only breaks a word when it has no other
-     choice, so it changes nothing for text that already fits. */
-  overflow-wrap: break-word;
 }
 
-/* `text-wrap: balance` only below 480px: on a narrow phone, a heading long
-   enough to need several wrapped lines can make the browser's balancing
-   pass settle on a box wider than the container instead of shrinking to
-   fit it — a real, measured horizontal-overflow source (confirmed on the
-   competition page's <h1> at 320-390px). The even-line-lengths effect is
-   a nicety worth keeping once there's enough width for it to have no
-   downside. */
+@media (max-width: 479px) {
+  .display { overflow-wrap: break-word; }
+}
+
 @media (min-width: 480px) {
   .display { text-wrap: balance; }
 }

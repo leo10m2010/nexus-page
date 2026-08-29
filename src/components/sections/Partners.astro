@@ -7,7 +7,6 @@ import { useTranslations } from "@lib/i18n";
 const t = useTranslations(Astro.currentLocale);
 const { heading, lede, slotLabel } = t.partners;
 
-/* Three open slots, mirroring the sponsor board on the previous site. */
 const SLOT_COUNT = 3;
 const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i + 1);
 ---
@@ -18,14 +17,13 @@ const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i + 1);
   </h2>
   <p class="lede reveal mt-5" style="--reveal-delay:70ms">{lede}</p>
 
-  {/* Sponsor board: one strip, hairline-divided, waiting to be filled. */}
   <div
-    class="reveal mt-12 grid gap-px border border-line bg-line sm:grid-cols-3"
+    class="reveal mt-12 grid gap-4 sm:grid-cols-3"
     style="--reveal-delay:130ms"
   >
     {
       slots.map((n) => (
-        <div class="chevron-field relative grid min-h-[132px] place-items-center bg-elev px-6">
+        <div class="chevron-field card-tile relative grid min-h-[132px] place-items-center rounded-card px-6">
           <span class="display-sm text-center text-[0.8125rem] tracking-[0.2em] text-muted">
             {slotLabel}
           </span>

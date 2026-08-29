@@ -2,13 +2,9 @@
 import { Icon } from "astro-icon/components";
 import { localeMeta, locales, localizePath, resolveLocale, useTranslations } from "@lib/i18n";
 
-/* Compact on purpose. The nav has to stay on one line at 1024px in every
-   language, and three loose EN / ES / RU links would not fit once the longer
-   Spanish nav labels are in. A 60px trigger does. */
 const current = resolveLocale(Astro.currentLocale);
 const t = useTranslations(Astro.currentLocale);
 
-/* Changing language keeps you on the page you were reading. */
 const path = Astro.url.pathname;
 ---
 
@@ -16,7 +12,7 @@ const path = Astro.url.pathname;
   <button
     type="button"
     data-locale-toggle
-    class="flex h-10 items-center gap-1.5 border border-line px-2.5 text-muted transition-colors hover:border-line-strong hover:text-ink"
+    class="flex h-10 items-center gap-1.5 rounded-control border border-line px-2.5 text-muted transition-colors hover:border-line-strong hover:text-ink"
     aria-label={t.a11y.switchLanguage}
     aria-expanded="false"
     aria-haspopup="true"
@@ -31,7 +27,7 @@ const path = Astro.url.pathname;
   <ul
     id="locale-menu"
     hidden
-    class="locale-menu absolute right-0 top-[calc(100%+1px)] z-10 min-w-[9.5rem] border border-line bg-elev"
+    class="locale-menu absolute right-0 top-[calc(100%+1px)] z-10 min-w-[9.5rem] rounded-card border border-line bg-elev"
   >
     {
       locales.map((l) => (

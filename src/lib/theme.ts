@@ -2,11 +2,6 @@ import type { Theme } from "@types";
 
 export const THEME_KEY = "nexus-theme";
 
-/**
- * Runs before paint, inlined into <head>, so the page never flashes the wrong
- * mode. Kept as a string because a module import would be too late.
- * It also arms the scroll reveal only when JS is alive.
- */
 export const themeBootScript = `(() => {
   const root = document.documentElement;
   try {
@@ -18,7 +13,6 @@ export const themeBootScript = `(() => {
   }
 })();`;
 
-/** Resolves the mode the user is actually looking at, explicit or inherited. */
 export function resolveTheme(): Theme {
   const explicit = document.documentElement.dataset.theme;
   if (explicit === "light" || explicit === "dark") return explicit;

@@ -4,9 +4,6 @@ import TeamMark from "@ui/TeamMark.astro";
 import type { Group } from "@lib/competition";
 import { useTranslations } from "@lib/i18n";
 
-/* Group tables. Nothing in here is stored: a result is written once, in
-   matches.yaml, and these numbers are counted from it. Which means a table
-   can never disagree with the result it came from. */
 interface Props {
   id: string;
   groups: Group[];
@@ -22,10 +19,10 @@ const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 <Section id={id} bordered>
   <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.standings}</h2>
 
-  <div class="grid-hairline mt-10 grid lg:grid-cols-2">
+  <div class="mt-10 grid gap-4 lg:grid-cols-2">
     {
       groups.map((group) => (
-        <div class="min-w-0 bg-elev p-6 sm:p-8">
+        <div class="card-tile min-w-0 rounded-card p-6 sm:p-8">
           <h3 class="display-sm text-sm text-accent-lift">
             {c.stage.groupStage} <span class="px-1 text-muted">/</span> {group.name}
           </h3>
