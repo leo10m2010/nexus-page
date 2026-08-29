@@ -25,6 +25,28 @@ var STAGE_LABELS = {
   thirdPlace: "Tercer puesto",
 };
 
+function formatDate(value) {
+  if (!value) return null;
+  var date = value instanceof Date ? value : new Date(value);
+  if (isNaN(date.getTime())) return String(value);
+  return date.toLocaleString("es-PE", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC",
+  }) + " UTC";
+}
+
+function formatDateOnly(value) {
+  if (!value) return null;
+  var date = value instanceof Date ? value : new Date(value);
+  if (isNaN(date.getTime())) return String(value);
+  return date.toLocaleString("es-PE", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
+}
+
 function flagEmoji(code) {
   if (!code || code.length !== 2) return "";
   var base = 127397;
@@ -86,7 +108,7 @@ var TournamentPreview = createClass({
         h("div", { className: "nx-tournament-facts" },
           h("div", null,
             h("p", { className: "nx-fact-label" }, "Fechas"),
-            h("p", { className: "nx-fact-value" }, (data.get("startDate") || "?") + " – " + (data.get("endDate") || "?"))
+            h("p", { className: "nx-fact-value" }, (formatDateOnly(data.get("startDate")) || "?") + " – " + (formatDateOnly(data.get("endDate")) || "?"))
           ),
           h("div", null,
             h("p", { className: "nx-fact-label" }, "Equipos"),
@@ -135,7 +157,7 @@ var MatchPreview = createClass({
         ),
         h("span", { className: "nx-match-team nx-match-team--away" }, data.get("away") || "Por definir")
       ),
-      h("p", { className: "nx-match-date" }, data.get("startsAt") ? String(data.get("startsAt")) : "Fecha por definir")
+      h("p", { className: "nx-match-date" }, formatDate(data.get("startsAt")) || "Fecha por definir")
     );
   },
 });

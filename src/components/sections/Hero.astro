@@ -1,6 +1,5 @@
 ---
 import { Image } from "astro:assets";
-import { Icon } from "astro-icon/components";
 import Button from "@ui/Button.astro";
 import Eyebrow from "@ui/Eyebrow.astro";
 import { ctas } from "@config/site";
@@ -90,13 +89,6 @@ const { headline, headlineClamp, lede } = t.hero;
     </div>
   </div>
 
-  <a
-    href="#about"
-    class="scroll-cue absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1.5 text-muted transition-colors hover:text-ink lg:flex"
-  >
-    <span class="font-display text-[0.6875rem] font-bold tracking-[0.16em] uppercase">{t.nav.about}</span>
-    <Icon name="ph:caret-down-bold" class="scroll-cue-icon size-4" />
-  </a>
 </section>
 
 <script>
@@ -202,6 +194,4 @@ const { headline, headlineClamp, lede } = t.hero;
     mask-image: linear-gradient(to bottom, transparent 0%, black 22%);
   }
 
-  .scroll-cue-icon { transition: transform 0.2s var(--ease-out-quint); }
-  .scroll-cue:hover .scroll-cue-icon { transform: translateY(3px); }
 </style>

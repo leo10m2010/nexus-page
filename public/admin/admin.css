@@ -319,6 +319,11 @@ input[type="time"] {
   color: var(--nx-muted) !important;
 }
 
+[class*="StyledListItemTopBar"] ~ div,
+[class*="ListItemTopBar"] ~ div {
+  background-color: var(--nx-elev) !important;
+}
+
 [class*="ListItem"],
 [class*="NestedObjectLabel"] {
   background-color: var(--nx-elev-2) !important;
@@ -357,6 +362,7 @@ input[type="time"] {
 [class*="PreviewPaneFrame"] {
   background-color: var(--nx-bg) !important;
 }
+
 
 [class*="DeleteButton"] {
   background-color: transparent !important;
