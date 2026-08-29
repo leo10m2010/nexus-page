@@ -19,11 +19,7 @@
 }
 
 .card-tile {
-  border: 1px solid transparent;
+  border: 1px solid var(--c-line-strong);
   background-color: var(--c-bg-elev);
-  background-image:
-    radial-gradient(80% 65% at 0% 0%, rgb(var(--c-brand-rgb) / 16%) 0%, transparent 45%),
-    linear-gradient(135deg, rgb(var(--c-brand-lift-rgb) / 65%), var(--c-line-strong) 65%);
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, border-box;
+  background-image: linear-gradient(155deg, var(--c-bg-elev-2) 0%, var(--c-bg-elev) 55%);
 }
