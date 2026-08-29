@@ -54,7 +54,7 @@ const hasBoth = Boolean(prize) && phases.length > 0;
         </div>
 
         <div class="mt-8 overflow-x-auto">
-          <table class="w-full min-w-[20rem] border-collapse text-left">
+          <table class={`w-full border-collapse text-left ${named ? "min-w-[20rem]" : ""}`}>
             <thead>
               <tr class="border-b border-line-strong">
                 <th scope="col" class="th">{c.prizeHead.place}</th>

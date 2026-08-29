@@ -18,7 +18,7 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
 <div class="flex items-center gap-4 sm:gap-6">
   <div class="flex min-w-0 flex-1 items-center gap-3">
     <TeamMark team={match.home} size={36} />
-    <span class={`truncate text-[0.9375rem] ${homeWon ? "text-ink" : "text-muted"}`}>
+    <span class={`[overflow-wrap:anywhere] text-[0.9375rem] sm:truncate ${homeWon ? "text-ink" : "text-muted"}`}>
       {match.home?.name ?? t.competition.tbd}
     </span>
   </div>
@@ -36,7 +36,7 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
   }
 
   <div class="flex min-w-0 flex-1 items-center justify-end gap-3">
-    <span class={`truncate text-right text-[0.9375rem] ${awayWon ? "text-ink" : "text-muted"}`}>
+    <span class={`[overflow-wrap:anywhere] text-right text-[0.9375rem] sm:truncate ${awayWon ? "text-ink" : "text-muted"}`}>
       {match.away?.name ?? t.competition.tbd}
     </span>
     <TeamMark team={match.away} size={36} />
