@@ -21,6 +21,7 @@ export interface ContactRoute extends Link {
 
 export interface Channel {
   code: string;
+  flag: string;
   language: string;
   href: string;
 }

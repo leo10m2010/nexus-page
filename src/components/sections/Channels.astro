@@ -24,11 +24,12 @@ const t = useTranslations(Astro.currentLocale);
       channels.map((c) => (
         <li class="overflow-hidden rounded-control border border-line-strong bg-elev">
           <a
-            class="group flex items-baseline gap-2.5 px-5 py-3 transition-colors hover:bg-elev2"
+            class="group flex items-center gap-2.5 px-5 py-3 transition-colors hover:bg-elev2"
             href={c.href}
             target="_blank"
             rel="noopener noreferrer"
           >
+            <Icon name={`flag:${c.flag}-4x3`} class="h-3.5 w-5 shrink-0" aria-hidden="true" />
             <span class="display-sm text-xl text-ink transition-colors group-hover:text-accent-lift">
               {c.code}
             </span>

@@ -20,9 +20,9 @@ export const social = {
 } as const;
 
 export const channels: Channel[] = [
-  { code: "ES", language: "Spanish", href: "https://www.twitch.tv/nexusmedia_es" },
-  { code: "EN", language: "English", href: "https://www.twitch.tv/nexusmedia_en" },
-  { code: "RU", language: "Russian", href: "https://www.twitch.tv/nexusmedia_ru" },
+  { code: "ES", flag: "es", language: "Spanish", href: "https://www.twitch.tv/nexusmedia_es" },
+  { code: "EN", flag: "us", language: "English", href: "https://www.twitch.tv/nexusmedia_en" },
+  { code: "RU", flag: "ru", language: "Russian", href: "https://www.twitch.tv/nexusmedia_ru" },
 ];
 
 export const ctas = {

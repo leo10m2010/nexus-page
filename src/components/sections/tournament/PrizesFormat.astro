@@ -40,8 +40,13 @@ const hasBoth = Boolean(prize) && phases.length > 0;
 >
   {
     prize && (
-      <div id="prizes" class="bento-cell bento-prize card-tile reveal rounded-card p-8 sm:p-10">
-        <div class="flex flex-wrap items-baseline justify-between gap-4">
+      <div id="prizes" class="bento-cell bento-prize card-tile reveal relative overflow-hidden rounded-card p-8 sm:p-10">
+        <Icon
+          name="ph:trophy-fill"
+          class="watermark-icon pointer-events-none absolute -right-6 -bottom-8 h-40 w-40 text-ink opacity-[0.05]"
+          aria-hidden="true"
+        />
+        <div class="relative flex flex-wrap items-baseline justify-between gap-4">
           <h2 class="display text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.info.prizePool}</h2>
           <p class="display-sm text-lg text-accent-lift tabular-nums">
             {formatMoney(prize.total, prize.currency, locale)}
@@ -105,13 +110,18 @@ const hasBoth = Boolean(prize) && phases.length > 0;
     phases.map((phase, i) => (
       <div
         {...(i === 0 ? { id: "format" } : {})}
-        class="bento-cell bento-phase card-tile rounded-card p-8 sm:p-10"
+        class="bento-cell bento-phase card-tile relative overflow-hidden rounded-card p-8 sm:p-10"
         style={`--phase-row:${i + 1}`}
       >
-        <h3 class="display-sm text-xl">{c.phase[phase.key]}</h3>
-        <p class="mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
+        <Icon
+          name="ph:flow-arrow-bold"
+          class="watermark-icon pointer-events-none absolute -right-4 -bottom-6 h-28 w-28 text-ink opacity-[0.05]"
+          aria-hidden="true"
+        />
+        <h3 class="relative display-sm text-xl">{c.phase[phase.key]}</h3>
+        <p class="relative mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
 
-        <ul class="mt-5 flex flex-wrap gap-2">
+        <ul class="relative mt-5 flex flex-wrap gap-2">
           {phase.teamCount && (
             <li class="rounded-control border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
               {c.teamCount(phase.teamCount)}

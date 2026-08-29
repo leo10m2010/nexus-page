@@ -55,7 +55,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
           <li class="group relative">
             <a
               href={competitionHref}
-              class="nav-link flex items-center gap-1.5 font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
+              class="nav-link inline-flex items-center gap-1.5 font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
             >
               {t.competition.navLabel}
               <Icon
@@ -65,49 +65,55 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
             </a>
 
             <div class="tournament-panel absolute left-1/2 top-full z-10 w-[23rem] -translate-x-1/2 pt-4">
-              <div class="rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
-                <p class="eyebrow">{t.roadmap.eyebrow}</p>
-                <ul class="mt-4 flex flex-col divide-y divide-line">
-                  {
-                    stages.map((stage, i) => {
-                      const StageTag = stage.href ? "a" : "div";
-                      return (
-                        <li>
-                          <StageTag
-                            href={stage.href ?? undefined}
-                            class={`flex items-center gap-3 py-3 ${stage.href ? "panel-row transition-colors" : ""}`}
-                          >
-                            <span
-                              class={`grid h-8 w-8 shrink-0 place-items-center rounded-control border font-display text-xs font-bold ${
-                                stage.href
-                                  ? "border-accent bg-accent text-on-accent"
-                                  : "border-accent/40 bg-bg text-accent"
-                              }`}
-                            >
-                              {ROMAN_NUMERALS[i]}
-                            </span>
-                            <span class="min-w-0 flex-1">
-                              <span class="block truncate font-display text-sm font-bold text-ink">
-                                {stage.name}
-                              </span>
-                              <span class="block truncate text-xs text-muted">
-                                {stage.dates ?? t.roadmap.dateTbd}
-                              </span>
-                            </span>
-                            <span class="shrink-0 font-display text-xs font-bold text-accent-lift">
-                              {stage.prizeTotal > 0
-                                ? formatMoney(stage.prizeTotal, stage.currency, locale)
-                                : t.roadmap.comingSoon}
-                            </span>
-                          </StageTag>
-                        </li>
-                      );
-                    })
-                  }
-                </ul>
+              <div class="chevron-field relative overflow-hidden rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
+                <p class="relative eyebrow">{t.roadmap.eyebrow}</p>
+
+                {
+                  stages.map((stage, i) =>
+                    stage.href ? (
+                      <a
+                        href={stage.href}
+                        class="panel-row relative mt-4 flex items-center gap-3 rounded-control border border-accent/30 bg-bg p-3 transition-colors"
+                      >
+                        <span class="grid h-10 w-10 shrink-0 place-items-center rounded-control border border-accent bg-accent font-display text-sm font-bold text-on-accent">
+                          {ROMAN_NUMERALS[i]}
+                        </span>
+                        <span class="min-w-0 flex-1">
+                          <span class="block truncate font-display text-sm font-bold text-ink">
+                            {stage.name}
+                          </span>
+                          <span class="block truncate text-xs text-muted">
+                            {stage.dates ?? t.roadmap.dateTbd}
+                          </span>
+                        </span>
+                        <span class="shrink-0 font-display text-sm font-bold text-accent-lift">
+                          {formatMoney(stage.prizeTotal, stage.currency, locale)}
+                        </span>
+                      </a>
+                    ) : null,
+                  )
+                }
+
+                {
+                  stages.some((s) => !s.href) && (
+                    <ul class="relative mt-4 flex flex-col gap-2 border-t border-line pt-4">
+                      {stages.map(
+                        (stage, i) =>
+                          !stage.href && (
+                            <li class="flex items-center gap-3 text-xs">
+                              <span class="font-display font-bold text-muted">{ROMAN_NUMERALS[i]}</span>
+                              <span class="min-w-0 flex-1 truncate text-muted">{stage.name}</span>
+                              <span class="shrink-0 text-muted">{t.roadmap.comingSoon}</span>
+                            </li>
+                          ),
+                      )}
+                    </ul>
+                  )
+                }
+
                 <a
                   href={competitionHref}
-                  class="panel-cta mt-4 flex items-center justify-between border-t border-line pt-4 font-display text-[0.75rem] font-bold tracking-[0.12em] text-accent-lift uppercase"
+                  class="panel-cta relative mt-4 flex items-center justify-between border-t border-line pt-4 font-display text-[0.75rem] font-bold tracking-[0.12em] text-accent-lift uppercase"
                 >
                   {t.competition.allTournaments}
                   <span aria-hidden="true" class="panel-arrow">&rarr;</span>
@@ -174,7 +180,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
 
 <style>
 
-  .nav-link { position: relative; padding-block: 0.35rem; white-space: nowrap; }
+  .nav-link { position: relative; padding-block: 0.35rem; white-space: nowrap; line-height: 1; }
   .nav-link::after {
     content: "";
     position: absolute;
