@@ -95,8 +95,6 @@ const tournaments = defineCollection({
           role: z.string(),
           icon: z.string(),
           href: z.string(),
-
-          photo: z.string().optional(),
         }),
       )
       .optional(),

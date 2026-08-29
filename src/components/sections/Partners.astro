@@ -12,10 +12,15 @@ const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i + 1);
 ---
 
 <Section bordered labelledby="partners-heading">
-  <h2 id="partners-heading" class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">
-    {heading}
-  </h2>
-  <p class="lede reveal mt-5" style="--reveal-delay:70ms">{lede}</p>
+  <div class="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
+    <div class="max-w-[46ch]">
+      <h2 id="partners-heading" class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">
+        {heading}
+      </h2>
+      <p class="lede reveal mt-5" style="--reveal-delay:70ms">{lede}</p>
+    </div>
+    <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" class="reveal shrink-0" />
+  </div>
 
   <div
     class="reveal mt-12 grid gap-4 sm:grid-cols-3"
@@ -32,6 +37,4 @@ const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i + 1);
       ))
     }
   </div>
-
-  <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" class="reveal mt-8" />
 </Section>
