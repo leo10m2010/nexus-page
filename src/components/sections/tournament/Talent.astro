@@ -40,8 +40,8 @@ const c = t.competition;
           >
             <Icon
               name={person.icon}
-              class={`size-7 shrink-0 ${person.brandColor ? "" : "text-muted transition-colors group-hover:text-accent-lift"}`}
-              style={person.brandColor ? `color:${person.brandColor}` : undefined}
+              class="talent-icon size-7 shrink-0 text-muted transition-colors"
+              style={person.brandColor ? `--brand-color:${person.brandColor}` : undefined}
             />
             <span class="min-w-0">
               <span class="display-sm block truncate text-base">{person.name}</span>
@@ -55,3 +55,7 @@ const c = t.competition;
     }
   </ul>
 </Section>
+
+<style>
+  .group:hover .talent-icon { color: var(--brand-color, var(--c-accent-lift)); }
+</style>

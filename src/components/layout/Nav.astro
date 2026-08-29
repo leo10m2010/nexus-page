@@ -65,7 +65,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
             </a>
 
             <div class="tournament-panel absolute left-1/2 top-full z-10 w-[23rem] -translate-x-1/2 pt-4">
-              <div class="chevron-field relative overflow-hidden rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
+              <div class="relative overflow-hidden rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
                 <p class="relative eyebrow">{t.roadmap.eyebrow}</p>
 
                 {
@@ -81,7 +81,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
                             alt=""
                             width="40"
                             height="40"
-                            class="h-10 w-10 shrink-0 rounded-control"
+                            class="h-10 w-10 shrink-0 rounded-control border border-accent"
                           />
                         ) : (
                           <span class="grid h-10 w-10 shrink-0 place-items-center rounded-control border border-accent bg-accent font-display text-sm font-bold text-on-accent">
