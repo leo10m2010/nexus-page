@@ -454,35 +454,105 @@ input[type="time"] {
   color: #f87171 !important;
 }
 
-[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for^="id-field"]) {
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:last-child {
   opacity: 0.6;
   margin-top: 1.5rem !important;
   padding-top: 1.25rem !important;
   border-top: 1px dashed var(--nx-line-strong) !important;
+  clear: both;
 }
-[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for^="id-field"]) [class*="FieldLabel"] {
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:last-child [class*="FieldLabel"] {
   font-size: 0.6875rem !important;
 }
 
-/* Equipos: Tag y Región lado a lado (prueba acotada de layout tipo bento) */
-[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="tag-field-2"]) {
+/*
+  Layout tipo bento: se empareja lado a lado usando la POSICION del campo
+  dentro de su formulario (nth-child) combinada con su tipo de widget
+  (aria-label), en vez del id numerico que Decap genera (ese id depende de
+  cuantos campos se montaron antes en la sesion del navegador, asi que NO es
+  estable entre recargas ni entre colecciones - probado que se rompe).
+*/
+/* Equipos: Tag + Region */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(2)[aria-label="string field"],
+/* Brackets: Etapa */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(2)[aria-label="select field"],
+/* Torneos: Fecha de inicio */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="datetime field"],
+/* Partidos: Equipo local */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="relation field"],
+/* Brackets: Equipo local */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="relation field"],
+/* Torneos: Formato */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="select field"],
+/* Torneos: Organizador */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(8)[aria-label="string field"],
+/* Torneos: Ubicacion */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(10)[aria-label="string field"] {
   float: left;
   width: calc(50% - 0.5rem);
   margin-right: 1rem;
   box-sizing: border-box;
 }
-[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="region-field-3"]) {
+
+/* Equipos: Region */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="string field"],
+/* Brackets: Bracket */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="select field"],
+/* Torneos: Fecha de fin */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="datetime field"],
+/* Partidos: Equipo visitante */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(5)[aria-label="relation field"],
+/* Torneos: Cantidad de equipos */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(7)[aria-label="number field"],
+/* Brackets: Equipo visitante */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(7)[aria-label="relation field"],
+/* Torneos: Modalidad */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(9)[aria-label="select field"],
+/* Torneos: Serie / temporada */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(11)[aria-label="string field"] {
   float: left;
   width: calc(50% - 0.5rem);
   box-sizing: border-box;
 }
-[class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="logo-field-4"]) {
+
+/* Equipos: Logo (limpia el par Tag/Region) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="image field"],
+/* Brackets: Ronda (limpia el par Etapa/Bracket) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="number field"],
+/* Torneos: Region (limpia el par de fechas) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(5)[aria-label="string field"],
+/* Partidos: Marcador (limpia el par de equipos) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="list field"],
+/* Torneos: Formato (limpia Region, tambien es inicio de par) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="select field"],
+/* Brackets: Marcador (limpia el par de equipos) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(8)[aria-label="list field"],
+/* Torneos: Organizador (limpia el par formato/equipos, tambien inicio de par) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(8)[aria-label="string field"],
+/* Torneos: Ubicacion (limpia el par organizador/modalidad, tambien inicio de par) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(10)[aria-label="string field"],
+/* Torneos: Premios (limpia el par ubicacion/serie) */
+[class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(12)[aria-label="object field"] {
   clear: both;
 }
 
 @media (max-width: 900px) {
-  [class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="tag-field-2"]),
-  [class*="ControlContainer"]:has(> [class*="ControlTopbar"] label[for="region-field-3"]) {
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(2)[aria-label="string field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(2)[aria-label="select field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="datetime field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="relation field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="relation field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(6)[aria-label="select field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(8)[aria-label="string field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(10)[aria-label="string field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="string field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(3)[aria-label="select field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(4)[aria-label="datetime field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(5)[aria-label="relation field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(7)[aria-label="number field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(7)[aria-label="relation field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(9)[aria-label="select field"],
+  [class*="ControlPaneContainer"] > [class*="ControlContainer"]:nth-child(11)[aria-label="string field"] {
     float: none !important;
     width: 100% !important;
     margin-right: 0 !important;
