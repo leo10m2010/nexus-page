@@ -5,10 +5,10 @@ import { ru } from "@content/ru";
 
 export const DEFAULT_LOCALE: Locale = "en";
 
-export const localeMeta: Record<Locale, { code: string; name: string; htmlLang: string; ogLocale: string }> = {
-  en: { code: "EN", name: "English", htmlLang: "en", ogLocale: "en_US" },
-  es: { code: "ES", name: "Español", htmlLang: "es", ogLocale: "es_ES" },
-  ru: { code: "RU", name: "Русский", htmlLang: "ru", ogLocale: "ru_RU" },
+export const localeMeta: Record<Locale, { code: string; name: string; htmlLang: string; ogLocale: string; flag: string }> = {
+  en: { code: "EN", name: "English", htmlLang: "en", ogLocale: "en_US", flag: "us" },
+  es: { code: "ES", name: "Español", htmlLang: "es", ogLocale: "es_ES", flag: "es" },
+  ru: { code: "RU", name: "Русский", htmlLang: "ru", ogLocale: "ru_RU", flag: "ru" },
 };
 
 export const locales = Object.keys(localeMeta) as Locale[];

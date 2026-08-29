@@ -18,7 +18,7 @@ const path = Astro.url.pathname;
     aria-haspopup="true"
     aria-controls="locale-menu"
   >
-    <Icon name="ph:globe-simple-bold" class="size-[17px]" />
+    <Icon name={`flag:${localeMeta[current].flag}-4x3`} class="h-3 w-4 shrink-0 rounded-[2px]" />
     <span class="font-display text-[0.75rem] font-bold tracking-[0.1em]">
       {localeMeta[current].code}
     </span>
@@ -37,10 +37,11 @@ const path = Astro.url.pathname;
             hreflang={localeMeta[l].htmlLang}
             lang={localeMeta[l].htmlLang}
             aria-current={l === current ? "true" : undefined}
-            class="flex items-center justify-between gap-4 px-3.5 py-2.5 text-sm text-muted transition-colors hover:bg-elev2 hover:text-ink aria-[current]:text-accent-lift"
+            class="flex items-center gap-2.5 px-3.5 py-2.5 text-sm text-muted transition-colors hover:bg-elev2 hover:text-ink aria-[current]:text-accent-lift"
           >
-            {localeMeta[l].name}
-            <span class="font-display text-[0.6875rem] font-bold tracking-[0.1em] opacity-70">
+            <Icon name={`flag:${localeMeta[l].flag}-4x3`} class="h-3 w-4 shrink-0 rounded-[2px]" />
+            <span class="min-w-0 flex-1 truncate">{localeMeta[l].name}</span>
+            <span class="shrink-0 font-display text-[0.6875rem] font-bold tracking-[0.1em] opacity-70">
               {localeMeta[l].code}
             </span>
           </a>
