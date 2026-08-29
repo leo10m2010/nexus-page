@@ -1,0 +1,15 @@
+id: rebeldes
+name: Rebeldes
+tag: REB
+region: South America
+players:
+  - handle: hFn
+    country: BR
+  - handle: SLATEMS
+    country: PE
+  - handle: Frank
+    country: PE
+  - handle: CoYoTao
+    country: BR
+  - handle: Frath
+    country: BR

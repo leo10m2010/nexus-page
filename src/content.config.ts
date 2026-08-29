@@ -1,5 +1,5 @@
 import { defineCollection } from "astro:content";
-import { file } from "astro/loaders";
+import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const player = z.object({
@@ -13,7 +13,7 @@ const player = z.object({
 });
 
 const teams = defineCollection({
-  loader: file("src/data/teams.yaml"),
+  loader: glob({ pattern: "*.yaml", base: "./src/data/teams" }),
   schema: z.object({
     id: z.string(),
     name: z.string(),
@@ -30,7 +30,7 @@ const teams = defineCollection({
 const qualification = z.enum(["invited", "qualifier", "regional", "defending"]);
 
 const tournaments = defineCollection({
-  loader: file("src/data/tournaments.yaml"),
+  loader: glob({ pattern: "*.yaml", base: "./src/data/tournaments" }),
   schema: z.object({
     id: z.string(),
     name: z.string(),
@@ -103,7 +103,7 @@ const tournaments = defineCollection({
 });
 
 const matches = defineCollection({
-  loader: file("src/data/matches.yaml"),
+  loader: glob({ pattern: "*.yaml", base: "./src/data/matches" }),
   schema: z.object({
     id: z.string(),
     tournament: z.string(),

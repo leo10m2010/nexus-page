@@ -1,0 +1,16 @@
+id: chandogs
+name: Chandogs
+tag: CHD
+region: South America
+logo: /teams/chandogs.webp
+players:
+  - handle: Ribau
+    country: PE
+  - handle: S1RENM
+    country: PE
+  - handle: YiSuS
+    country: CO
+  - handle: MonHty
+    country: PE
+  - handle: Bastian
+    country: PE

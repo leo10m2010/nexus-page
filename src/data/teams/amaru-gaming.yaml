@@ -1,0 +1,16 @@
+id: amaru-gaming
+name: Amaru Gaming
+tag: AMA
+region: South America
+logo: /teams/amaru-gaming.webp
+players:
+  - handle: K1
+    country: PE
+  - handle: PiPi
+    country: PE
+  - handle: Oscar
+    country: BO
+  - handle: N1ght
+    country: PE
+  - handle: Panda
+    country: PE

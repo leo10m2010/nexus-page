@@ -1,0 +1,16 @@
+id: estar-backs
+name: Estar Backs
+tag: EST
+region: South America
+logo: /teams/estar-backs.webp
+players:
+  - handle: payk
+    country: PE
+  - handle: Mr.Jeans
+    country: PE
+  - handle: Snufy
+    country: PE
+  - handle: Michael
+    country: BO
+  - handle: Yadomi
+    country: PE

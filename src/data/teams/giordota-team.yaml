@@ -1,0 +1,16 @@
+id: giordota-team
+name: GiorDota Team
+tag: GDT
+region: South America
+logo: /teams/giordota-team.webp
+players:
+  - handle: Zasa
+    country: PE
+  - handle: SHEOL
+    country: PE
+  - handle: bsK-
+    country: PE
+  - handle: Fer
+    country: PE
+  - handle: FeelinG
+    country: PE

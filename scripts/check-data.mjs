@@ -8,10 +8,13 @@
  *
  * Run with: npm run check:data   (also runs as part of npm run build)
  */
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { parse } from "yaml";
 
-const load = (name) => parse(readFileSync(`src/data/${name}.yaml`, "utf8")) ?? [];
+const load = (name) =>
+  readdirSync(`src/data/${name}`)
+    .filter((f) => f.endsWith(".yaml"))
+    .map((f) => parse(readFileSync(`src/data/${name}/${f}`, "utf8")));
 
 const teams = load("teams");
 const tournaments = load("tournaments");

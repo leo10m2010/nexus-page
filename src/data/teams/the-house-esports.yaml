@@ -1,0 +1,16 @@
+id: the-house-esports
+name: The House Esports
+tag: THE
+region: South America
+logo: /teams/the-house-esports.webp
+players:
+  - handle: Porty
+    country: PE
+  - handle: BroColi
+    country: PE
+  - handle: ArzenT
+    country: PE
+  - handle: Smoker
+    country: PE
+  - handle: Sunny
+    country: PE

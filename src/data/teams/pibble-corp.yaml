@@ -1,0 +1,16 @@
+id: pibble-corp
+name: Pibble Corp
+tag: PIB
+region: South America
+logo: /teams/pibble-corp.webp
+players:
+  - handle: Lumiere
+    country: PE
+  - handle: lalatronii
+    country: PE
+  - handle: Ryu
+    country: PE
+  - handle: Mjz
+    country: PE
+  - handle: Prada
+    country: PE
