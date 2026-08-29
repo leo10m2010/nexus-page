@@ -1,35 +1,37 @@
 (function () {
-  var TILE_ID = "nx-bracket-map-tile";
+  var TILES = [
+    { id: "nx-partidos-map-tile", testid: "partidos-map", label: "Ver partidos", href: "/admin/partidos-viewer.html" },
+    { id: "nx-bracket-map-tile", testid: "bracket-map", label: "Ver bracket", href: "/admin/bracket-editor.html" },
+  ];
 
-  function ensureTile() {
+  function ensureTiles() {
     var list = document.querySelector('[class*="SidebarNavList"]');
     if (!list) return;
-    if (document.getElementById(TILE_ID)) return;
+    var sample = list.querySelector('[data-testid="equipos"]') || list.querySelector('[class*="SidebarNavLink"]');
+    if (!sample) return;
 
-    var sample = list.querySelector('[class*="SidebarNavLink"]');
-    var tile = sample ? sample.cloneNode(true) : document.createElement("a");
-
-    tile.id = TILE_ID;
-    tile.setAttribute("data-testid", "bracket-map");
-    tile.removeAttribute("aria-current");
-    tile.classList.remove("sidebar-active");
-    tile.setAttribute("href", "/admin/bracket-editor.html");
-
-    tile.childNodes.forEach(function (node) {
-      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-        node.textContent = "Ver bracket";
-      }
+    TILES.forEach(function (spec) {
+      if (document.getElementById(spec.id)) return;
+      var tile = sample.cloneNode(true);
+      tile.id = spec.id;
+      tile.setAttribute("data-testid", spec.testid);
+      tile.removeAttribute("aria-current");
+      tile.classList.remove("sidebar-active");
+      tile.setAttribute("href", spec.href);
+      tile.childNodes.forEach(function (node) {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+          node.textContent = spec.label;
+        }
+      });
+      tile.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.location.href = spec.href;
+      });
+      list.appendChild(tile);
     });
-
-    tile.addEventListener("click", function (e) {
-      e.preventDefault();
-      window.location.href = "/admin/bracket-editor.html";
-    });
-
-    list.appendChild(tile);
   }
 
-  var observer = new MutationObserver(ensureTile);
+  var observer = new MutationObserver(ensureTiles);
   observer.observe(document.body, { childList: true, subtree: true });
-  ensureTile();
+  ensureTiles();
 })();
