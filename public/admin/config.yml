@@ -154,6 +154,8 @@ collections:
         name: "prizePool"
         widget: "object"
         required: false
+        collapsed: true
+        summary: "{{fields.currency}} {{fields.total}}"
         fields:
           - { label: "Moneda (3 letras, ej: USD)", name: "currency", widget: "string" }
           - { label: "Total", name: "total", widget: "number" }
@@ -161,6 +163,7 @@ collections:
             name: "distribution"
             widget: "list"
             required: false
+            collapsed: true
             summary: "Puesto {{fields.place}} — {{fields.amount}}"
             fields:
               - { label: "Puesto", name: "place", widget: "number", value_type: "int" }
@@ -178,6 +181,7 @@ collections:
         name: "phases"
         widget: "list"
         required: false
+        collapsed: true
         summary: "{{fields.key}}"
         fields:
           - label: "Etapa"
@@ -204,6 +208,7 @@ collections:
         name: "participants"
         widget: "list"
         required: false
+        collapsed: true
         summary: "{{fields.team}}"
         fields:
           - label: "Equipo"
@@ -226,6 +231,7 @@ collections:
         name: "broadcastTalent"
         widget: "list"
         required: false
+        collapsed: true
         summary: "{{fields.name}}"
         fields:
           - { label: "Nombre", name: "name", widget: "string" }

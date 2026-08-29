@@ -185,6 +185,43 @@ body,
   border: 1px solid var(--nx-line-strong) !important;
   border-radius: 0.5rem !important;
 }
+[class*="DateTimeControl"] button {
+  background-color: var(--nx-elev-2) !important;
+  color: var(--nx-text) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+  border-radius: 0.375rem !important;
+}
+
+[class*="DropdownList"],
+[class*="StyledMenuItem"],
+[class*="StyledWrapper"] {
+  background-color: var(--nx-elev-2) !important;
+  color: var(--nx-text) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+}
+[class*="StyledMenuItem"]:hover {
+  background-color: var(--nx-elev) !important;
+  color: var(--nx-accent-lift) !important;
+}
+
+[class*="StyledModal"],
+[class*="HeaderContainer"],
+[class*="LibraryTop"],
+[class*="RowContainer"],
+[class*="LibraryTable"],
+[class*="CardsGrid"] {
+  background-color: var(--nx-bg) !important;
+  color: var(--nx-text) !important;
+}
+[class*="StyledModal"] button {
+  background-color: var(--nx-elev-2) !important;
+  color: var(--nx-text) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+}
+[class*="StyledModal"] [class*="CloseButton"] {
+  background-color: var(--nx-elev-2) !important;
+  color: var(--nx-text) !important;
+}
 input[type="date"],
 input[type="datetime-local"],
 input[type="time"] {
@@ -233,10 +270,58 @@ input[type="time"] {
   color: var(--nx-muted) !important;
 }
 
+[class*="FileWidgetButton"] {
+  background-color: var(--nx-elev-2) !important;
+  color: var(--nx-text) !important;
+  border: 1px solid var(--nx-line-strong) !important;
+}
+[class*="FileWidgetButton"]:hover {
+  background-color: var(--nx-elev) !important;
+}
+
 [class*="AvatarDropdownButton"] {
   background-color: var(--nx-elev-2) !important;
 }
 
 [class*="PreviewPaneFrame"] {
   background-color: var(--nx-bg) !important;
+}
+
+@media (max-width: 900px) {
+  [class*="EditorContainer"] {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  .SplitPane > .Pane2,
+  .SplitPane > .Resizer,
+  [class*="EditorToggle"] {
+    display: none !important;
+  }
+  .SplitPane > .Pane1 {
+    width: 100% !important;
+  }
+
+  [class*="ToolbarContainer"] {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 0.5rem !important;
+  }
+  [class*="ToolbarSectionMain"],
+  [class*="ToolbarSectionMeta"],
+  [class*="ToolbarSectionBackLink"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+  [class*="PreviewButtonContainer"] {
+    display: none !important;
+  }
+  [class*="AppHeaderContent"] {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    padding: 0.5rem !important;
+  }
 }
