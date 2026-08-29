@@ -86,8 +86,17 @@ body {
   padding: 0.5rem 0.75rem;
 }
 
-.nx-flag {
-  font-size: 1.125rem;
+.nx-flag-img {
+  width: 22px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgb(238 237 238 / 0.18);
+}
+.nx-flag-img--empty {
+  display: inline-block;
+  background-color: rgb(238 237 238 / 0.1);
 }
 
 .nx-handle {

@@ -47,11 +47,9 @@ function formatDateOnly(value) {
   return date.toLocaleString("es-PE", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
 
-function flagEmoji(code) {
-  if (!code || code.length !== 2) return "";
-  var base = 127397;
-  return String.fromCodePoint(base + code.toUpperCase().charCodeAt(0)) +
-    String.fromCodePoint(base + code.toUpperCase().charCodeAt(1));
+function flagUrl(code) {
+  if (!code || code.length !== 2) return null;
+  return "https://flagcdn.com/24x18/" + code.toLowerCase() + ".png";
 }
 
 var TeamPreview = createClass({
@@ -77,8 +75,11 @@ var TeamPreview = createClass({
       players && players.size > 0
         ? h("ul", { className: "nx-roster" },
             players.map(function (p, i) {
+              var flag = flagUrl(p.get("country"));
               return h("li", { key: i, className: "nx-roster-row" },
-                h("span", { className: "nx-flag" }, flagEmoji(p.get("country"))),
+                flag
+                  ? h("img", { className: "nx-flag-img", src: flag, alt: p.get("country") })
+                  : h("span", { className: "nx-flag-img nx-flag-img--empty" }),
                 h("span", { className: "nx-handle" }, p.get("handle") || "—"),
                 p.get("role") ? h("span", { className: "nx-role" }, p.get("role")) : null
               );
