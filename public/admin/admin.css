@@ -17,6 +17,28 @@
   font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif !important;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--nx-line-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--nx-line-strong);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--nx-accent);
+  background-clip: padding-box;
+}
+
 h1, h2, h3,
 [class*="FieldLabel"],
 [class*="ListCardTitle"],
