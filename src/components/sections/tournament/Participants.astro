@@ -2,21 +2,18 @@
 import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
 import TeamMark from "@ui/TeamMark.astro";
-import type { Participant, Tournament } from "@lib/competition";
-import { formatMoney } from "@lib/format";
+import type { Participant } from "@lib/competition";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
 interface Props {
   id: string;
-  tournament: Tournament;
   participants: Participant[];
 }
-const { id, tournament, participants } = Astro.props;
+const { id, participants } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const c = t.competition;
-const currency = tournament.prizePool?.currency;
 ---
 
 <Section id={id} bordered>
@@ -34,7 +31,7 @@ const currency = tournament.prizePool?.currency;
             <div class="min-w-0 flex-1">
               <h3 class="display-sm truncate text-base">{entry.team.name}</h3>
               <p class="mt-1 text-[0.8125rem] text-muted">
-                {entry.team.tag} <span class="px-1">/</span> {entry.team.region}
+                {entry.team.tag}
               </p>
             </div>
           </div>
@@ -43,13 +40,6 @@ const currency = tournament.prizePool?.currency;
             {entry.via && (
               <span class="rounded-control border border-line-strong px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-muted uppercase">
                 {c.qualification[entry.via]}
-              </span>
-            )}
-            {entry.payout && currency && (
-              <span class="rounded-control border border-accent px-2 py-1 font-display text-[0.625rem] font-bold tracking-[0.14em] text-accent-lift uppercase">
-                {c.place(entry.payout.place)}
-                <span class="px-1">/</span>
-                {formatMoney(entry.payout.amount, currency, locale)}
               </span>
             )}
           </div>
@@ -68,12 +58,31 @@ const currency = tournament.prizePool?.currency;
                       />
                     )}
                     <span class="truncate text-ink">{player.handle}</span>
-                    {player.role && (
-                      <span class="ml-auto shrink-0 text-[0.75rem] text-muted">{player.role}</span>
-                    )}
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+          {entry.team.liquipediaUrl && (
+            <div class="mt-auto flex flex-wrap gap-x-3 gap-y-1 pt-4 text-[0.6875rem] font-medium text-muted">
+              <a
+                href={entry.team.liquipediaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline decoration-line-strong underline-offset-4 transition-colors hover:text-accent-lift"
+              >
+                {c.dataFromLiquipedia} · CC BY-SA 3.0
+              </a>
+              {entry.team.liquipediaLogoSource && (
+                <a
+                  href={entry.team.liquipediaLogoSource}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline decoration-line-strong underline-offset-4 transition-colors hover:text-accent-lift"
+                >
+                  {c.liquipediaLogoSource}
+                </a>
+              )}
             </div>
           )}
         </li>

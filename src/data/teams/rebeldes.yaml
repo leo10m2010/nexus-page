@@ -1,7 +1,6 @@
 id: rebeldes
 name: Rebeldes
 tag: REB
-region: South America
 players:
   - handle: hFn
     country: BR

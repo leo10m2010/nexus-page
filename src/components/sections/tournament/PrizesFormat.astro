@@ -1,17 +1,15 @@
 ---
 import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
-import TeamMark from "@ui/TeamMark.astro";
-import type { Participant, Tournament, Phase } from "@lib/competition";
+import { getPrizeTotal, type Tournament, type Phase } from "@lib/competition";
 import { formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
 interface Props {
   tournament: Tournament;
-  participants: Participant[];
   phases: Phase[];
 }
-const { tournament, participants, phases } = Astro.props;
+const { tournament, phases } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -23,18 +21,24 @@ const payouts = (prize?.distribution ?? []).map((row) => ({
   ...row,
   medal: row.place < 4 ? MEDALS[row.place - 1] : null,
 }));
-const teamById = new Map(participants.map((p) => [p.team.id, p.team]));
-const named = payouts.some((row) => row.team);
+const prizeTotal = getPrizeTotal(tournament);
 
 const hasBoth = Boolean(prize) && phases.length > 0;
 ---
 
 <Section bordered>
+{!prize && phases.length > 0 && (
+  <h2 id="format" class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.format}</h2>
+)}
 
 <div
   class:list={[
     "bento-prize-format grid gap-4",
-    { "bento-prize-format--prize-only": Boolean(prize) && !hasBoth, "bento-prize-format--phases-only": !prize && phases.length > 0 },
+    {
+      "mt-10": !prize && phases.length > 0,
+      "bento-prize-format--prize-only": Boolean(prize) && !hasBoth,
+      "bento-prize-format--phases-only": !prize && phases.length > 0,
+    },
   ]}
   style={`--phase-count:${Math.max(phases.length, 1)}`}
 >
@@ -49,23 +53,21 @@ const hasBoth = Boolean(prize) && phases.length > 0;
         <div class="relative flex flex-wrap items-baseline justify-between gap-4">
           <h2 class="display text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.info.prizePool}</h2>
           <p class="display-sm text-lg text-accent-lift tabular-nums">
-            {formatMoney(prize.total, prize.currency, locale)}
+            {formatMoney(prizeTotal ?? 0, prize.currency, locale)}
           </p>
         </div>
 
         <div class="mt-8 overflow-x-auto">
-          <table class={`w-full border-collapse text-left ${named ? "min-w-[20rem]" : ""}`}>
+          <table class="w-full border-collapse text-left">
             <thead>
               <tr class="border-b border-line-strong">
                 <th scope="col" class="th">{c.prizeHead.place}</th>
                 <th scope="col" class="th text-right">{c.prizeHead.prize}</th>
-                {named && <th scope="col" class="th pl-8">{c.prizeHead.team}</th>}
               </tr>
             </thead>
             <tbody>
               {
                 payouts.map((row) => {
-                  const team = row.team ? (teamById.get(row.team) ?? null) : null;
                   return (
                     <tr class="border-b border-line last:border-0">
                       <td class="py-3.5 font-display text-[0.9375rem] font-bold text-ink">
@@ -81,20 +83,6 @@ const hasBoth = Boolean(prize) && phases.length > 0;
                       <td class="py-3.5 text-right text-[0.9375rem] text-ink tabular-nums">
                         {formatMoney(row.amount, prize.currency, locale)}
                       </td>
-                      {named && (
-                        <td class="py-3.5 pl-8">
-                          {team ? (
-                            <span class="flex items-center gap-2.5">
-                              <TeamMark team={team} size={24} />
-                              <span class="truncate text-[0.9375rem]">{team.name}</span>
-                            </span>
-                          ) : (
-                            <span class="text-[0.9375rem] text-muted" aria-hidden="true">
-                              &mdash;
-                            </span>
-                          )}
-                        </td>
-                      )}
                     </tr>
                   );
                 })
@@ -109,7 +97,7 @@ const hasBoth = Boolean(prize) && phases.length > 0;
   {
     phases.map((phase, i) => (
       <div
-        {...(i === 0 ? { id: "format" } : {})}
+        {...(i === 0 && prize ? { id: "format" } : {})}
         class="bento-cell bento-phase card-tile relative overflow-hidden rounded-card p-8 sm:p-10"
         style={`--phase-row:${i + 1}`}
       >

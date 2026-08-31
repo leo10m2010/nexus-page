@@ -23,7 +23,9 @@ const pairs = (matches: ResolvedMatch[]): ResolvedMatch[][] =>
   }, []);
 
 const feeds = (round: BracketRound, next: BracketRound | undefined): boolean =>
-  next != null && next.matches.length * 2 === round.matches.length;
+  next != null &&
+  (next.matches.length * 2 === round.matches.length ||
+    (next.matches.length === 1 && round.matches.length === 1));
 
 const heading = (round: BracketRound): string =>
   round.stage ? c.stage[round.stage] : c.round(round.round);
@@ -33,7 +35,11 @@ const repeatsSide = (side: BracketSide, round: BracketRound): boolean =>
 
 const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
   if (!match.score) return false;
-  const [home, away] = match.score;
+  const { home, away } = match.score;
+  if (match.bestOf) {
+    const winsNeeded = Math.floor(match.bestOf / 2) + 1;
+    if (Math.max(home, away) !== winsNeeded || Math.min(home, away) >= winsNeeded) return false;
+  }
   return side === "home" ? home > away : away > home;
 };
 ---
@@ -44,12 +50,15 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
   <div class="mt-10 flex flex-col gap-12">
     {
       sides.map((side) => (
-        <div>
-          {sides.length > 1 && (
-            <h3 class="display-sm mb-5 text-sm text-accent-lift">{c.bracketSide[side.side]}</h3>
-          )}
+        <section>
+          <h3 class="display-sm mb-5 text-sm text-accent-lift">{c.bracketSide[side.side]}</h3>
 
-          <div class="overflow-x-auto pb-2">
+          <div
+            class="overflow-x-auto pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-lift"
+            role="region"
+            aria-label={c.bracketSide[side.side]}
+            tabindex="0"
+          >
             <div class="bracket">
               {side.rounds.map((round, r) => (
                 <div class={`bracket-round ${feeds(round, side.rounds[r + 1]) ? "is-feeding" : ""}`}>
@@ -69,10 +78,11 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
                               <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
                                 <TeamMark team={match[seat]} size={20} />
 
-                                <span class="truncate">{match[seat]?.name}</span>
+                                <span class="truncate">{match[seat]?.name ?? c.tbd}</span>
                                 <span class="bracket-score tabular-nums">
-                                  {match.score ? match.score[seat === "home" ? 0 : 1] : "-"}
+                                  {match.score ? match.score[seat] : "-"}
                                 </span>
+                                {winner(match, seat) && <span class="sr-only">, {c.winner}</span>}
                               </div>
                             ))}
                           </article>
@@ -84,7 +94,7 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       ))
     }
   </div>

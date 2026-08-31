@@ -2,7 +2,12 @@
 import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
 import StatusBadge from "@ui/StatusBadge.astro";
-import type { Tournament } from "@lib/competition";
+import {
+  getPrizeTotal,
+  getTournamentFormats,
+  getTournamentTeamCount,
+  type Tournament,
+} from "@lib/competition";
 import { formatDateRange, formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale, DEFAULT_LOCALE } from "@lib/i18n";
 import { NAV_HEIGHT } from "@config/nav";
@@ -17,6 +22,9 @@ const t = useTranslations(locale);
 const c = t.competition;
 
 const backHref = `${locale === DEFAULT_LOCALE ? "" : `/${locale}`}/competition/`;
+const prizeTotal = getPrizeTotal(tournament);
+const teamCount = getTournamentTeamCount(tournament);
+const formatSummary = getTournamentFormats(tournament).map((format) => c.format[format]).join(" + ");
 
 const where = tournament.location
   ? { label: c.info.location, value: tournament.location, icon: "ph:map-pin-bold" }
@@ -32,21 +40,17 @@ const facts = [
   },
   {
     label: c.info.prizePool,
-    value: tournament.prizePool
-      ? formatMoney(tournament.prizePool.total, tournament.prizePool.currency, locale)
+    value: tournament.prizePool && prizeTotal != null
+      ? formatMoney(prizeTotal, tournament.prizePool.currency, locale)
       : null,
     icon: "ph:trophy-fill",
     accent: true,
   },
-  { label: c.info.teams, value: c.teamCount(tournament.teamCount), icon: "ph:users-three-bold" },
-  { label: c.info.format, value: c.format[tournament.format], icon: "ph:flow-arrow-bold" },
+  { label: c.info.teams, value: teamCount == null ? null : c.teamCount(teamCount), icon: "ph:users-three-bold" },
+  { label: c.info.format, value: formatSummary || null, icon: "ph:flow-arrow-bold" },
   where,
 ].filter((f): f is { label: string; value: string; icon: string; accent?: boolean } => f.value !== null);
 
-const series =
-  tournament.series && !tournament.name.toLowerCase().includes(tournament.series.toLowerCase())
-    ? tournament.series
-    : null;
 ---
 
 <Section class="relative overflow-hidden border-b border-line">
@@ -61,7 +65,6 @@ const series =
     </a>
 
     <div class="reveal mt-6 flex flex-wrap items-center gap-4">
-      {series && <p class="eyebrow">{series}</p>}
       <StatusBadge status={tournament.status} />
     </div>
 

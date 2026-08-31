@@ -105,7 +105,7 @@ export interface Dictionary {
     empty: string;
     status: Record<"upcoming" | "live" | "finished", string>;
     format: Record<
-      "doubleElimination" | "singleElimination" | "roundRobin" | "swiss",
+      "doubleElimination" | "singleElimination" | "roundRobin",
       string
     >;
     stage: Record<
@@ -126,7 +126,6 @@ export interface Dictionary {
     section: Record<"format" | "participants" | "standings" | "bracket" | "matches" | "talent", string>;
 
     info: Record<
-      | "organizer"
       | "venue"
       | "location"
       | "dates"
@@ -139,9 +138,9 @@ export interface Dictionary {
     venue: Record<"online" | "offline" | "hybrid", string>;
 
     qualification: Record<"invited" | "qualifier" | "regional" | "defending", string>;
-    phase: Record<"qualifier" | "groupStage" | "swissStage" | "playoffs" | "finals", string>;
+    phase: Record<"groupStage" | "playoffs" | "finals", string>;
     bracketSide: Record<"upper" | "lower" | "final", string>;
-    prizeHead: Record<"place" | "prize" | "team", string>;
+    prizeHead: Record<"place" | "prize", string>;
 
     standingsHead: Record<"team" | "series" | "maps" | "diff", string>;
 
@@ -156,8 +155,12 @@ export interface Dictionary {
     placeRange: (from: number, to: number) => string;
 
     tbd: string;
+    winner: string;
     roster: string;
     allTournaments: string;
     viewTournament: string;
+    viewOnLiquipedia: string;
+    dataFromLiquipedia: string;
+    liquipediaLogoSource: string;
   };
 }

@@ -1,7 +1,6 @@
 id: pibble-corp
 name: Pibble Corp
 tag: PIB
-region: South America
 logo: /teams/pibble-corp.webp
 players:
   - handle: Lumiere

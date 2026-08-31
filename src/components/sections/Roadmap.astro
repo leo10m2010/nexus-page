@@ -4,7 +4,7 @@ import Section from "@ui/Section.astro";
 import Eyebrow from "@ui/Eyebrow.astro";
 import NexusWordmark from "@ui/NexusWordmark.astro";
 import StageCard from "./roadmap/StageCard.astro";
-import { getRoadmapStages, ROMAN_NUMERALS } from "@lib/roadmap";
+import { getRoadmapNumeral, getRoadmapStages } from "@lib/roadmap";
 import { formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
@@ -19,9 +19,9 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
 
   <div class="gold-glow pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen" aria-hidden="true" />
 
-  <div class="wordmark pointer-events-none absolute inset-0 -z-10 flex items-center overflow-hidden select-none" aria-hidden="true">
+  <div class="wordmark pointer-events-none absolute inset-x-0 top-0 -z-10 flex overflow-hidden select-none" aria-hidden="true">
 
-    <NexusWordmark class="wordmark-svg text-ink" style="--word-brand: currentColor" />
+    <NexusWordmark class="wordmark-svg text-ink" />
   </div>
 
   <div class="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
@@ -34,10 +34,10 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
     <p class="lede reveal max-w-[42ch]" style="--reveal-delay:90ms">{t.roadmap.lede}</p>
   </div>
 
-  <div class="mt-14 grid gap-4 md:grid-cols-3">
+  <div class="roadmap-cards mt-14 grid gap-4 md:grid-cols-3">
     {
       stages.map((stage, i) => (
-        <StageCard stage={stage} numeral={ROMAN_NUMERALS[i]!} />
+        <StageCard stage={stage} numeral={getRoadmapNumeral(i)} />
       ))
     }
   </div>
@@ -61,10 +61,33 @@ const totalPrize = stages.reduce((sum, s) => sum + s.prizeTotal, 0);
     );
   }
 
+  .wordmark {
+    height: clamp(18rem, 30vw, 27rem);
+    align-items: center;
+    justify-content: center;
+    padding-top: clamp(7rem, 9vw, 9rem);
+  }
+
   :global(.wordmark-svg) {
-    width: clamp(36rem, 96vw, 80rem);
+    width: min(88rem, 95vw);
     flex-shrink: 0;
-    opacity: 0.03;
-    transform: rotate(-9deg) translate(6%, 6%);
+    opacity: 0.04;
+    transform: translateY(2%);
+  }
+
+  @media (max-width: 700px) {
+    .wordmark {
+      height: 20rem;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 9rem;
+    }
+
+    :global(.wordmark-svg) {
+      width: calc(100vw - 2.5rem);
+      min-width: 22rem;
+      opacity: 0.05;
+      transform: none;
+    }
   }
 </style>

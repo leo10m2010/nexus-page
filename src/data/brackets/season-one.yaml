@@ -1,0 +1,49 @@
+id: season-one
+tournament: season-one
+defaultBestOf: 3
+matches:
+  - id: s1-ubsf1
+    stage: semifinal
+    startsAt: "2026-09-11T20:00:00Z"
+    bracket: upper
+    round: 1
+    slot: 1
+  - id: s1-ubsf2
+    stage: semifinal
+    startsAt: "2026-09-11T23:00:00Z"
+    bracket: upper
+    round: 1
+    slot: 2
+  - id: s1-ubf
+    stage: upperFinal
+    startsAt: "2026-09-12T23:00:00Z"
+    homeSource: { match: s1-ubsf1, outcome: winner }
+    awaySource: { match: s1-ubsf2, outcome: winner }
+    bracket: upper
+    round: 2
+    slot: 1
+  - id: s1-lbsf
+    stage: lowerRound
+    startsAt: "2026-09-12T20:00:00Z"
+    homeSource: { match: s1-ubsf1, outcome: loser }
+    awaySource: { match: s1-ubsf2, outcome: loser }
+    bracket: lower
+    round: 1
+    slot: 1
+  - id: s1-lbf
+    stage: lowerFinal
+    startsAt: "2026-09-14T17:00:00Z"
+    homeSource: { match: s1-lbsf, outcome: winner }
+    awaySource: { match: s1-ubf, outcome: loser }
+    bracket: lower
+    round: 2
+    slot: 1
+  - id: s1-gf
+    stage: grandFinal
+    startsAt: "2026-09-15T20:00:00Z"
+    homeSource: { match: s1-ubf, outcome: winner }
+    awaySource: { match: s1-lbf, outcome: winner }
+    bestOf: 5
+    bracket: final
+    round: 1
+    slot: 1

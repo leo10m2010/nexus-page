@@ -7,7 +7,7 @@ import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
 import { navItems, NAV_HEIGHT } from "@config/nav";
 import { ctas } from "@config/site";
 import { showCompetition } from "@config/features";
-import { getRoadmapStages, ROMAN_NUMERALS } from "@lib/roadmap";
+import { getRoadmapNumeral, getRoadmapStages } from "@lib/roadmap";
 import { formatMoney } from "@lib/format";
 import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
 
@@ -85,7 +85,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
                           />
                         ) : (
                           <span class="grid h-10 w-10 shrink-0 place-items-center rounded-control border border-accent bg-accent font-display text-sm font-bold text-on-accent">
-                            {ROMAN_NUMERALS[i]}
+                            {getRoadmapNumeral(i)}
                           </span>
                         )}
                         <span class="min-w-0 flex-1">
@@ -111,7 +111,7 @@ const stages = showCompetition ? await getRoadmapStages(locale) : [];
                         (stage, i) =>
                           !stage.href && (
                             <li class="flex items-center gap-3 text-xs">
-                              <span class="font-display font-bold text-muted">{ROMAN_NUMERALS[i]}</span>
+                              <span class="font-display font-bold text-muted">{getRoadmapNumeral(i)}</span>
                               <span class="min-w-0 flex-1 truncate text-muted">{stage.name}</span>
                               <span class="shrink-0 text-muted">{t.roadmap.comingSoon}</span>
                             </li>

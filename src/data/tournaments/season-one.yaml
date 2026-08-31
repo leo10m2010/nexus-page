@@ -4,13 +4,12 @@ status: upcoming
 startDate: 2026-09-06
 endDate: 2026-09-15
 region: South America
-format: doubleElimination
-teamCount: 8
-organizer: Nexus Media
 venue: online
+roadmapIcon: /seasons/nexus-series-i.png
+roadmapColor: "#1477e7"
+liquipediaUrl: https://liquipedia.net/dota2/Nexus_Series/1
 prizePool:
   currency: USD
-  total: 10000
   distribution:
     - place: 1
       amount: 7000
@@ -31,7 +30,6 @@ phases:
     bestOf: 3
 broadcastTalent:
   - name: Papita
-    role: Co-streamer
     icon: simple-icons:kick
     href: https://kick.com/PAPITA
 participants:

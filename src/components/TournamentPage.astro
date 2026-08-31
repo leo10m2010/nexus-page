@@ -20,6 +20,8 @@ import {
   getMatches,
   getParticipants,
   getTournament,
+  getTournamentFormats,
+  getTournamentTeamCount,
 } from "@lib/competition";
 
 interface Props {
@@ -42,6 +44,7 @@ const [participants, groups, bracket, matches] = await Promise.all([
 const phases = tournament.phases ?? [];
 const hasMatches = matches.some((m) => m.home && m.away);
 const talent = tournament.broadcastTalent ?? [];
+const teamCount = getTournamentTeamCount(tournament);
 
 const sections = [
   { id: "prizes", label: c.info.prizePool, show: tournament.prizePool != null },
@@ -56,9 +59,9 @@ const sections = [
 const description = [
   tournament.name,
   formatDateRange(tournament.startDate, tournament.endDate, locale),
-  c.format[tournament.format],
-  c.teamCount(tournament.teamCount),
-].join(" - ");
+  getTournamentFormats(tournament).map((format) => c.format[format]).join(" + "),
+  teamCount == null ? null : c.teamCount(teamCount),
+].filter(Boolean).join(" - ");
 ---
 
 <Base
@@ -73,12 +76,12 @@ const description = [
 
     {
       (tournament.prizePool || phases.length > 0) && (
-        <PrizesFormat tournament={tournament} participants={participants} phases={phases} />
+        <PrizesFormat tournament={tournament} phases={phases} />
       )
     }
     {
       participants.length > 0 && (
-        <Participants id="participants" tournament={tournament} participants={participants} />
+        <Participants id="participants" participants={participants} />
       )
     }
     {groups.length > 0 && <Standings id="standings" groups={groups} />}

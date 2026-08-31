@@ -10,7 +10,8 @@ interface Props {
 }
 const { match, trailing } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
-const [homeScore, awayScore] = match.score ?? [];
+const homeScore = match.score?.home;
+const awayScore = match.score?.away;
 const homeWon = match.score ? homeScore! > awayScore! : false;
 const awayWon = match.score ? awayScore! > homeScore! : false;
 ---

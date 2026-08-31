@@ -6,10 +6,27 @@ import type { Locale } from "@types";
 
 export type Team = CollectionEntry<"teams">["data"];
 export type Tournament = CollectionEntry<"tournaments">["data"];
-export type Match = CollectionEntry<"matches">["data"];
+type GroupMatch = CollectionEntry<"matches">["data"];
+type BracketDocument = CollectionEntry<"brackets">["data"];
+type BracketMatch = BracketDocument["matches"][number];
+type MatchStage = GroupMatch["stage"] | BracketMatch["stage"];
+
+export interface Match {
+  id: string;
+  tournament: string;
+  stage: MatchStage;
+  startsAt: Date;
+  home?: string;
+  away?: string;
+  score?: { home: number; away: number };
+  bestOf?: number;
+  bracket?: BracketMatch["bracket"];
+  round?: number;
+  slot?: number;
+  group?: string;
+}
 export type Player = NonNullable<Team["players"]>[number];
 export type Phase = NonNullable<Tournament["phases"]>[number];
-export type Payout = NonNullable<NonNullable<Tournament["prizePool"]>["distribution"]>[number];
 
 export interface ResolvedMatch extends Omit<Match, "home" | "away" | "tournament"> {
   home: Team | null;
@@ -20,8 +37,6 @@ export interface ResolvedMatch extends Omit<Match, "home" | "away" | "tournament
 export interface Participant {
   team: Team;
   via?: NonNullable<Tournament["participants"]>[number]["via"];
-
-  payout?: Payout;
 }
 
 export interface BracketRound {
@@ -61,6 +76,93 @@ const NAMED_STAGES = new Set<Match["stage"]>([
   "thirdPlace",
 ]);
 
+const FINAL_STAGES = new Set<Match["stage"]>(["final", "grandFinal"]);
+
+function getPhaseForStage(tournament: Tournament, stage: Match["stage"]): Phase | undefined {
+  const phases = tournament.phases ?? [];
+  if (stage === "groupStage") return phases.find((phase) => phase.key === "groupStage");
+  if (FINAL_STAGES.has(stage)) {
+    return phases.find((phase) => phase.key === "finals") ?? phases.find((phase) => phase.key === "playoffs");
+  }
+  return phases.find((phase) => phase.key === "playoffs") ?? phases.find((phase) => phase.key === "finals");
+}
+
+function hasWinningScore(match: BracketMatch, document: BracketDocument): boolean {
+  if (!match.score || match.score.home === match.score.away) return false;
+  const bestOf = match.bestOf ?? document.defaultBestOf;
+  const winsNeeded = Math.floor(bestOf / 2) + 1;
+  return Math.max(match.score.home, match.score.away) === winsNeeded && Math.min(match.score.home, match.score.away) < winsNeeded;
+}
+
+function flattenBracket(document: BracketDocument): Match[] {
+  const matchById = new Map(document.matches.map((match) => [match.id, match]));
+  const resolving = new Set<string>();
+
+  const resolveSide = (match: BracketMatch, side: "home" | "away"): string | undefined => {
+    const direct = match[side];
+    if (direct) return direct;
+
+    const source = match[`${side}Source`];
+    if (!source) return undefined;
+    if (resolving.has(match.id)) {
+      throw new Error(`brackets.yaml: "${document.id}" contains a progression cycle at "${match.id}"`);
+    }
+
+    const sourceMatch = matchById.get(source.match);
+    if (!sourceMatch) {
+      throw new Error(`brackets.yaml: "${match.id}" points at unknown source "${source.match}"`);
+    }
+
+    resolving.add(match.id);
+    const home = resolveSide(sourceMatch, "home");
+    const away = resolveSide(sourceMatch, "away");
+    resolving.delete(match.id);
+
+    if (!home || !away || !sourceMatch.score || !hasWinningScore(sourceMatch, document)) {
+      return undefined;
+    }
+
+    const homeWins = sourceMatch.score.home > sourceMatch.score.away;
+    if (source.outcome === "winner") return homeWins ? home : away;
+    return homeWins ? away : home;
+  };
+
+  return document.matches.map((match) => ({
+    id: match.id,
+    tournament: document.tournament,
+    stage: match.stage,
+    startsAt: match.startsAt,
+    home: resolveSide(match, "home"),
+    away: resolveSide(match, "away"),
+    score: match.score,
+    bestOf: match.bestOf ?? document.defaultBestOf,
+    bracket: match.bracket,
+    round: match.round,
+    slot: match.slot,
+  }));
+}
+
+export function getTournamentTeamCount(tournament: Tournament): number | null {
+  return tournament.participants?.length ?? null;
+}
+
+export function getTournamentFormats(tournament: Tournament): Phase["format"][] {
+  return [...new Set((tournament.phases ?? []).map((phase) => phase.format))];
+}
+
+export function getPrizeTotal(tournament: Tournament): number | null {
+  const distribution = tournament.prizePool?.distribution;
+  if (!distribution?.length) return null;
+  return distribution.reduce(
+    (sum, row) => sum + row.amount * ((row.to ?? row.place) - row.place + 1),
+    0,
+  );
+}
+
+function getMatchPhase(tournament: Tournament, match: Match): Phase | undefined {
+  return getPhaseForStage(tournament, match.stage);
+}
+
 export async function getTeams(): Promise<Team[]> {
   const entries = await getCollection("teams");
   return entries
@@ -91,14 +193,24 @@ export function tournamentPath(id: string, locale: Locale = DEFAULT_LOCALE): str
 }
 
 async function getResolvedMatches(): Promise<ResolvedMatch[]> {
-  const [matches, teams, tournaments] = await Promise.all([
+  const [groupMatches, bracketDocuments, teams, tournaments] = await Promise.all([
     getCollection("matches"),
+    getCollection("brackets"),
     getTeams(),
     getTournaments(),
   ]);
-
   const teamById = new Map(teams.map((t) => [t.id, t]));
   const tournamentById = new Map(tournaments.map((t) => [t.id, t]));
+  const matches: Match[] = [
+    ...groupMatches.map(({ data }) => data),
+    ...bracketDocuments.flatMap(({ data }) => {
+      const tournament = tournamentById.get(data.tournament);
+      if (!tournament) {
+        throw new Error(`brackets.yaml: "${data.id}" points at unknown tournament "${data.tournament}"`);
+      }
+      return flattenBracket(data);
+    }),
+  ];
 
   const side = (id: string | undefined, matchId: string): Team | null => {
     if (id == null) return null;
@@ -107,14 +219,17 @@ async function getResolvedMatches(): Promise<ResolvedMatch[]> {
     return team;
   };
 
-  return matches.map(({ data }) => {
+  return matches.map((data) => {
     const tournament = tournamentById.get(data.tournament);
     if (!tournament) {
       throw new Error(`matches.yaml: "${data.id}" points at unknown tournament "${data.tournament}"`);
     }
 
+    const defaultPhase = getMatchPhase(tournament, data);
+
     return {
       ...data,
+      bestOf: data.bestOf ?? defaultPhase?.bestOf,
       home: side(data.home, data.id),
       away: side(data.away, data.id),
       tournament,
@@ -179,7 +294,7 @@ export async function getBracket(tournamentId: string): Promise<BracketSide[]> {
               matches.every((m) => m.stage === matches[0]!.stage) && NAMED_STAGES.has(matches[0]!.stage)
                 ? matches[0]!.stage
                 : null,
-            matches,
+            matches: [...matches].sort((a, b) => (a.slot ?? 0) - (b.slot ?? 0)),
           })),
       };
     })
@@ -194,7 +309,7 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
   const byGroup = new Map<string, Map<string, StandingRow>>();
 
   for (const match of played) {
-    const [homeScore, awayScore] = match.score!;
+    const { home: homeScore, away: awayScore } = match.score!;
     const table = byGroup.get(match.group!) ?? new Map<string, StandingRow>();
     byGroup.set(match.group!, table);
 
@@ -234,17 +349,11 @@ export async function getParticipants(tournament: Tournament): Promise<Participa
   if (!tournament.participants?.length) return [];
 
   const teamById = new Map((await getTeams()).map((t) => [t.id, t]));
-  const payoutByTeam = new Map(
-    (tournament.prizePool?.distribution ?? [])
-      .filter((row) => row.team)
-      .map((row) => [row.team!, row]),
-  );
-
   return tournament.participants.map(({ team, via }) => {
     const found = teamById.get(team);
     if (!found) {
       throw new Error(`tournaments.yaml: "${tournament.id}" lists unknown team "${team}"`);
     }
-    return { team: found, via, payout: payoutByTeam.get(team) };
+    return { team: found, via };
   });
 }
