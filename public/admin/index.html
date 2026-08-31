@@ -8,8 +8,48 @@
     <link rel="stylesheet" href="/admin/admin.css" />
   </head>
   <body>
+    <main id="cms-status" class="cms-status" role="status" aria-live="polite">
+      <p>
+        <strong>Cargando el panel</strong>
+        <span>Conectando con el gestor de contenido...</span>
+      </p>
+    </main>
+    <noscript>
+      <p class="cms-status">El panel necesita JavaScript para funcionar.</p>
+    </noscript>
+    <dialog
+      id="nx-confirm-dialog"
+      class="nx-confirm-dialog"
+      aria-labelledby="nx-confirm-title"
+      aria-describedby="nx-confirm-message"
+    >
+      <form method="dialog" class="nx-confirm-panel">
+        <span class="nx-confirm-kicker">Panel Nexus</span>
+        <h2 id="nx-confirm-title">Confirmar acción</h2>
+        <p id="nx-confirm-message"></p>
+        <div class="nx-confirm-actions">
+          <button type="submit" value="cancel">Cancelar</button>
+          <button type="submit" value="confirm">Confirmar</button>
+        </div>
+      </form>
+    </dialog>
+    <script src="/admin/admin-guard.js"></script>
     <script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
     <script src="/admin/preview-templates.js"></script>
-    <script src="/admin/sidebar-extra.js"></script>
+    <script src="/admin/admin-ui.js"></script>
+    <script src="/admin/liquipedia-import.js"></script>
+    <script>
+      (function () {
+        var status = document.getElementById("cms-status");
+        if (!window.CMS) {
+          status.setAttribute("role", "alert");
+          status.querySelector("strong").textContent = "No se pudo abrir el panel";
+          status.querySelector("span").textContent = "Revisa tu conexión y vuelve a cargar la página.";
+          return;
+        }
+
+        status.remove();
+      })();
+    </script>
   </body>
 </html>

@@ -116,10 +116,20 @@ flag hasta que los tengas.
 
 ### La página de cada torneo
 
-`/competition/` es el índice. Cada torneo de `tournaments.yaml` tiene además su
+`/competition/` es el índice. Cada torneo de `src/data/tournaments/` tiene además su
 propia página en `/competition/<id>/`, con la estructura que usan las páginas de
 torneo del sector (Liquipedia y compañía), traducida al sistema visual de Nexus:
 sin bordes redondeados, retícula de líneas de un píxel, oro solo como acento.
+
+Al crear y publicar un torneo desde Decap, el siguiente build genera su página en
+los tres idiomas y lo añade automáticamente al índice, al menú y al roadmap,
+ordenado por fecha de inicio. Mientras existan menos de tres torneos, el roadmap
+completa los lugares restantes con las ediciones anunciadas en
+`src/config/roadmap.ts`. `roadmapIcon` permite subir desde el admin un logo para
+la tarjeta y `roadmapColor` conserva el color propio de cada edición; si el logo se
+deja vacío, aparece el número romano. No hace falta editar TypeScript para incorporar
+un torneo nuevo. Los placeholders de Series II y III ya publican sus fechas y colores
+confirmados aunque sus páginas de torneo todavía no existan.
 
 | Sección | Qué muestra | De dónde sale |
 | --- | --- | --- |
@@ -127,51 +137,66 @@ sin bordes redondeados, retícula de líneas de un píxel, oro solo como acento.
 | Barra de secciones | Índice pegajoso que marca por dónde vas leyendo | las secciones que tengan datos |
 | Resumen | Reparto de premios + ficha con los datos del torneo | `prizePool` |
 | Formato | Una tarjeta por fase: sistema, equipos, Bo, cuántos pasan | `phases` |
-| Participantes | Los equipos, cómo entraron, su plantilla y su premio | `participants` + `players` |
+| Participantes | Los equipos, cómo entraron y su plantilla | `participants` + `players` |
 | Clasificación | Tabla de cada grupo: series, mapas, diferencia | se **calcula** de los partidos con `group` |
-| Cuadro | El bracket, con las llaves dibujadas | los partidos con `bracket` y `round` |
-| Partidos | Todos los partidos por día, jugados y por jugar | `matches.yaml` |
+| Cuadro | El bracket, con las llaves dibujadas | `src/data/brackets/*.yaml` |
+| Partidos | Todos los partidos por día, jugados y por jugar | jornadas + cruces del bracket |
 
 **Una sección que no tiene datos no se dibuja, y tampoco aparece en la barra.**
 Un torneo con solo fechas y equipos sigue dando una página que se lee entera,
-no una llena de huecos. Por eso los tres torneos de ejemplo son distintos a
-propósito: Season One lleva cuadro de doble eliminación, LATAM Qualifier lleva
-grupos y no lleva cuadro, y Summer Invitational está terminado con premios ya
-repartidos.
+no una llena de huecos.
 
-Nada de la clasificación está guardado: un resultado se escribe una sola vez,
-en `matches.yaml`, y la tabla se cuenta a partir de ahí. Así una tabla nunca
+Nada de la clasificación está guardado: un resultado de grupos se escribe una sola vez,
+en `src/data/matches/`, y la tabla se cuenta a partir de ahí. Así una tabla nunca
 puede contradecir al resultado del que salió.
 
 ### Editar los datos
 
-Todo está en `src/data/`, en tres archivos con comentarios explicando cada
-campo:
+Todo está en `src/data/`, con un archivo YAML por entrada:
 
 | Archivo | Contiene |
 | --- | --- |
-| `teams.yaml` | Equipos: nombre, abreviatura, región, logo y plantilla opcionales |
-| `tournaments.yaml` | Torneos: fechas, estado, formato, equipos, premios, fases, participantes |
-| `matches.yaml` | Partidos: torneo, fase, fecha y hora, equipos, marcador, cuadro |
+| `src/data/teams/*.yaml` | Equipos: nombre, abreviatura, logo, plantilla y procedencia opcionales |
+| `src/data/tournaments/*.yaml` | Torneos: fechas, estado, sede, logo del roadmap, premios, fases y participantes |
+| `src/data/matches/*.yaml` | Jornada: partidos de grupos, fecha, equipos y resultado |
+| `src/data/brackets/*.yaml` | Eliminatorias: un bracket completo por torneo, con todos sus cruces |
 
-**Un partido pasa de calendario a resultados solo con ponerle `score`.** No hay
-que moverlo de sitio ni tocar código.
+**Un partido pasa de calendario a resultados solo con ponerle `score.home` y
+`score.away`.** En Eliminatorias, ganadores y perdedores avanzan automáticamente
+y todo el bracket se guarda de una sola vez.
 
-**Un hueco del cuadro se publica sin equipos.** Si dejas `home` y `away` sin
-poner, el partido sale como "Por definir": puedes publicar el cuadro entero el
-día uno y solo ir rellenando nombres.
+**Un hueco del cuadro se publica sin equipos.** Solo se eligen los equipos de los
+cruces iniciales; los demás asientos apuntan al ganador o perdedor de un cruce
+anterior y aparecen como "Por definir" hasta que exista ese resultado.
 
 Todo lo que no es obligatorio se puede dejar fuera. Los campos opcionales
-—premios, fases, participantes, plantillas, `bracket`, `group`— existen para
+—premios, fases, participantes, plantillas, `group`— existen para
 encender secciones de la página del torneo; lo que no rellenes, no se dibuja.
 
 Los nombres de fase, formato y estado se traducen solos a los tres idiomas: en
-el YAML escribes la clave (`quarterfinal`, `swiss`, `live`) y la web pone
-"Cuartos de final", "Sistema suizo", "En directo". Lo mismo con lo nuevo:
+el YAML escribes la clave (`quarterfinal`, `roundRobin`, `live`) y la web pone
+"Cuartos de final", "Todos contra todos", "En directo". Lo mismo con lo nuevo:
 `invited` es "Invitado", `hybrid` es "En línea y presencial", y una frase como
 "8 equipos · Bo3 · pasan 4" la escribe cada idioma por su cuenta a partir de los
 números. Por eso no hay texto libre para describir el formato: se rompería en
 los otros dos idiomas.
+
+### Importar un equipo desde Liquipedia
+
+En `Equipos → Nuevo equipo`, el bloque **Importar desde Liquipedia** acepta el
+nombre del equipo o una URL de Liquipedia Dota 2. La consulta abre una vista
+previa con nombre, país, región, plantilla activa y logo. Ningún campo cambia
+hasta pulsar **Aplicar seleccionados**; al actualizar un equipo existente se
+puede excluir cualquier diferencia para conservar el dato local.
+
+El logo se convierte a WebP, con un máximo de 512 px, y se añade al borrador de
+Decap. Al publicar, el YAML y `public/teams/<id>.webp` se guardan juntos. La web
+no enlaza el archivo remoto ni consulta Liquipedia durante las visitas.
+
+La función `/api/liquipedia/team` respeta el límite de la MediaWiki API, mantiene
+los resultados en caché y registra la página de procedencia. En Netlify se puede
+definir `LIQUIPEDIA_USER_AGENT` con un identificador y contacto propios; si no se
+define, se usa `NexusSeriesAdmin/1.0 (https://nexusseries.org)`.
 
 ### Si te equivocas al editar
 
@@ -182,32 +207,30 @@ claro, en vez de dejar la página rota en silencio:
 npm run check:data
 ```
 
-Comprueba que ningún partido apunte a un equipo o torneo que no existe, que no
-haya ids repetidos, que un equipo no juegue contra sí mismo y que un torneo no
-termine antes de empezar. También, ahora que hay más que rellenar: que el
-reparto de premios sume exactamente el bote, que `teamCount` coincida con los
-participantes que has listado, y que un partido con `bracket` diga en qué ronda
-va. Se ejecuta solo dentro de `npm run build`.
+Comprueba que ningún partido apunte a un equipo o torneo que no existe, que los
+ids coincidan con sus archivos, que un equipo no juegue contra sí mismo y que
+un torneo no termine antes de empezar. También valida participantes, fechas,
+fases únicas, rondas del bracket, monedas, premios, resultados y valores Bo.
+Se ejecuta solo dentro de `npm run build`.
 
 Los esquemas de `src/content.config.ts` validan cada archivo por separado.
 Ejemplo real de lo que verías al escribir mal un formato:
 
 ```
 [InvalidContentEntryDataError] tournaments → season-one
-  format: Invalid option: expected one of "doubleElimination"|"singleElimination"|...
-  teamCount: Required
+  phases.0.format: Invalid option: expected one of "doubleElimination"|"singleElimination"|...
 ```
 
 Te dice el archivo, la entrada, el campo y las opciones válidas.
 
 ### Los datos actuales son de ejemplo
 
-Los doce equipos, los tres torneos y los veintinueve partidos están inventados
-para poder ver la página montada, plantillas incluidas. Cada archivo lo avisa
-en la primera línea. Reemplázalos antes de publicar.
+Los ocho equipos, el torneo y los dieciséis partidos actuales están preparados
+para poder ver la página montada, plantillas incluidas. Reemplázalos antes de
+publicar si todavía son datos de ejemplo.
 
 Los equipos sin `logo` se dibujan con un monograma de su abreviatura. Cuando
-tengas los logos reales, déjalos en `public/` y añade la ruta en `teams.yaml`.
+tengas los logos reales, déjalos en `public/teams/` y añade la ruta al archivo del equipo.
 
 ### Horarios
 

@@ -1,10 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter+Tight:wght@400;500;600&display=swap");
 
 body {
+  margin: 0;
   background-color: #06080f;
   color: #eeedee;
   font-family: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
   padding: 1.5rem;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+::selection {
+  background-color: #d2a355;
+  color: #06080f;
 }
 
 .nx-preview {
@@ -14,11 +24,11 @@ body {
 }
 
 .nx-card {
-  border: 1px solid rgb(238 237 238 / 0.18);
+  border: 1px solid #313a50;
   background-color: #0b1020;
-  background-image: linear-gradient(155deg, #101830 0%, #0b1020 55%);
-  border-radius: 0.875rem;
-  padding: 1.5rem;
+  background-image: none;
+  border-radius: 0.25rem;
+  padding: 1.25rem;
 }
 
 .nx-team-card {
@@ -31,11 +41,15 @@ body {
   width: 64px;
   height: 64px;
   object-fit: contain;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   flex-shrink: 0;
 }
 .nx-team-logo--empty {
   background-color: rgb(238 237 238 / 0.08);
+  background-image: url("https://cdn.simpleicons.org/dota2/aeb8cc");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 55%;
 }
 
 .nx-team-name {
@@ -58,14 +72,8 @@ body {
   letter-spacing: 0.08em;
   color: #06080f;
   background-color: #d2a355;
-  border-radius: 0.375rem;
+  border-radius: 0.125rem;
   padding: 0.125rem 0.5rem;
-}
-
-.nx-region {
-  color: #9aa3b8;
-  font-size: 0.875rem;
-  align-self: center;
 }
 
 .nx-roster {
@@ -74,16 +82,18 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
+  border-top: 1px solid #313a50;
 }
 
 .nx-roster-row {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  border: 1px solid rgb(238 237 238 / 0.12);
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid #313a50;
+  border-radius: 0;
+  padding: 0.625rem 0.25rem;
 }
 
 .nx-flag-img {
@@ -92,7 +102,7 @@ body {
   object-fit: cover;
   border-radius: 2px;
   flex-shrink: 0;
-  box-shadow: 0 0 0 1px rgb(238 237 238 / 0.18);
+  box-shadow: 0 0 0 1px #4e5970;
 }
 .nx-flag-img--empty {
   display: inline-block;
@@ -103,9 +113,9 @@ body {
   font-weight: 600;
 }
 
-.nx-role {
+.nx-country {
   margin-left: auto;
-  color: #9aa3b8;
+  color: #b8c1d4;
   font-size: 0.8125rem;
 }
 
@@ -129,7 +139,7 @@ body {
   text-transform: uppercase;
   background-color: #ae7c32;
   color: #06080f;
-  border-radius: 0.375rem;
+  border-radius: 0.125rem;
   padding: 0.25rem 0.625rem;
 }
 
@@ -150,7 +160,7 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  border-top: 1px solid rgb(238 237 238 / 0.12);
+  border-top: 1px solid #4e5970;
   padding-top: 1rem;
 }
 
@@ -187,20 +197,47 @@ body {
 }
 
 .nx-match-card {
-  display: flex;
+  display: grid;
   align-items: center;
-  justify-content: space-between;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: 1rem;
 }
 
 .nx-match-team {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.625rem;
   font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
   font-weight: 700;
   font-size: 1.0625rem;
+  overflow-wrap: anywhere;
+}
+
+.nx-match-team--home {
+  justify-content: flex-end;
+  text-align: right;
 }
 
 .nx-match-team--away {
   text-align: right;
+}
+
+.nx-match-logo {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  object-fit: contain;
+}
+
+.nx-match-logo--fallback {
+  width: 34px;
+  height: 34px;
+  margin: 4px;
+}
+
+.nx-match-team-name {
+  min-width: 0;
 }
 
 .nx-match-score {
@@ -219,8 +256,8 @@ body {
 .nx-bracket-cross {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(238 237 238 / 0.18);
-  border-radius: 0.875rem;
+  border: 1px solid #66718a;
+  border-radius: 0.25rem;
   overflow: hidden;
 }
 
@@ -236,9 +273,7 @@ body {
   background-color: rgb(174 124 50 / 0.16);
 }
 
-.nx-bracket-slot--loser {
-  opacity: 0.55;
-}
+.nx-bracket-slot--loser { color: #b8c1d4; }
 
 .nx-bracket-team {
   font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
@@ -261,11 +296,220 @@ body {
   letter-spacing: 0.08em;
   color: #06080f;
   background-color: #d2a355;
-  border-radius: 0.375rem;
+  border-radius: 0.125rem;
   padding: 0.1875rem 0.5rem;
 }
 
 .nx-bracket-connector {
   height: 1px;
-  background-color: rgb(238 237 238 / 0.18);
+  background-color: #66718a;
+}
+
+.nx-bracket-preview {
+  gap: 2rem;
+}
+
+.nx-bracket-preview-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid #313a50;
+}
+
+.nx-bracket-preview-head h1 {
+  margin: 0.375rem 0 0;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.nx-bracket-preview-head > span {
+  flex: none;
+  padding: 0.375rem 0.625rem;
+  border: 1px solid #66718a;
+  border-radius: 0.25rem;
+  color: #d2a355;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.nx-bracket-preview-side {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.nx-bracket-preview-side > h2 {
+  margin: 0;
+  color: #d2a355;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.nx-bracket-preview-rounds {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.nx-bracket-preview-round {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.nx-bracket-preview-round > h3 {
+  margin: 0;
+  color: #9aa3b8;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nx-bracket-preview-match {
+  overflow: hidden;
+  border: 1px solid #313a50;
+  border-radius: 0.25rem;
+  background: #0b1020;
+}
+
+.nx-bracket-preview-match > header {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid #313a50;
+}
+
+.nx-bracket-preview-match > header strong {
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+}
+
+.nx-bracket-preview-match > header span {
+  color: #9aa3b8;
+  font-size: 0.625rem;
+}
+
+.nx-bracket-preview-seat {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.625rem;
+  min-height: 48px;
+  padding: 0.5rem 0.75rem;
+  border-left: 2px solid transparent;
+}
+
+.nx-bracket-preview-seat + .nx-bracket-preview-seat {
+  border-top: 1px solid #313a50;
+}
+
+.nx-bracket-preview-seat--winner {
+  border-left-color: #d2a355;
+  background: rgb(210 163 85 / 0.08);
+}
+
+.nx-bracket-preview-logo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.nx-bracket-preview-logo--fallback {
+  width: 24px;
+  height: 24px;
+  margin: 3px;
+}
+
+.nx-bracket-preview-logo--empty {
+  border: 1px dashed #66718a;
+  border-radius: 0.25rem;
+}
+
+.nx-bracket-preview-team {
+  display: grid;
+  min-width: 0;
+  gap: 0.125rem;
+}
+
+.nx-bracket-preview-team strong,
+.nx-bracket-preview-team small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nx-bracket-preview-team strong {
+  font-size: 0.75rem;
+}
+
+.nx-bracket-preview-team small {
+  color: #9aa3b8;
+  font-size: 0.625rem;
+}
+
+.nx-bracket-preview-score {
+  color: #d2a355;
+  font-family: "Archivo", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 520px) {
+  body { padding: 1rem; }
+
+  .nx-card { padding: 1rem; }
+
+  .nx-team-card {
+    align-items: flex-start;
+    gap: 0.875rem;
+  }
+
+  .nx-team-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .nx-tournament-top {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nx-tournament-facts { grid-template-columns: 1fr; }
+
+  .nx-match-team {
+    gap: 0.375rem;
+    font-size: 0.875rem;
+  }
+
+  .nx-match-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nx-bracket-preview-head {
+    display: grid;
+  }
+
+  .nx-bracket-preview-head > span {
+    justify-self: start;
+  }
+
+  .nx-match-logo--fallback {
+    width: 30px;
+    height: 30px;
+    margin: 3px;
+  }
+
+  .nx-bracket-slot {
+    flex-wrap: wrap;
+    padding: 0.875rem;
+  }
 }

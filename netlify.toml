@@ -12,3 +12,8 @@
   from = "/api/callback"
   to = "/.netlify/functions/callback"
   status = 200
+
+[[redirects]]
+  from = "/api/liquipedia/team"
+  to = "/.netlify/functions/liquipedia-team"
+  status = 200

@@ -3,6 +3,7 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
+import { liquipediaDevApi } from './scripts/liquipedia-dev-api.mjs';
 
 export default defineConfig({
   site: 'https://nexusseries.org',
@@ -19,5 +20,5 @@ export default defineConfig({
       i18n: { defaultLocale: 'en', locales: { en: 'en', es: 'es', ru: 'ru' } },
     }),
   ],
-  vite: { plugins: [tailwindcss()] },
+  vite: { plugins: [tailwindcss(), liquipediaDevApi()] },
 });
