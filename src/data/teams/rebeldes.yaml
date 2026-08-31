@@ -1,6 +1,6 @@
-id: rebeldes
 name: Rebeldes
 tag: REB
+logo: /teams/rebelde-logo-4x.png
 players:
   - handle: hFn
     country: BR
@@ -12,3 +12,4 @@ players:
     country: BR
   - handle: Frath
     country: BR
+id: rebeldes
