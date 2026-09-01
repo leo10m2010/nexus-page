@@ -91,3 +91,26 @@ const description = [
   </main>
   <Footer />
 </Base>
+
+<script>
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const precisePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  if (!reducedMotion && precisePointer) {
+    document.querySelectorAll<HTMLElement>("[data-spotlight]").forEach((surface) => {
+      if (surface.dataset.spotlightReady === "true") return;
+      surface.dataset.spotlightReady = "true";
+
+      surface.addEventListener("pointermove", (event) => {
+        const rect = surface.getBoundingClientRect();
+        surface.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+        surface.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+      }, { passive: true });
+
+      surface.addEventListener("pointerleave", () => {
+        surface.style.removeProperty("--spot-x");
+        surface.style.removeProperty("--spot-y");
+      });
+    });
+  }
+</script>

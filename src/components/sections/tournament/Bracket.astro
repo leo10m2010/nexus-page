@@ -1,8 +1,9 @@
 ---
+import { Icon } from "astro-icon/components";
 import TeamMark from "@ui/TeamMark.astro";
 import Section from "@ui/Section.astro";
 import type { BracketRound, BracketSide, ResolvedMatch } from "@lib/competition";
-import { formatDate } from "@lib/format";
+import { formatDate, formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
 interface Props {
@@ -42,6 +43,27 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
   }
   return side === "home" ? home > away : away > home;
 };
+
+const winningTeam = (match: ResolvedMatch) => {
+  if (winner(match, "home")) return match.home;
+  if (winner(match, "away")) return match.away;
+  return null;
+};
+
+const bracketSides = sides.map((side) => {
+  const finalRound = side.rounds[side.rounds.length - 1];
+  const finalMatch = side.side === "final"
+    ? finalRound?.matches[finalRound.matches.length - 1] ?? null
+    : null;
+  const champion = finalMatch ? winningTeam(finalMatch) : null;
+  const prizePool = finalMatch?.tournament.prizePool;
+  const winnerPayout = prizePool?.distribution.find((row) => row.place === 1);
+  const championPrize = winnerPayout && prizePool
+    ? formatMoney(winnerPayout.amount, prizePool.currency, locale)
+    : null;
+
+  return { side, finalMatch, champion, championPrize };
+});
 ---
 
 <Section id={id} bordered>
@@ -49,12 +71,12 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
 
   <div class="mt-10 flex flex-col gap-12">
     {
-      sides.map((side) => (
-        <section>
+      bracketSides.map(({ side, finalMatch, champion, championPrize }) => (
+        <section class="bracket-side" data-side={side.side}>
           <h3 class="display-sm mb-5 text-sm text-accent-lift">{c.bracketSide[side.side]}</h3>
 
           <div
-            class="overflow-x-auto pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-lift"
+            class={`bracket-region overflow-x-auto pb-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent-lift${finalMatch ? " has-champion" : ""}`}
             role="region"
             aria-label={c.bracketSide[side.side]}
             tabindex="0"
@@ -93,6 +115,36 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
                 </div>
               ))}
             </div>
+
+            {finalMatch && (
+              <>
+                <span class="champion-connector" aria-hidden="true"></span>
+                <aside
+                  class={`champion-card${champion ? " is-crowned" : ""}`}
+                  data-spotlight
+                  aria-label={`${c.winner}: ${champion?.name ?? c.tbd}`}
+                >
+                  <p class="champion-label">{c.winner}</p>
+
+                  <div class="champion-mark" aria-hidden={!champion ? "true" : undefined}>
+                    {champion ? (
+                      <TeamMark team={champion} size={72} />
+                    ) : (
+                      <Icon name="ph:crown-simple-fill" />
+                    )}
+                  </div>
+
+                  <h4 class="champion-name display-sm">{champion?.name ?? c.tbd}</h4>
+
+                  {championPrize && (
+                    <p class="champion-prize tabular-nums">
+                      <Icon name="ph:trophy-fill" aria-hidden="true" />
+                      {championPrize}
+                    </p>
+                  )}
+                </aside>
+              </>
+            )}
           </div>
         </section>
       ))
@@ -106,6 +158,11 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
     align-items: stretch;
     gap: 2.5rem;
     min-width: max-content;
+  }
+
+  .bracket-region.has-champion {
+    display: flex;
+    align-items: center;
   }
 
   .bracket-round { display: flex; width: 15.5rem; flex-direction: column; }
@@ -136,6 +193,16 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
     border: 1px solid var(--c-line);
     border-radius: var(--radius-control);
     background: var(--c-bg-elev);
+    transition:
+      border-color 220ms var(--ease-out-quint),
+      background-color 220ms var(--ease-out-quint),
+      box-shadow 260ms var(--ease-out-quint);
+  }
+
+  .bracket-match:hover {
+    border-color: var(--c-line-strong);
+    background: var(--c-bg-elev-2);
+    box-shadow: 0 18px 36px -30px rgb(0 0 0 / 0.72);
   }
 
   .bracket-meta {
@@ -189,5 +256,158 @@ const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
     left: calc(100% + 1.25rem);
     height: 1px;
     width: 1.25rem;
+  }
+
+  .champion-connector {
+    position: relative;
+    width: 3rem;
+    height: 1px;
+    flex: none;
+    margin-top: 1.75rem;
+    background: linear-gradient(90deg, var(--c-line-strong), var(--c-accent-lift));
+  }
+
+  .champion-connector::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 999px;
+    background: var(--c-accent-lift);
+    content: "";
+    transform: translate(50%, -50%);
+  }
+
+  .champion-card {
+    --spot-x: 50%;
+    --spot-y: 38%;
+    position: relative;
+    display: grid;
+    width: 18rem;
+    min-height: 18rem;
+    flex: none;
+    place-items: center;
+    align-content: center;
+    gap: 1rem;
+    overflow: hidden;
+    padding: 1.5rem;
+    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 72%, var(--c-line));
+    border-radius: var(--radius-card);
+    background: var(--c-bg-elev);
+    color: var(--c-accent-lift);
+    box-shadow: 0 30px 72px -46px color-mix(in srgb, var(--c-accent-lift) 50%, transparent);
+    text-align: center;
+    transition:
+      border-color 260ms var(--ease-out-quint),
+      background-color 260ms var(--ease-out-quint),
+      box-shadow 320ms var(--ease-out-quint);
+  }
+
+  .champion-card::before {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      20rem circle at var(--spot-x) var(--spot-y),
+      color-mix(in srgb, var(--c-accent-lift) 22%, transparent),
+      transparent 64%
+    );
+    content: "";
+    opacity: 0.34;
+    pointer-events: none;
+    transition: opacity 280ms var(--ease-out-quint);
+  }
+
+  .champion-card::after {
+    position: absolute;
+    inset: 0.2rem 12% auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-accent-lift), transparent);
+    content: "";
+    opacity: 0.85;
+  }
+
+  .champion-card:hover {
+    border-color: var(--c-accent-lift);
+    background-color: var(--c-bg-elev-2);
+    box-shadow: 0 34px 80px -42px color-mix(in srgb, var(--c-accent-lift) 62%, transparent);
+  }
+
+  .champion-card:hover::before { opacity: 1; }
+
+  .champion-card.is-crowned::before { opacity: 0.62; }
+
+  .champion-label,
+  .champion-prize {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+
+  .champion-mark {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 5rem;
+    height: 5rem;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 64%, transparent);
+    border-radius: var(--radius-control);
+    background: color-mix(in srgb, var(--c-accent-lift) 8%, transparent);
+  }
+
+  .champion-mark > :global(svg) { width: 2.25rem; height: 2.25rem; }
+
+  .champion-name {
+    position: relative;
+    z-index: 1;
+    max-width: 14ch;
+    color: var(--c-text);
+    font-size: 1.5rem;
+  }
+
+  .champion-prize {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
+    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 52%, transparent);
+    border-radius: var(--radius-control);
+    letter-spacing: 0.08em;
+  }
+
+  .champion-prize :global(svg) { width: 0.875rem; height: 0.875rem; }
+
+  @media (max-width: 639px) {
+    .bracket-region.has-champion {
+      display: grid;
+      width: 100%;
+      min-width: 0;
+      justify-items: center;
+    }
+
+    .bracket-region.has-champion .bracket { width: 100%; min-width: 0; }
+    .bracket-region.has-champion .bracket-round { width: 100%; }
+
+    .champion-connector {
+      width: 1px;
+      height: 2rem;
+      margin-top: 0;
+      background: linear-gradient(180deg, var(--c-line-strong), var(--c-accent-lift));
+    }
+
+    .champion-connector::after { top: auto; right: 50%; bottom: 0; transform: translate(50%, 50%); }
+
+    .champion-card { width: 100%; min-height: 16rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bracket-match,
+    .champion-card,
+    .champion-card::before { transition: none; }
   }
 </style>
