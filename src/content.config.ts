@@ -24,6 +24,28 @@ const teams = defineCollection({
   }),
 });
 
+const sponsor = z.object({
+  name: z.string(),
+  logo: z.string(),
+  url: z
+    .url()
+    .refine(
+      (url) => /^https:\/\/[A-Za-z0-9.-]+(?::[0-9]+)?(?:\/[^\s]*)?$/.test(url),
+      "Usa una URL HTTPS completa y sin espacios",
+    )
+    .optional(),
+  tier: z.enum(["principal", "official", "collaborator"]).default("official"),
+  surface: z.enum(["auto", "light", "dark"]).default("auto"),
+  active: z.boolean().default(true),
+});
+
+const sponsors = defineCollection({
+  loader: glob({ pattern: "*.yaml", base: "./src/data/sponsors" }),
+  schema: z.object({
+    sponsors: z.array(sponsor).default([]),
+  }),
+});
+
 const qualification = z.enum(["invited", "qualifier", "regional", "defending"]);
 const bestOf = z
   .number()
@@ -262,4 +284,4 @@ const brackets = defineCollection({
     }),
 });
 
-export const collections = { teams, tournaments, matches, brackets };
+export const collections = { teams, sponsors, tournaments, matches, brackets };

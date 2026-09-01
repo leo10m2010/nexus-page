@@ -30,6 +30,12 @@ var PHASE_LABELS = {
   finals: "Finales",
 };
 
+var SPONSOR_TIER_LABELS = {
+  principal: "Sponsor principal",
+  official: "Sponsor oficial",
+  collaborator: "Colaborador",
+};
+
 var DOTA_ICON_URL = "https://cdn.simpleicons.org/dota2/aeb8cc";
 var TEAM_META = {
   "amaru-gaming": { name: "Amaru Gaming", logo: "/teams/amaru-gaming.webp" },
@@ -434,7 +440,83 @@ var BracketPreview = createClass({
   },
 });
 
+var SponsorPreview = createClass({
+  render: function () {
+    var data = this.props.entry.get("data");
+    var sponsors = data.get("sponsors");
+    var getAsset = this.props.getAsset;
+    var sponsorList = sponsors ? sponsors.toArray() : [];
+
+    function sponsorMonogram(sponsor) {
+      var name = (sponsor.get("name") || "NXS").trim();
+      return name.split(/\s+/).slice(0, 2).map(function (word) { return word.charAt(0); }).join("").toUpperCase();
+    }
+
+    function sponsorLogo(sponsor) {
+      var logo = sponsor.get("logo");
+      return logo
+        ? h("div", { className: "nx-sponsor-preview-logo-stack" },
+            h("img", {
+              src: getAsset(logo).toString(),
+              alt: "",
+              onError: function (event) {
+                event.currentTarget.hidden = true;
+                if (event.currentTarget.nextElementSibling) event.currentTarget.nextElementSibling.hidden = false;
+              },
+            }),
+            h("span", { className: "nx-sponsor-preview-monogram", hidden: true }, sponsorMonogram(sponsor))
+          )
+        : h("span", { className: "nx-sponsor-preview-monogram" }, sponsorMonogram(sponsor));
+    }
+
+    function sponsorClass(base, sponsor) {
+      var surface = sponsor.get("surface") || "auto";
+      var tier = sponsor.get("tier") || "official";
+      var active = sponsor.get("active") !== false;
+      return base + " nx-sponsor-preview-surface--" + surface +
+        (tier === "principal" ? " nx-sponsor-preview-card--principal" : "") +
+        (!active ? " nx-sponsor-preview-card--hidden" : "");
+    }
+
+    return h("div", { className: "nx-preview nx-sponsor-preview" },
+      h("div", { className: "nx-sponsor-preview-head" },
+        h("div", null,
+          h("p", { className: "nx-match-stage" }, "PORTADA · NEXUS SERIES"),
+          h("h1", null, "Sponsors y colaboradores")
+        ),
+        h("span", null, sponsorList.length, sponsorList.length === 1 ? " marca" : " marcas")
+      ),
+      sponsorList.length > 0
+        ? h("div", { className: "nx-sponsor-preview-strip", "data-count": sponsorList.length },
+            sponsorList.map(function (sponsor, index) {
+              var tier = sponsor.get("tier") || "official";
+              return h("article", {
+                key: index,
+                className: sponsorClass("nx-sponsor-preview-card", sponsor),
+              },
+                h("span", { className: "nx-sponsor-preview-tier" }, SPONSOR_TIER_LABELS[tier] || tier),
+                h("div", { className: "nx-sponsor-preview-logo-field" }, sponsorLogo(sponsor)),
+                h("div", { className: "nx-sponsor-preview-footer" },
+                  h("strong", null, sponsor.get("name") || "Nombre de la marca"),
+                  sponsor.get("active") === false
+                    ? h("span", { className: "nx-sponsor-preview-status" }, "Oculto")
+                    : null
+                )
+              );
+            })
+          )
+        : h("div", { className: "nx-sponsor-preview-empty" },
+            h("div", { className: "nx-sponsor-preview-empty-field" },
+              h("strong", null, "Aún no hay sponsors cargados"),
+              h("span", null, "Añade una marca en el formulario para verla aquí.")
+            )
+          )
+    );
+  },
+});
+
 CMS.registerPreviewTemplate("equipos", TeamPreview);
+CMS.registerPreviewTemplate("homepage", SponsorPreview);
 CMS.registerPreviewTemplate("torneos", TournamentPreview);
 CMS.registerPreviewTemplate("partidos", MatchPreview);
 CMS.registerPreviewTemplate("brackets", BracketPreview);

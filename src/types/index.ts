@@ -71,7 +71,13 @@ export interface Dictionary {
   channels: { intro: string; languages: Record<ChannelCode, string> };
   about: { eyebrow: string; heading: string; body: [string, string] };
   vision: { heading: string; lede: string; pillars: Pillar[] };
-  partners: { heading: string; lede: string; slotLabel: string };
+  partners: {
+    heading: string;
+    lede: string;
+    slotLabel: string;
+    tier: Record<"principal" | "official" | "collaborator", string>;
+    visitWebsite: string;
+  };
   contact: { eyebrow: string; heading: [string, string]; lede: string };
   footer: { rights: string; navHeading: string; watchHeading: string };
 

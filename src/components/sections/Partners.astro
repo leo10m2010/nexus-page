@@ -1,40 +1,282 @@
 ---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
 import Button from "@ui/Button.astro";
 import { ctas } from "@config/site";
 import { useTranslations } from "@lib/i18n";
 
 const t = useTranslations(Astro.currentLocale);
-const { heading, lede, slotLabel } = t.partners;
+const { heading, lede, slotLabel, tier, visitWebsite } = t.partners;
+const entries = await getCollection("sponsors");
+const sponsors = entries.flatMap((entry) => entry.data.sponsors).filter((sponsor) => sponsor.active);
+const sponsorCount = sponsors.length;
+const sponsorRemainder = sponsorCount % 3;
 
-const SLOT_COUNT = 3;
-const slots = Array.from({ length: SLOT_COUNT }, (_, i) => i + 1);
+const monogram = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase() || "NXS";
 ---
 
-<Section bordered labelledby="partners-heading">
-  <div class="flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
-    <div class="min-w-0 max-w-[46ch]">
-      <h2 id="partners-heading" class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">
+<Section
+  id="partners"
+  bordered
+  labelledby="partners-heading"
+  spacing="none"
+  class="sponsors-section relative isolate overflow-hidden py-16 sm:py-20"
+>
+  <div class="sponsors-intro grid gap-7 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+    <div class="max-w-[52rem]">
+      <h2 id="partners-heading" class="display reveal max-w-[18ch] text-[clamp(2rem,3.8vw,3.5rem)]">
         {heading}
       </h2>
-      <p class="lede reveal mt-5" style="--reveal-delay:70ms">{lede}</p>
+      <p class="lede reveal mt-5 max-w-[52ch]" style="--reveal-delay:70ms">{lede}</p>
     </div>
-    <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" class="reveal shrink-0" />
+    <Button {...ctas.partnership} label={t.cta.partnership} variant="ghost" class="reveal w-fit" />
   </div>
 
-  <div
-    class="reveal mt-12 grid gap-4 sm:grid-cols-3"
-    style="--reveal-delay:130ms"
-  >
-    {
-      slots.map((n) => (
-        <div class="card-tile relative grid min-h-[132px] place-items-center rounded-card px-6">
-          <span class="display-sm text-center text-[0.8125rem] tracking-[0.2em] text-muted">
-            {slotLabel}
-          </span>
-          <span class="sr-only">{t.a11y.openSlot(n, SLOT_COUNT)}</span>
-        </div>
-      ))
-    }
-  </div>
+  {
+    sponsorCount > 0 ? (
+      <ul
+        class="sponsor-strip reveal mt-10"
+        data-count={sponsorCount}
+        data-remainder={sponsorRemainder}
+        style="--reveal-delay:130ms"
+      >
+        {sponsors.map((sponsor) => {
+          const SponsorTag = sponsor.url ? "a" : "div";
+          return (
+            <li class="sponsor-item" data-tier={sponsor.tier} data-surface={sponsor.surface} data-sponsor-card>
+              <SponsorTag
+                href={sponsor.url || undefined}
+                target={sponsor.url ? "_blank" : undefined}
+                rel={sponsor.url ? "noopener noreferrer" : undefined}
+                aria-label={sponsor.url ? `${sponsor.name}: ${visitWebsite}` : undefined}
+                class="sponsor-lockup"
+              >
+                <span class="sponsor-lockup-top">
+                  <span class="sponsor-tier">{tier[sponsor.tier]}</span>
+                  {sponsor.url && <Icon name="ph:arrow-up-right-bold" class="sponsor-arrow" aria-hidden="true" />}
+                </span>
+                <span class="sponsor-logo-field">
+                  <img src={sponsor.logo} alt="" loading="lazy" decoding="async" data-sponsor-logo />
+                  <span class="sponsor-logo-fallback" hidden aria-hidden="true">{monogram(sponsor.name)}</span>
+                </span>
+                <span class="sponsor-name">{sponsor.name}</span>
+              </SponsorTag>
+            </li>
+          );
+        })}
+      </ul>
+    ) : (
+      <div class="sponsor-strip sponsor-strip--empty reveal mt-10" style="--reveal-delay:130ms">
+        <span class="sponsor-empty-copy">
+          <span class="sponsor-open-mark" aria-hidden="true"><Icon name="ph:plus-bold" /></span>
+          <strong class="display-sm">{slotLabel}</strong>
+          <span class="sr-only">{t.a11y.openSlot(1, 1)}</span>
+        </span>
+      </div>
+    )
+  }
 </Section>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>("[data-sponsor-logo]").forEach((image) => {
+    const showFallback = () => {
+      image.hidden = true;
+      if (image.nextElementSibling instanceof HTMLElement) image.nextElementSibling.hidden = false;
+    };
+
+    if (image.complete && image.naturalWidth === 0) showFallback();
+    else image.addEventListener("error", showFallback, { once: true });
+  });
+</script>
+
+<style>
+  .sponsors-section::before {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 28%;
+    z-index: -1;
+    background: color-mix(in srgb, var(--c-brand) 8%, transparent);
+    content: "";
+    -webkit-mask-image: linear-gradient(to left, black, transparent);
+    mask-image: linear-gradient(to left, black, transparent);
+  }
+
+  .sponsor-strip {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--radius-card);
+    gap: 1px;
+    background: var(--c-line-strong);
+  }
+
+  .sponsor-item {
+    min-width: 0;
+    background: var(--c-bg-elev);
+  }
+
+  .sponsor-lockup {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    min-height: 11rem;
+    grid-template-rows: auto minmax(5rem, 1fr) auto;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
+    background: var(--c-bg-elev);
+    color: var(--c-text);
+    transition: background-color 0.3s var(--ease-out-quint);
+  }
+
+  .sponsor-item[data-tier="principal"] .sponsor-lockup {
+    box-shadow: inset 0 1px 0 var(--c-accent-lift);
+  }
+
+  a.sponsor-lockup:hover { background: var(--c-bg-elev-2); }
+
+  a.sponsor-lockup:focus-visible {
+    outline: 2px solid var(--c-accent-lift);
+    outline-offset: -4px;
+  }
+
+  .sponsor-lockup-top {
+    display: flex;
+    min-width: 0;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .sponsor-logo-field {
+    display: grid;
+    min-width: 0;
+    width: 100%;
+    overflow: hidden;
+    place-items: center;
+    padding: 0.75rem;
+    border: 1px solid transparent;
+    color: var(--c-text);
+  }
+
+  [data-surface="light"] .sponsor-logo-field {
+    border-color: rgb(16 19 28 / 0.13);
+    background: #f5f5f2;
+    color: #10131c;
+  }
+
+  [data-surface="dark"] .sponsor-logo-field {
+    border-color: rgb(238 237 238 / 0.12);
+    background: #06080f;
+    color: #eeedee;
+  }
+
+  .sponsor-logo-field img {
+    width: min(72%, 14rem);
+    max-height: 5rem;
+    object-fit: contain;
+    transition: transform 0.45s var(--ease-out-quint);
+  }
+
+  .sponsor-strip[data-count="1"] .sponsor-lockup {
+    min-height: 13rem;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .sponsor-strip[data-count="1"] .sponsor-logo-field img {
+    width: min(56%, 28rem);
+    max-height: 7.5rem;
+  }
+
+  .sponsor-item[data-tier="principal"] .sponsor-logo-field img { width: min(78%, 17rem); }
+
+  a.sponsor-lockup:hover .sponsor-logo-field img { transform: scale(1.03); }
+
+  .sponsor-logo-fallback {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.75rem);
+    font-stretch: 118%;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+    text-transform: uppercase;
+  }
+
+  .sponsor-tier,
+  .sponsor-name {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .sponsor-tier { color: var(--c-accent-lift); }
+  .sponsor-name { min-width: 0; overflow-wrap: anywhere; }
+
+  .sponsor-arrow {
+    width: 1rem;
+    height: 1rem;
+    flex: none;
+    transition: transform 0.3s var(--ease-out-quint);
+  }
+
+  a.sponsor-lockup:hover .sponsor-arrow { transform: translate(0.2rem, -0.2rem); }
+
+  .sponsor-strip--empty {
+    display: grid;
+  }
+
+  .sponsor-empty-copy {
+    display: grid;
+    min-height: 10rem;
+    place-content: center;
+    justify-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem;
+    background: var(--c-bg-elev);
+  }
+
+  .sponsor-open-mark {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--radius-control);
+    color: var(--c-accent-lift);
+  }
+
+  @media (min-width: 640px) {
+    .sponsor-strip:not(.sponsor-strip--empty) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sponsor-item:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  }
+
+  @media (min-width: 1024px) {
+    .sponsor-strip:not(.sponsor-strip--empty) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .sponsor-item,
+    .sponsor-item:last-child:nth-child(odd) { grid-column: span 2; }
+    .sponsor-strip[data-remainder="2"] .sponsor-item:nth-last-child(-n + 2) { grid-column: span 3; }
+    .sponsor-strip[data-remainder="1"] .sponsor-item:nth-last-child(-n + 4) { grid-column: span 3; }
+    .sponsor-strip[data-count="1"] .sponsor-item:only-child { grid-column: 1 / -1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sponsor-lockup,
+    .sponsor-logo-field img,
+    .sponsor-arrow { transition: none; }
+
+    a.sponsor-lockup:hover .sponsor-logo-field img,
+    a.sponsor-lockup:hover .sponsor-arrow { transform: none; }
+  }
+</style>

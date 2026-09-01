@@ -71,9 +71,15 @@ export const en: Dictionary = {
   },
 
   partners: {
-    heading: "Partners & collaborators",
-    lede: "Partnership slots are open for brands building in competitive esports.",
+    heading: "The brands backing Nexus Series.",
+    lede: "A space for the partners who make competition possible and the brands ready to build its next stage with us.",
     slotLabel: "Your brand here",
+    tier: {
+      principal: "Main sponsor",
+      official: "Official sponsor",
+      collaborator: "Collaborator",
+    },
+    visitWebsite: "Visit website",
   },
 
   contact: {

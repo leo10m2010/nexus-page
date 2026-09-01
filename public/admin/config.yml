@@ -18,6 +18,57 @@ public_folder: "/uploads"
 locale: "es"
 
 collections:
+  - name: "sponsors"
+    label: "Sponsors"
+    files:
+      - name: "homepage"
+        label: "Sponsors de portada"
+        file: "src/data/sponsors/homepage.yaml"
+        fields:
+          - label: "Sponsors"
+            name: "sponsors"
+            widget: "list"
+            required: false
+            collapsed: true
+            minimize_collapsed: true
+            summary: "{{fields.name}} · {{fields.tier}}"
+            hint: "Arrastra los elementos para cambiar el orden en la portada. Puedes ocultar una marca sin borrarla."
+            fields:
+              - { label: "Nombre de la marca", name: "name", widget: "string" }
+              - label: "Logo"
+                name: "logo"
+                widget: "image"
+                choose_url: false
+                media_folder: "/public/sponsors"
+                public_folder: "/sponsors"
+                hint: "Preferiblemente SVG o PNG/WebP transparente, con espacio alrededor del símbolo."
+              - label: "Sitio web"
+                name: "url"
+                widget: "string"
+                required: false
+                pattern: ["^https://[A-Za-z0-9.-]+(?::[0-9]+)?(?:/[^\\s]*)?$", "Usa una URL HTTPS completa y sin espacios."]
+              - label: "Nivel de presencia"
+                name: "tier"
+                widget: "select"
+                default: "official"
+                options:
+                  - { label: "Sponsor principal (acento destacado)", value: "principal" }
+                  - { label: "Sponsor oficial", value: "official" }
+                  - { label: "Colaborador", value: "collaborator" }
+              - label: "Fondo para el logo"
+                name: "surface"
+                widget: "select"
+                default: "auto"
+                hint: "Usa claro para logos oscuros y oscuro para logos blancos."
+                options:
+                  - { label: "Automático (tema de la web)", value: "auto" }
+                  - { label: "Claro", value: "light" }
+                  - { label: "Oscuro", value: "dark" }
+              - label: "Visible en la web"
+                name: "active"
+                widget: "boolean"
+                default: true
+
   - name: "equipos"
     label: "Equipos"
     label_singular: "Equipo"

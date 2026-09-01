@@ -15,6 +15,8 @@ export const site = {
 
 export const social = {
   discord: "https://discord.gg/yNv97eMAcF",
+  instagram: "https://www.instagram.com/nexusmedia_esports",
+  instagramHandle: "@nexusmedia_esports",
   x: "https://x.com/nexusmedia77",
   xHandle: "@nexusmedia77",
 } as const;
@@ -53,6 +55,13 @@ export const contactRoutes: ContactRoute[] = [
     external: true,
   },
   {
+    icon: "simple-icons:instagram",
+    label: "Instagram",
+    value: social.instagramHandle,
+    href: social.instagram,
+    external: true,
+  },
+  {
     icon: "simple-icons:x",
     label: "X / Twitter",
     value: social.xHandle,
@@ -63,8 +72,9 @@ export const contactRoutes: ContactRoute[] = [
 
 export const socialLinks: (Link & { icon: string })[] = [
   { icon: "simple-icons:x", label: "X / Twitter", href: social.x, external: true },
+  { icon: "simple-icons:instagram", label: "Instagram", href: social.instagram, external: true },
   { icon: "simple-icons:discord", label: "Discord", href: social.discord, external: true },
   { icon: "simple-icons:twitch", label: "Twitch", href: channels[1]!.href, external: true },
 ];
 
-export const sameAs: string[] = [social.x, social.discord, ...channels.map((c) => c.href)];
+export const sameAs: string[] = [social.x, social.instagram, social.discord, ...channels.map((c) => c.href)];

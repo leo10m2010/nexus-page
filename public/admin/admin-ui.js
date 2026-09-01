@@ -304,6 +304,25 @@
     });
   }
 
+  function localizeSponsorEditor() {
+    if (window.location.hash.indexOf("#/collections/sponsors/entries/") !== 0) return;
+    var editor = document.querySelector(".SplitPane > .Pane1") || document;
+
+    editor.querySelectorAll("button").forEach(function (button) {
+      button.childNodes.forEach(function (node) {
+        if (node.nodeType === Node.TEXT_NODE && /^\s*Add sponsors\s*$/i.test(node.nodeValue || "")) {
+          node.nodeValue = "Agregar sponsor";
+        }
+      });
+    });
+
+    editor.querySelectorAll("div, span, p").forEach(function (element) {
+      if (element.childElementCount > 0) return;
+      var match = (element.textContent || "").trim().match(/^(\d+) sponsors$/i);
+      if (match && Number(match[1]) === 1) element.textContent = "1 sponsor";
+    });
+  }
+
   var BRACKET_SIDE_LABELS = {
     upper: "Bracket superior",
     lower: "Bracket inferior",
@@ -1031,6 +1050,7 @@
     enhanceTeamCards();
     formatSummaryDates();
     enhanceMatchCards();
+    localizeSponsorEditor();
 
     var formPane = document.querySelector(".SplitPane > .Pane1");
     var previewPane = document.querySelector(".SplitPane > .Pane2");

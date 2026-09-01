@@ -157,6 +157,7 @@ Todo está en `src/data/`, con un archivo YAML por entrada:
 | Archivo | Contiene |
 | --- | --- |
 | `src/data/teams/*.yaml` | Equipos: nombre, abreviatura, logo, plantilla y procedencia opcionales |
+| `src/data/sponsors/homepage.yaml` | Sponsors de portada: logo, enlace, nivel visual y visibilidad |
 | `src/data/tournaments/*.yaml` | Torneos: fechas, estado, sede, logo del roadmap, premios, fases y participantes |
 | `src/data/matches/*.yaml` | Jornada: partidos de grupos, fecha, equipos y resultado |
 | `src/data/brackets/*.yaml` | Eliminatorias: un bracket completo por torneo, con todos sus cruces |
@@ -180,6 +181,19 @@ el YAML escribes la clave (`quarterfinal`, `roundRobin`, `live`) y la web pone
 "8 equipos · Bo3 · pasan 4" la escribe cada idioma por su cuenta a partir de los
 números. Por eso no hay texto libre para describir el formato: se rompería en
 los otros dos idiomas.
+
+### Gestionar sponsors
+
+En el panel, `Sponsors → Sponsors de portada` contiene una lista reordenable.
+Cada marca admite nombre, logo, sitio web, nivel de presencia y fondo claro u
+oscuro para respetar la versión del logo entregada por el sponsor. Desactivar
+`Visible en la web` la retira de la portada sin borrar sus datos.
+
+Los logos se guardan en `public/sponsors/`. Si solo hay una marca visible, ocupa
+toda la franja. Al añadir más sponsors, se distribuyen automáticamente en filas
+equilibradas para escritorio y móvil; el nivel principal recibe un acento visual
+sutil sin cambiar el orden configurado en el panel. Si la lista está vacía, la
+sección muestra una invitación de patrocinio en lugar de desaparecer.
 
 ### Importar un equipo desde Liquipedia
 
