@@ -1,4 +1,5 @@
 import type { Channel, ContactRoute, CtaIntent, Cta, Link } from "@types";
+import channelSettings from "../data/settings/channels.json";
 
 export const site = {
   name: "Nexus Series",
@@ -21,11 +22,19 @@ export const social = {
   xHandle: "@nexusmedia77",
 } as const;
 
-export const channels: Channel[] = [
-  { code: "ES", flag: "es", language: "Spanish", href: "https://www.twitch.tv/nexusmedia_es" },
-  { code: "EN", flag: "us", language: "English", href: "https://www.twitch.tv/nexusmedia_en" },
-  { code: "RU", flag: "ru", language: "Russian", href: "https://www.twitch.tv/nexusmedia_ru" },
-];
+const channelMeta = {
+  ES: { flag: "es", language: "Spanish" },
+  EN: { flag: "us", language: "English" },
+  RU: { flag: "ru", language: "Russian" },
+} as const;
+
+type ConfiguredChannelCode = keyof typeof channelMeta;
+const configuredChannels = channelSettings.channels as Array<{ code: ConfiguredChannelCode; href: string }>;
+
+export const channels: Channel[] = configuredChannels.map((channel) => ({
+  ...channel,
+  ...channelMeta[channel.code],
+}));
 
 export const ctas = {
   community: {
@@ -74,7 +83,12 @@ export const socialLinks: (Link & { icon: string })[] = [
   { icon: "simple-icons:x", label: "X / Twitter", href: social.x, external: true },
   { icon: "simple-icons:instagram", label: "Instagram", href: social.instagram, external: true },
   { icon: "simple-icons:discord", label: "Discord", href: social.discord, external: true },
-  { icon: "simple-icons:twitch", label: "Twitch", href: channels[1]!.href, external: true },
+  {
+    icon: "simple-icons:twitch",
+    label: "Twitch",
+    href: (channels.find((channel) => channel.code === "EN") ?? channels[0])!.href,
+    external: true,
+  },
 ];
 
 export const sameAs: string[] = [social.x, social.instagram, social.discord, ...channels.map((c) => c.href)];

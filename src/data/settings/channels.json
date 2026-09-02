@@ -1,0 +1,16 @@
+{
+  "channels": [
+    {
+      "code": "ES",
+      "href": "https://www.twitch.tv/nexusmedia_es"
+    },
+    {
+      "code": "EN",
+      "href": "https://www.twitch.tv/nexusmedia_en"
+    },
+    {
+      "code": "RU",
+      "href": "https://www.twitch.tv/nexusmedia_ru"
+    }
+  ]
+}

@@ -30,8 +30,13 @@ phases:
     bestOf: 3
 broadcastTalent:
   - name: Papita
+    language: es
     icon: simple-icons:kick
     href: https://kick.com/PAPITA
+  - name: KosdaBence
+    language: en
+    icon: simple-icons:twitch
+    href: https://www.twitch.tv/nexusmedia_en
 participants:
   - team: amaru-gaming
     via: invited

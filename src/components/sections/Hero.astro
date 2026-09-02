@@ -38,20 +38,31 @@ const { headline, headlineClamp, lede } = t.hero;
 
       <div
         data-parallax
-        class="hero-figures-frame relative w-[76vw] max-w-[54rem] overflow-hidden sm:w-[66vw] md:w-[56vw]"
+        class="hero-figures-frame relative w-[88vw] max-w-[60rem] overflow-hidden sm:w-[74vw] md:w-[60vw]"
       >
-        <Image
-          src={media.heroFigures.src}
+        <img
+          src="/media/hero-figures-poster.webp"
           alt={media.heroFigures.alt}
-          widths={[640, 960, 1280, 1920]}
-          sizes="(min-width: 768px) 46vw, 68vw"
-          format="webp"
-          quality={82}
+          width="1376"
+          height="768"
           loading="eager"
           decoding="sync"
           fetchpriority="high"
-          class="hero-figures h-full w-full object-cover"
+          class="hero-figures-fallback absolute inset-0 h-full w-full object-contain"
         />
+
+        <video
+          data-hero-video
+          class="hero-figures-video relative h-full w-full object-contain"
+          muted
+          loop
+          playsinline
+          preload="auto"
+          poster="/media/hero-figures-poster.webp"
+        >
+          <source src="/media/hero-figures-loop.webm" type="video/webm" />
+          <source src="/media/hero-figures-loop.mp4" type="video/mp4" />
+        </video>
       </div>
     </div>
   </div>
@@ -95,8 +106,26 @@ const { headline, headlineClamp, lede } = t.hero;
 
   const hero = document.getElementById("home");
   const frame = hero?.querySelector<HTMLElement>("[data-parallax]");
+  const video = hero?.querySelector<HTMLVideoElement>("[data-hero-video]");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const hasMouse = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  if (frame && video && !reduced) {
+    const revealVideo = () => frame.classList.add("is-video-ready");
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) revealVideo();
+    else video.addEventListener("canplay", revealVideo, { once: true });
+
+    void video.play().catch(() => {
+      frame.classList.remove("is-video-ready");
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) video.pause();
+      else void video.play().catch(() => {});
+    });
+  } else {
+    video?.pause();
+  }
 
   if (hero && frame && !reduced && hasMouse) {
     const strength = 14;
@@ -185,13 +214,34 @@ const { headline, headlineClamp, lede } = t.hero;
   }
 
   .hero-figures-frame {
-    aspect-ratio: 3 / 2;
-    border-radius: 1.25rem;
-    box-shadow: 0 30px 60px -10px rgb(6 8 15 / 0.55);
+    aspect-ratio: 43 / 24;
     will-change: transform;
 
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 22%);
-    mask-image: linear-gradient(to bottom, transparent 0%, black 22%);
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+    mask-composite: intersect;
+  }
+
+  .hero-figures-fallback,
+  .hero-figures-video {
+    transition: opacity 500ms var(--ease-out-quint);
+  }
+
+  .hero-figures-video {
+    opacity: 0;
+  }
+
+  .hero-figures-frame.is-video-ready .hero-figures-fallback { opacity: 0; }
+  .hero-figures-frame.is-video-ready .hero-figures-video { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-figures-fallback,
+    .hero-figures-video { transition: none; }
   }
 
 </style>

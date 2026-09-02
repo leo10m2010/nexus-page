@@ -14,6 +14,7 @@ const homePath = localePath(locale);
 const homeHref = Astro.url.pathname === homePath ? "#home" : `${homePath}#home`;
 const sectionHref = (hash: string) => (Astro.url.pathname === homePath ? hash : `${homePath}${hash}`);
 const competitionHref = `${homePath}competition/`.replace("//", "/");
+const channelHandle = (href: string) => new URL(href).pathname.replace(/^\/+|\/+$/g, "");
 
 const year = new Date().getFullYear();
 ---
@@ -74,18 +75,22 @@ const year = new Date().getFullYear();
 
     <div>
       <h3 class="eyebrow">{t.footer.watchHeading}</h3>
-      <ul class="mt-5 flex flex-col gap-3">
+      <ul class="watch-list mt-4">
         {
           channels.map((c) => (
-            <li>
+            <li class="watch-item">
               <a
                 href={c.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="footer-link inline-flex items-center gap-2 text-[0.9375rem] text-muted"
+                class="watch-link"
               >
-                <Icon name="simple-icons:twitch" class="size-4 shrink-0" />
-                {t.channels.languages[c.code.toLowerCase() as ChannelCode]}
+                <Icon name={`flag:${c.flag}-4x3`} class="watch-flag" aria-hidden="true" />
+                <span class="min-w-0">
+                  <strong>{t.channels.languages[c.code.toLowerCase() as ChannelCode]}</strong>
+                  <span>@{channelHandle(c.href)}</span>
+                </span>
+                <Icon name="simple-icons:twitch" class="watch-platform" aria-hidden="true" />
               </a>
             </li>
           ))
@@ -124,8 +129,63 @@ const year = new Date().getFullYear();
   .footer-link:hover { color: var(--c-text); }
   .footer-link:hover::after { transform: scaleX(1); }
 
+  .watch-list { border-top: 1px solid var(--c-line); }
+  .watch-item { border-bottom: 1px solid var(--c-line); }
+
+  .watch-link {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+    color: var(--c-text-muted);
+    transition: color 0.2s var(--ease-out-quint), padding-left 0.25s var(--ease-out-quint);
+  }
+
+  .watch-flag {
+    width: 1.5rem;
+    height: 1.125rem;
+    border: 1px solid var(--c-line-strong);
+  }
+
+  .watch-link strong,
+  .watch-link span span {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .watch-link strong {
+    color: var(--c-text);
+    font-family: var(--font-display);
+    font-size: 0.8125rem;
+    font-weight: 650;
+  }
+
+  .watch-link span span { margin-top: 0.125rem; font-size: 0.6875rem; }
+
+  .watch-platform {
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--c-text-muted);
+    transition: color 0.2s var(--ease-out-quint);
+  }
+
+  .watch-link:hover { padding-left: 0.25rem; color: var(--c-text); }
+  .watch-link:hover .watch-platform { color: #9146ff; }
+
+  .watch-link:focus-visible {
+    outline: 2px solid var(--c-accent-lift);
+    outline-offset: 3px;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .brand:active { transform: none; }
     .footer-link::after { transition: none; }
+    .watch-link,
+    .watch-platform { transition: none; }
+    .watch-link:hover { padding-left: 0; }
   }
 </style>

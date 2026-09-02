@@ -69,6 +69,34 @@ collections:
                 widget: "boolean"
                 default: true
 
+  - name: "ajustes"
+    label: "Ajustes globales"
+    files:
+      - name: "canales"
+        label: "Canales en vivo"
+        file: "src/data/settings/channels.json"
+        fields:
+          - label: "Canales oficiales"
+            name: "channels"
+            widget: "list"
+            min: 1
+            max: 3
+            collapsed: false
+            summary: "{{fields.code}} · {{fields.href}}"
+            hint: "El idioma determina automáticamente la bandera que aparece en la web."
+            fields:
+              - label: "Idioma"
+                name: "code"
+                widget: "select"
+                options:
+                  - { label: "Español", value: "ES" }
+                  - { label: "Inglés", value: "EN" }
+                  - { label: "Ruso", value: "RU" }
+              - label: "URL de Twitch"
+                name: "href"
+                widget: "string"
+                pattern: ["^https://(?:www\\.)?twitch\\.tv/[A-Za-z0-9_]+/?$", "Usa una URL completa de Twitch."]
+
   - name: "equipos"
     label: "Equipos"
     label_singular: "Equipo"
@@ -443,6 +471,13 @@ collections:
         summary: "{{fields.name}}"
         fields:
           - { label: "Nombre", name: "name", widget: "string" }
+          - label: "Idioma"
+            name: "language"
+            widget: "select"
+            options:
+              - { label: "Español", value: "es" }
+              - { label: "Inglés", value: "en" }
+              - { label: "Ruso", value: "ru" }
           - label: "Plataforma"
             name: "icon"
             widget: "select"

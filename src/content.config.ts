@@ -100,6 +100,7 @@ const tournaments = defineCollection({
         .array(
           z.object({
             name: z.string(),
+            language: z.enum(["es", "en", "ru"]),
             icon: z.string(),
             href: z.url(),
           }),

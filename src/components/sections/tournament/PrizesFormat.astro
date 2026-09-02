@@ -17,13 +17,16 @@ const c = t.competition;
 
 const prize = tournament.prizePool;
 const MEDALS = ["gold", "silver", "bronze"] as const;
+const prizeTotal = getPrizeTotal(tournament);
 const payouts = (prize?.distribution ?? []).map((row) => ({
   ...row,
   medal: row.place < 4 ? MEDALS[row.place - 1] : null,
+  share: prizeTotal
+    ? (row.amount * ((row.to ?? row.place) - row.place + 1) / prizeTotal) * 100
+    : 0,
 }));
 const podium = payouts.slice(0, 3);
 const remainingPayouts = payouts.slice(3);
-const prizeTotal = getPrizeTotal(tournament);
 const placement = (row: (typeof payouts)[number]) =>
   row.to ? c.placeRange(row.place, row.to) : c.place(row.place);
 const prizeIcon = (place: number) =>
@@ -34,14 +37,20 @@ const prizeIcon = (place: number) =>
   {
     prize && (
       <div id="prizes" class="prize-stage relative isolate">
-        <div class="prize-heading reveal mx-auto text-center">
-          <h2 class="display text-[clamp(2.25rem,5vw,4.75rem)]">{c.info.prizePool}</h2>
-          <p class="prize-total display mt-5 text-accent-lift tabular-nums">
+        <header class="prize-heading reveal">
+          <div class="prize-heading-copy">
+            <span class="prize-sigil" aria-hidden="true">
+              <Icon name="ph:trophy-fill" />
+            </span>
+            <h2 class="display text-[clamp(2.25rem,5vw,4.75rem)]">{c.info.prizePool}</h2>
+          </div>
+
+          <p class="prize-total display text-accent-lift tabular-nums">
             {formatMoney(prizeTotal ?? 0, prize.currency, locale)}
           </p>
-        </div>
+        </header>
 
-        <ol class="prize-podium mt-12" data-count={podium.length}>
+        <ol class="prize-podium mt-10" data-count={podium.length}>
           {podium.map((row, index) => (
             <li
               class:list={["prize-card reveal", { "is-primary": row.place === 1 }]}
@@ -62,7 +71,10 @@ const prizeIcon = (place: number) =>
                 <p class="prize-amount display-sm tabular-nums">
                   {formatMoney(row.amount, prize.currency, locale)}
                 </p>
-                <p class="prize-caption mt-2">{placement(row)}</p>
+                <p class="prize-caption mt-2 tabular-nums">
+                  <span class="sr-only">{c.info.prizePool}: </span>
+                  {Math.round(row.share)}%
+                </p>
               </div>
             </li>
           ))}
@@ -85,39 +97,59 @@ const prizeIcon = (place: number) =>
   {
     phases.length > 0 && (
       <div id="format" class:list={["format-block", { "mt-24 sm:mt-32": Boolean(prize) }]}>
-        <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.format}</h2>
+        <header class="format-heading reveal">
+          <h2 class="display text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.format}</h2>
+          <span class="format-phase-count tabular-nums" aria-hidden="true">
+            {String(phases.length).padStart(2, "0")}
+          </span>
+        </header>
 
-        <div class="format-grid mt-10">
+        <ol class="format-flow mt-8" style={`--phase-count:${phases.length}`}>
           {phases.map((phase, index) => (
-            <article class="phase-card card-tile reveal relative overflow-hidden rounded-card p-8 sm:p-10" style={`--reveal-delay:${Math.min(index * 70, 140)}ms`}>
-              <Icon
-                name="ph:flow-arrow-bold"
-                class="watermark-icon pointer-events-none absolute -right-4 -bottom-6 h-28 w-28 text-ink opacity-[0.05]"
-                aria-hidden="true"
-              />
-              <h3 class="relative display-sm text-xl">{c.phase[phase.key]}</h3>
-              <p class="relative mt-2 text-[0.9375rem] text-accent-lift">{c.format[phase.format]}</p>
+            <li class="phase-step reveal" style={`--reveal-delay:${Math.min(index * 70, 140)}ms`}>
+              <article class="phase-card">
+                <header class="phase-card-heading">
+                  <span class="phase-number display tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+                  <span class="phase-progress tabular-nums">{index + 1} / {phases.length}</span>
+                </header>
 
-              <ul class="relative mt-5 flex flex-wrap gap-2">
-                {phase.teamCount && (
-                  <li class="rounded-control border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
-                    {c.teamCount(phase.teamCount)}
-                  </li>
-                )}
-                {phase.bestOf && (
-                  <li class="rounded-control border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
-                    {c.bestOf(phase.bestOf)}
-                  </li>
-                )}
-                {phase.advance && phase.advance !== phase.teamCount && (
-                  <li class="rounded-control border border-line-strong px-2.5 py-1 text-[0.8125rem] text-muted">
-                    {c.advance(phase.advance)}
-                  </li>
-                )}
-              </ul>
-            </article>
+                <h3 class="phase-title display-sm">{c.phase[phase.key]}</h3>
+
+                <div class="phase-system">
+                  <span class="phase-system-icon" aria-hidden="true">
+                    <Icon name="ph:git-branch-bold" />
+                  </span>
+                  <span>
+                    <small>{c.info.format}</small>
+                    <strong>{c.format[phase.format]}</strong>
+                  </span>
+                </div>
+
+                <ul class="phase-stats">
+                  {phase.teamCount && (
+                    <li>
+                      <Icon name="ph:users-three-bold" aria-hidden="true" />
+                      <span>{c.teamCount(phase.teamCount)}</span>
+                    </li>
+                  )}
+                  {phase.bestOf && (
+                    <li>
+                      <Icon name="ph:sword-bold" aria-hidden="true" />
+                      <span>{c.bestOf(phase.bestOf)}</span>
+                    </li>
+                  )}
+                </ul>
+              </article>
+
+              {index < phases.length - 1 && (
+                <div class="phase-connector" aria-label={phase.advance ? c.advance(phase.advance) : undefined}>
+                  {phase.advance && phase.advance !== phase.teamCount && <span>{c.advance(phase.advance)}</span>}
+                  <Icon name="ph:arrow-right-bold" aria-hidden="true" />
+                </div>
+              )}
+            </li>
           ))}
-        </div>
+        </ol>
       </div>
     )
   }
@@ -148,17 +180,83 @@ const prizeIcon = (place: number) =>
     pointer-events: none;
   }
 
-  .prize-heading { max-width: 56rem; }
+  .prize-heading {
+    display: grid;
+    grid-template-areas: "title total";
+    grid-template-columns: minmax(16rem, 0.8fr) minmax(22rem, 1.2fr);
+    align-items: end;
+    gap: 4rem;
+    padding-block: 2rem;
+    border-block: 1px solid var(--c-line-strong);
+  }
+
+  .prize-heading-copy {
+    display: flex;
+    grid-area: title;
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .prize-sigil {
+    position: relative;
+    display: grid;
+    width: 5.25rem;
+    height: 5.25rem;
+    flex: none;
+    place-items: center;
+    color: var(--c-accent-lift);
+  }
+
+  .prize-sigil::before {
+    position: absolute;
+    inset: 0.75rem;
+    border: 1px solid currentColor;
+    content: "";
+    opacity: 0.62;
+    transform: rotate(45deg);
+  }
+
+  .prize-sigil::after {
+    position: absolute;
+    width: 145%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    content: "";
+    opacity: 0.46;
+  }
+
+  .prize-sigil :global(svg) {
+    position: relative;
+    z-index: 1;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
 
   .prize-total {
+    grid-area: total;
+    justify-self: end;
     font-size: clamp(2.75rem, 7vw, 5.5rem);
     letter-spacing: -0.04em;
     line-height: 0.9;
+    text-align: right;
   }
 
   .prize-podium {
+    position: relative;
     display: grid;
+    align-items: end;
     gap: clamp(0.75rem, 1.4vw, 1.125rem);
+  }
+
+  .prize-podium::after {
+    position: absolute;
+    right: 0;
+    bottom: -0.625rem;
+    left: 0;
+    z-index: -1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--c-line-strong) 12%, var(--c-accent-lift) 50%, var(--c-line-strong) 88%, transparent);
+    content: "";
   }
 
   .prize-card {
@@ -167,7 +265,7 @@ const prizeIcon = (place: number) =>
     position: relative;
     display: grid;
     min-width: 0;
-    min-height: 17rem;
+    min-height: 16.5rem;
     grid-template-rows: auto 1fr auto;
     place-items: center;
     overflow: hidden;
@@ -222,6 +320,7 @@ const prizeIcon = (place: number) =>
   .prize-card[data-medal="standard"] { color: var(--c-accent-lift); }
 
   .prize-card.is-primary {
+    min-height: 20.5rem;
     border-color: color-mix(in srgb, var(--c-accent-lift) 70%, var(--c-line));
     box-shadow: 0 30px 72px -44px color-mix(in srgb, var(--c-accent-lift) 52%, transparent);
   }
@@ -263,6 +362,13 @@ const prizeIcon = (place: number) =>
 
   .prize-emblem :global(svg) { width: 1.75rem; height: 1.75rem; }
 
+  .prize-card.is-primary .prize-emblem {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+
+  .prize-card.is-primary .prize-emblem :global(svg) { width: 2.25rem; height: 2.25rem; }
+
   .prize-amount {
     color: var(--c-text);
     font-size: clamp(1.75rem, 3.1vw, 2.75rem);
@@ -299,21 +405,219 @@ const prizeIcon = (place: number) =>
 
   .prize-remaining strong { color: var(--c-text); }
 
-  .format-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+  .format-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--c-line-strong);
   }
 
-  .phase-card { min-width: 0; min-height: 13rem; }
+  .format-phase-count {
+    color: var(--c-text-muted);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+
+  .format-flow {
+    display: grid;
+    gap: 3.5rem;
+  }
+
+  .phase-step { position: relative; min-width: 0; }
+
+  .phase-card {
+    position: relative;
+    display: flex;
+    min-height: 18.5rem;
+    flex-direction: column;
+    overflow: hidden;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--radius-card);
+    background:
+      linear-gradient(145deg, color-mix(in srgb, var(--c-brand) 8%, transparent), transparent 48%),
+      var(--c-bg-elev);
+  }
+
+  .phase-card::after {
+    position: absolute;
+    right: -4rem;
+    bottom: -6rem;
+    width: 12rem;
+    height: 12rem;
+    border: 1px solid var(--c-line);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2rem color-mix(in srgb, var(--c-line) 38%, transparent);
+    content: "";
+    opacity: 0.5;
+  }
+
+  .phase-card-heading {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+  }
+
+  .phase-number {
+    color: var(--c-accent-lift);
+    font-size: clamp(2.75rem, 5vw, 4.5rem);
+    line-height: 0.8;
+  }
+
+  .phase-progress {
+    color: var(--c-text-muted);
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+  }
+
+  .phase-title {
+    position: relative;
+    z-index: 1;
+    margin-top: 2rem;
+    color: var(--c-text);
+    font-size: clamp(1.25rem, 2.3vw, 1.75rem);
+  }
+
+  .phase-system {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.875rem;
+    margin-top: 1.25rem;
+    padding-block: 1rem;
+    border-block: 1px solid var(--c-line);
+  }
+
+  .phase-system-icon {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    place-items: center;
+    border: 1px solid var(--c-line-strong);
+    border-radius: var(--radius-control);
+    color: var(--c-accent-lift);
+  }
+
+  .phase-system-icon :global(svg) { width: 1rem; height: 1rem; }
+
+  .phase-system small,
+  .phase-system strong { display: block; }
+
+  .phase-system small {
+    color: var(--c-text-muted);
+    font-family: var(--font-display);
+    font-size: 0.625rem;
+    font-weight: 650;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .phase-system strong {
+    margin-top: 0.1875rem;
+    color: var(--c-text);
+    font-size: 0.9375rem;
+  }
+
+  .phase-stats {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    margin-top: auto;
+    padding-top: 1.25rem;
+  }
+
+  .phase-stats li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    color: var(--c-text-muted);
+    font-size: 0.8125rem;
+  }
+
+  .phase-stats :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    color: var(--c-brand-lift);
+  }
+
+  .phase-connector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.625rem;
+    color: var(--c-accent-lift);
+  }
+
+  .phase-connector span {
+    font-family: var(--font-display);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .phase-connector :global(svg) { width: 1.25rem; height: 1.25rem; }
 
   @media (min-width: 768px) {
-    .prize-podium { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
-    .prize-podium[data-count="3"] .prize-card.is-primary { grid-column: 2; grid-row: 1; min-height: 19rem; }
+    .prize-podium { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .prize-podium[data-count="3"] .prize-card.is-primary { grid-column: 2; grid-row: 1; }
     .prize-podium[data-count="3"] .prize-card:nth-child(2) { grid-column: 1; grid-row: 1; }
     .prize-podium[data-count="3"] .prize-card:nth-child(3) { grid-column: 3; grid-row: 1; }
     .prize-podium[data-count="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .prize-podium[data-count="1"] { grid-template-columns: minmax(0, 42rem); justify-content: center; }
+
+    .format-flow { grid-template-columns: repeat(var(--phase-count), minmax(0, 1fr)); }
+
+    .phase-connector {
+      position: absolute;
+      top: 50%;
+      left: calc(100% + 0.5rem);
+      width: 2.5rem;
+      flex-direction: column;
+      transform: translateY(-50%);
+    }
+
+    .phase-connector span {
+      position: absolute;
+      bottom: calc(100% + 0.5rem);
+      width: 7rem;
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .prize-heading {
+      grid-template-areas:
+        "title"
+        "total";
+      grid-template-columns: minmax(0, 1fr);
+      align-items: start;
+      gap: 1.5rem;
+      padding-block: 1.5rem;
+    }
+
+    .prize-sigil { width: 4rem; height: 4rem; }
+    .prize-sigil :global(svg) { width: 1.75rem; height: 1.75rem; }
+    .prize-total { justify-self: start; text-align: left; }
+
+    .prize-card,
+    .prize-card.is-primary { min-height: 17rem; }
+
+    .format-flow { gap: 1rem; }
+    .phase-connector { min-height: 3rem; }
+    .phase-connector :global(svg) { transform: rotate(90deg); }
   }
 
   @media (prefers-reduced-motion: reduce) {

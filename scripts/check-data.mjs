@@ -23,8 +23,29 @@ const teams = load("teams");
 const tournaments = load("tournaments");
 const matches = load("matches");
 const brackets = load("brackets");
+const channelSettings = JSON.parse(readFileSync("src/data/settings/channels.json", "utf8"));
 
 const problems = [];
+
+const channels = channelSettings.channels;
+if (!Array.isArray(channels) || channels.length < 1) {
+  problems.push("settings/channels.json: add at least one official channel");
+} else {
+  const allowedCodes = new Set(["ES", "EN", "RU"]);
+  const channelCodes = new Set();
+  for (const channel of channels) {
+    if (!allowedCodes.has(channel.code)) {
+      problems.push(`settings/channels.json: invalid language code "${channel.code}"`);
+    }
+    if (channelCodes.has(channel.code)) {
+      problems.push(`settings/channels.json: language "${channel.code}" is repeated`);
+    }
+    channelCodes.add(channel.code);
+    if (!/^https:\/\/(?:www\.)?twitch\.tv\/[A-Za-z0-9_]+\/?$/.test(channel.href ?? "")) {
+      problems.push(`settings/channels.json: "${channel.code}" needs a valid Twitch URL`);
+    }
+  }
+}
 
 const duplicates = (rows, label) => {
   const seen = new Set();
