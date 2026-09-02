@@ -18,62 +18,13 @@ const { headline, headlineClamp, lede } = t.hero;
   <div class="hero-shape hero-shape--a pointer-events-none absolute -z-10" aria-hidden="true"></div>
   <div class="hero-shape hero-shape--b pointer-events-none absolute -z-10" aria-hidden="true"></div>
 
-  <div
-    class="hero-figures-layer pointer-events-none absolute inset-x-0 bottom-0 z-0 flex h-[min(64dvh,100dvh-21rem)] min-h-[14rem] items-start justify-center pt-[1dvh] sm:h-[min(68dvh,100dvh-19rem)] sm:pt-[2dvh] md:h-[76dvh] md:pt-[2dvh]"
-    aria-hidden="true"
-  >
-
-    <div class="hero-figures-stack relative">
-
-      <Image
-        src={media.heroGlow.src}
-        alt=""
-        widths={[480, 768, 1024]}
-        sizes="70vw"
-        format="webp"
-        quality={78}
-        loading="eager"
-        class="hero-glow pointer-events-none absolute left-1/2 top-1/2 -z-10 w-[95vw] max-w-[58rem] -translate-x-1/2 -translate-y-1/2 sm:w-[78vw] md:w-[66vw]"
-      />
-
-      <div
-        data-parallax
-        class="hero-figures-frame relative w-[88vw] max-w-[60rem] overflow-hidden sm:w-[74vw] md:w-[60vw]"
-      >
-        <img
-          src="/media/hero-figures-poster.webp"
-          alt={media.heroFigures.alt}
-          width="1376"
-          height="768"
-          loading="eager"
-          decoding="sync"
-          fetchpriority="high"
-          class="hero-figures-fallback absolute inset-0 h-full w-full object-contain"
-        />
-
-        <video
-          data-hero-video
-          class="hero-figures-video relative h-full w-full object-contain"
-          muted
-          loop
-          playsinline
-          preload="auto"
-          poster="/media/hero-figures-poster.webp"
-        >
-          <source src="/media/hero-figures-loop.webm" type="video/webm" />
-          <source src="/media/hero-figures-loop.mp4" type="video/mp4" />
-        </video>
-      </div>
-    </div>
-  </div>
-
   <div class="hero-scrim pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[62%] sm:h-[46%] md:h-[38%]" aria-hidden="true"></div>
 
   <div
-    class="relative z-10 mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-5 sm:px-8"
+    class="relative mx-auto flex w-full max-w-[1400px] flex-1 flex-col px-5 sm:px-8"
     style={`padding-top:${NAV_HEIGHT + 28}px`}
   >
-    <div class="text-center md:text-left">
+    <div class="hero-copy relative z-10 text-center md:text-left">
       <Eyebrow text={t.roadmap.eyebrow} class="reveal" />
       <h1
         class="hero-headline display reveal mt-2"
@@ -90,7 +41,54 @@ const { headline, headlineClamp, lede } = t.hero;
       </h1>
     </div>
 
-    <div class="mt-auto grid gap-8 pb-10 sm:pb-14 lg:grid-cols-12 lg:items-end">
+    <div
+      class="hero-figures-layer pointer-events-none absolute inset-x-0 bottom-0 z-0 flex h-[min(64dvh,100dvh-21rem)] min-h-[14rem] items-start justify-center pt-[1dvh] sm:h-[min(68dvh,100dvh-19rem)] sm:pt-[2dvh] md:h-[76dvh] md:pt-[2dvh]"
+      aria-hidden="true"
+    >
+      <div class="hero-figures-stack relative">
+        <Image
+          src={media.heroGlow.src}
+          alt=""
+          widths={[480, 768, 1024]}
+          sizes="70vw"
+          format="webp"
+          quality={78}
+          loading="eager"
+          class="hero-glow pointer-events-none absolute left-1/2 top-1/2 -z-10 w-[110vw] max-w-[58rem] -translate-x-1/2 -translate-y-1/2 sm:w-[82vw] md:w-[66vw]"
+        />
+
+        <div
+          data-parallax
+          class="hero-figures-frame relative w-[104vw] max-w-[60rem] overflow-hidden sm:w-[78vw] md:w-[60vw]"
+        >
+          <img
+            src="/media/hero-figures-poster.webp"
+            alt={media.heroFigures.alt}
+            width="1376"
+            height="768"
+            loading="eager"
+            decoding="sync"
+            fetchpriority="high"
+            class="hero-figures-fallback absolute inset-0 h-full w-full object-contain"
+          />
+
+          <video
+            data-hero-video
+            class="hero-figures-video relative h-full w-full object-contain"
+            muted
+            loop
+            playsinline
+            preload="auto"
+            poster="/media/hero-figures-poster.webp"
+          >
+            <source src="/media/hero-figures-loop.webm" type="video/webm" />
+            <source src="/media/hero-figures-loop.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-bottom relative z-10 mt-auto grid gap-8 pb-10 sm:pb-14 lg:grid-cols-12 lg:items-end">
       <p class="lede lg:col-span-6">{lede}</p>
 
       <div class="flex flex-wrap justify-center gap-3 lg:col-span-5 lg:col-start-8 lg:justify-end">
@@ -187,6 +185,22 @@ const { headline, headlineClamp, lede } = t.hero;
     clip-path: polygon(0 0, 100% 40%, 40% 100%, 0 100%);
   }
 
+  @media (max-width: 639px) {
+    .hero-shape { display: none; }
+
+    .hero-figures-layer {
+      position: relative;
+      inset: auto;
+      height: auto;
+      min-height: 0;
+      flex: none;
+      margin-top: 1.5rem;
+      padding-top: 0;
+    }
+
+    .hero-bottom { margin-top: 1rem; }
+  }
+
   .hero-glow {
 
     mix-blend-mode: screen;
@@ -218,13 +232,24 @@ const { headline, headlineClamp, lede } = t.hero;
     will-change: transform;
 
     -webkit-mask-image:
-      linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+      linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black 10%, black 94%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
-      linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+      linear-gradient(to right, transparent 0%, black 2%, black 98%, transparent 100%),
+      linear-gradient(to bottom, transparent 0%, black 10%, black 94%, transparent 100%);
     mask-composite: intersect;
+  }
+
+  @media (min-width: 640px) {
+    .hero-figures-frame {
+      -webkit-mask-image:
+        linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+      mask-image:
+        linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%),
+        linear-gradient(to bottom, transparent 0%, black 18%, black 88%, transparent 100%);
+    }
   }
 
   .hero-figures-fallback,
