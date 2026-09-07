@@ -81,6 +81,7 @@ export interface MediakitCopy {
   contactTitle: [string, string];
   contactCopy: string;
   emailSubject: string;
+  emailBody: string;
   footer: string;
   scheduleToggle: string;
   channelsToggle: string;
@@ -88,7 +89,6 @@ export interface MediakitCopy {
   previewExpand: string;
   previewHighlight: string;
   previewOriginal: string;
-  gameFeedNote: string;
 }
 
 export const mediakitCopy = {
@@ -145,7 +145,7 @@ export const mediakitCopy = {
     visibilityTitle: ["Espacios", "de patrocinio"],
     visibilityCopy: "Cuatro opciones para mostrar o mencionar tu marca. Los formatos y la disponibilidad se acuerdan en la propuesta.",
     placements: [
-      { title: "Banners", description: "Imágenes con tu logo o mensaje en espacios del torneo. La ubicación, el tamaño y el periodo se acuerdan en la propuesta.", items: ["Ubicación y formato por acuerdo", "Cantidad y periodo de exhibición definidos en la propuesta"] },
+      { title: "Banners", description: "Tu identidad visual en anuncios, programación y resultados del torneo.", items: ["Ubicación y formato por acuerdo", "Cantidad y periodo de exhibición definidos en la propuesta"] },
       { title: "Redes sociales", description: "Menciones y etiquetado de tu marca en publicaciones de las páginas de Nexus.", items: ["Anuncio de la alianza y contenido del torneo", "Cantidad de publicaciones y frecuencia acordadas"] },
       { title: "Transmisiones oficiales", description: "Tu logo en pantalla y menciones del equipo de transmisión, con frecuencia, duración e idiomas por acuerdo.", items: ["Gráficos en pantalla y mensajes de marca aprobados", "Frecuencia, duración e idiomas definidos por edición"] },
       { title: "Transmisiones de creadores", description: "Banners y menciones en canales de creadores que transmitan el torneo, sujetos a su confirmación y acuerdo.", items: ["Participación sujeta a confirmación del creador", "Formato y frecuencia acordados con cada canal"] },
@@ -173,6 +173,7 @@ export const mediakitCopy = {
     contactTitle: ["Hablemos", "de tu marca."],
     contactCopy: "Escríbenos con tu objetivo, las ediciones que te interesan y un presupuesto de referencia para consultar disponibilidad y solicitar una propuesta.",
     emailSubject: "Consulta de patrocinio y alianzas | Nexus",
+    emailBody: "Hola, equipo de Nexus Series:\n\nNos interesa recibir una propuesta de patrocinio.\n\nMarca o empresa:\nEdiciones de interés:\nObjetivo de la colaboración:\nEspacios de interés (banners, redes, transmisión o creadores):\nPresupuesto orientativo (opcional):\nNombre y contacto:\n\nGracias.",
     footer: "Nexus · Patrocinio con condiciones acordadas por edición.",
     scheduleToggle: "Ver partidos y horarios de Perú / Europa Central",
     channelsToggle: "Consultar canales y redes de Nexus",
@@ -180,7 +181,6 @@ export const mediakitCopy = {
     previewExpand: "Ver diseño completo",
     previewHighlight: "Señalar espacios de marca",
     previewOriginal: "Diseño de transmisión",
-    gameFeedNote: "Zona de juego. Esta referencia muestra únicamente el marco de transmisión.",
   },
   en: {
     metaTitle: "Nexus | Partnerships & Sponsorship",
@@ -235,7 +235,7 @@ export const mediakitCopy = {
     visibilityTitle: ["Sponsorship", "opportunities"],
     visibilityCopy: "Four options for displaying or mentioning your brand. Formats and availability are agreed in the proposal.",
     placements: [
-      { title: "Banners", description: "Images with your logo or message in tournament spaces. Placement, size and display period are agreed in the proposal.", items: ["Placement and format by agreement", "Quantity and display period defined in the proposal"] },
+      { title: "Banners", description: "Your visual identity across tournament announcements, schedules and results.", items: ["Placement and format by agreement", "Quantity and display period defined in the proposal"] },
       { title: "Social media", description: "Brand mentions and tags in posts on Nexus social pages.", items: ["Partnership announcements and tournament content", "Post count and publishing frequency agreed in advance"] },
       { title: "Official broadcasts", description: "Your logo on screen and mentions by the broadcast team, with frequency, duration and languages subject to agreement.", items: ["On-screen graphics and approved brand messages", "Frequency, duration and languages defined per edition"] },
       { title: "Creator broadcasts", description: "Banners and mentions on creators' tournament broadcasts, subject to their confirmation and agreement.", items: ["Participation subject to creator confirmation", "Format and frequency agreed with each channel"] },
@@ -263,6 +263,7 @@ export const mediakitCopy = {
     contactTitle: ["Let's talk", "about your brand."],
     contactCopy: "Send us your goals, the editions you are interested in and an approximate budget to check availability and request a proposal.",
     emailSubject: "Sponsorship and partnership inquiry | Nexus",
+    emailBody: "Hello Nexus Series team,\n\nWe would like to receive a sponsorship proposal.\n\nBrand or company:\nEditions of interest:\nPartnership objective:\nPreferred placements (banners, social media, broadcast or creators):\nIndicative budget (optional):\nName and contact:\n\nThank you.",
     footer: "Nexus · Sponsorship terms agreed for each edition.",
     scheduleToggle: "View matches and Peru / Central Europe times",
     channelsToggle: "Explore Nexus channels and social pages",
@@ -270,7 +271,6 @@ export const mediakitCopy = {
     previewExpand: "View full design",
     previewHighlight: "Highlight brand spaces",
     previewOriginal: "Broadcast design",
-    gameFeedNote: "Gameplay area. This reference only shows the broadcast overlay.",
   },
   ru: {
     metaTitle: "Nexus | Партнёрство и спонсорство",
@@ -325,7 +325,7 @@ export const mediakitCopy = {
     visibilityTitle: ["Форматы", "спонсорства"],
     visibilityCopy: "Четыре варианта показа или упоминания вашего бренда. Форматы и доступность согласуются в предложении.",
     placements: [
-      { title: "Баннеры", description: "Изображения с вашим логотипом или сообщением на площадках турнира. Место, размер и срок размещения согласуются в предложении.", items: ["Позиции и форматы по соглашению", "Количество и период размещения фиксируются в предложении"] },
+      { title: "Баннеры", description: "Фирменный стиль вашего бренда в анонсах, расписаниях и результатах турнира.", items: ["Позиции и форматы по соглашению", "Количество и период размещения фиксируются в предложении"] },
       { title: "Социальные сети", description: "Упоминания и отметки вашего бренда в публикациях на страницах Nexus.", items: ["Анонс партнёрства и материалы о турнире", "Количество и частоту публикаций согласуем заранее"] },
       { title: "Официальные трансляции", description: "Ваш логотип на экране и упоминания командой трансляции. Частота, длительность и языки согласуются заранее.", items: ["Графика на экране и согласованные сообщения бренда", "Частота, длительность и языки определяются для каждого турнира"] },
       { title: "Трансляции авторов", description: "Баннеры и упоминания в эфирах авторов, освещающих турнир, при условии их подтверждения и согласования.", items: ["Участие требует подтверждения автора", "Формат и частота согласуются с каждым каналом"] },
@@ -353,6 +353,7 @@ export const mediakitCopy = {
     contactTitle: ["Поговорим", "о вашем бренде."],
     contactCopy: "Напишите нам о целях, интересующих турнирах и примерном бюджете, чтобы уточнить доступность размещений и запросить предложение.",
     emailSubject: "Запрос о спонсорстве и партнёрстве | Nexus",
+    emailBody: "Здравствуйте, команда Nexus Series!\n\nМы хотели бы получить предложение о спонсорстве.\n\nБренд или компания:\nИнтересующие турниры:\nЦель сотрудничества:\nИнтересующие размещения (баннеры, соцсети, трансляции или авторы):\nОриентир по бюджету (необязательно):\nИмя и контакт:\n\nСпасибо!",
     footer: "Nexus · Условия спонсорства согласуются для каждого турнира.",
     scheduleToggle: "Матчи и время Перу / Центральной Европы",
     channelsToggle: "Каналы и социальные сети Nexus",
@@ -360,6 +361,5 @@ export const mediakitCopy = {
     previewExpand: "Открыть полный дизайн",
     previewHighlight: "Показать места для бренда",
     previewOriginal: "Оформление трансляции",
-    gameFeedNote: "Область игры. Этот пример показывает только оформление трансляции.",
   },
 } satisfies Record<Locale, MediakitCopy>;

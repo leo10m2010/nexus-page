@@ -17,9 +17,8 @@ const icons = ["ph:hourglass-duotone", "ph:squares-four-duotone", "ph:users-thre
     <div class="scene-stage">
       {c.broadcastScenes.map((scene, index) => <figure data-scene-panel={index} id={`scene-${scenes[index]}`}>
         <div class={`preview-canvas scene-${scenes[index]}`}>
-          <img src={`/media/mediakit-${scenes[index]}.webp`} alt={`${c.previewOriginal}: ${scene.label}`} width="1600" height="900" loading={index === 1 ? "eager" : "lazy"} fetchpriority={index === 1 ? "high" : "auto"} />
+          <img src={`/media/mediakit-${scenes[index]}.webp`} alt={`${c.previewOriginal}: ${scene.label}`} width="1600" height="900" loading="lazy" decoding="async" />
           {index === 0 && <><span class="waiting-schedule-title">{c.nav.schedule} / PET · CEST</span>{matches.map((match, i) => { const times = getBroadcastTimes(match.startsAt, Astro.currentLocale); return <div class="waiting-times" style={`top:${i === 0 ? 36.5 : 52.5}%`}><span>{times.pet.time}<small>PET</small></span><span>{times.europe.time}<small>{times.europe.zone}</small></span></div>; })}</>}
-          {index === 3 && <p class="game-feed-note">{c.gameFeedNote}</p>}
           <span class="sponsor-marker" hidden role="img" aria-label={c.sponsorSlot}><Icon name="ph:crosshair-bold" aria-hidden="true" /></span>
         </div>
         <figcaption><div><h3>{scene.title}</h3><p>{scene.description}</p></div><a class="preview-expand" href={`/media/mediakit-${scenes[index]}.webp`} target="_blank" rel="noopener noreferrer"><Icon name="ph:arrows-out-simple-bold" aria-hidden="true" /><span>{c.previewExpand}</span></a></figcaption>
@@ -84,7 +83,6 @@ const icons = ["ph:hourglass-duotone", "ph:squares-four-duotone", "ph:users-thre
   .scene-draft .sponsor-marker { left: 51%; top: 64.3%; }
   .scene-roster .sponsor-marker { left: 50%; top: 93%; }
   .scene-game .sponsor-marker { left: 79%; top: 95%; }
-  .game-feed-note { position: absolute; left: 22%; right: 22%; top: 45%; color: #aebcd0; text-align: center; font-size: clamp(0.625rem, 1.2vw, 1rem); line-height: 1.6; }
   figcaption { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; padding: 22px 24px; border-top: 1px solid var(--c-line); }
   figcaption h3 { font: 650 1rem/1.4 var(--font-body); }
   figcaption p { color: var(--c-text-muted); max-width: 65ch; font-size: 0.875rem; line-height: 1.7; margin-top: 8px; }

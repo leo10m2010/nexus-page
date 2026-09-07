@@ -26,7 +26,7 @@ const [participants, matches, stages] = await Promise.all([
 const dates = formatDateRange(tournament.startDate, tournament.endDate, locale);
 const total = getPrizeTotal(tournament);
 const currency = tournament.prizePool?.currency ?? "USD";
-const contact = `mailto:${site.email}?subject=${encodeURIComponent(c.emailSubject)}`;
+const contact = `mailto:${site.email}?subject=${encodeURIComponent(c.emailSubject)}&body=${encodeURIComponent(c.emailBody)}`;
 const tourPath = tournamentPath(tournament.id, locale);
 const regionName = tournament.region === "South America"
   ? { es: "Sudamérica", en: "South America", ru: "Южная Америка" }[locale]
@@ -140,7 +140,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
   .team-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 12px; padding: 0; margin-top: 24px; list-style: none; }
   .team-list li { display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center; min-width: 0; }
   .team-emblem { display: grid; place-items: center; width: 60px; height: 60px; border-radius: var(--radius-card); background: #101830; }
-  .team-list li > span:last-child { font-size: 0.75rem; line-height: 1.4; color: var(--c-text-muted); }
+  .team-list li > span:last-child { font-size: 0.8125rem; line-height: 1.5; color: var(--c-text-muted); }
   .tournament-brief { border: 1px solid var(--c-line-strong); border-radius: var(--radius-card); overflow: hidden; background: var(--c-bg-elev); }
   .brief-header { display: flex; align-items: center; gap: 10px; padding: 20px 24px; border-bottom: 1px solid var(--c-line); font-size: 0.875rem; font-weight: 600; }
   .brief-header :global([data-icon]) { color: var(--c-accent-lift); width: 24px; height: 24px; }
@@ -242,8 +242,10 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
   }
   @media (max-width: 800px) {
     .wrap { width: calc(100% - 48px); }
-    .kit-header { gap: 20px; min-height: 84px; }
-    .header-links { display: none; }
+    .kit-header { gap: 4px 20px; min-height: 84px; flex-wrap: wrap; padding-top: 16px; }
+    .header-actions { margin-left: auto; }
+    .header-links { display: flex; order: 3; flex-basis: 100%; margin: 0; flex-wrap: wrap; gap: 4px 20px; }
+    .header-links a { min-height: 44px; padding-block: 12px; font-size: 0.8125rem; }
     .cover { padding-top: 40px; gap: 32px; }
     h1 { font-size: clamp(2.7rem, 5.8vw, 4rem); }
     .cover-pitch .lede { font-size: 0.9375rem; }
@@ -286,7 +288,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
     .team-list li { flex-direction: row; text-align: left; gap: 10px; }
     .team-emblem { width: 48px; height: 48px; }
     .team-emblem :global(img) { width: 38px !important; height: 38px !important; }
-    .team-list li > span:last-child { font-size: 0.6875rem; }
+    .team-list li > span:last-child { font-size: 0.8125rem; }
     .brief-header, .facts { padding: 20px; }
     .format-strip { padding-inline: 20px; }
     .liquipedia-link { padding: 18px 20px; }

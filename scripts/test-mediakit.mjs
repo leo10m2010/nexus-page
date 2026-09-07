@@ -76,6 +76,9 @@ try {
         assert.equal(await page.locator('.team-list img').count(), 8);
         assert.equal(await page.locator('.season-roadmap li').count(), 3);
         assert.equal(await page.locator('[data-print]').count(), 0);
+        assert.equal(await page.locator('.header-links a:visible').count(), 3);
+        const contact = new URL(await page.locator('.cover-pitch .btn').getAttribute('href'));
+        assert.ok(contact.searchParams.get('body')?.trim().length > 50, 'Missing proposal brief');
         assert.ok(await page.locator('.season-roadmap li').evaluateAll((els) => els.every((el) => getComputedStyle(el).getPropertyValue('--stage-color').trim())));
         assert.equal(await page.locator('[data-scene-button]').count(), 4);
         assert.equal(await page.locator('[data-scene-panel]').count(), 4);
@@ -126,7 +129,12 @@ try {
         assert.equal(await link.getAttribute('target'), '_blank');
         const href = await link.getAttribute('href');
         assert.match(href, /^\/media\/mediakit-[\w-]+\.webp$/);
-        assert.equal((await context.request.get(new URL(href, base).href, { maxRetries: 1 })).status(), 200);
+        const asset = await context.request.get(new URL(href, base).href, { maxRetries: 1 });
+        assert.equal(asset.status(), 200);
+        assert.ok((await asset.body()).length <= 512000, `Oversized preview: ${href}`);
+        await panel.locator('img').evaluate((img) => img.decode());
+        assert.ok(await panel.locator('img').evaluate((img) => img.naturalWidth <= 1920), 'Unoptimized image dimensions');
+        assert.equal(await panel.locator('.game-feed-note').count(), 0);
         const markers = panel.locator('.sponsor-marker');
         assert.ok(await markers.count(), 'Missing sponsor markers');
         for (const pressed of ['false', 'true', 'false']) {
