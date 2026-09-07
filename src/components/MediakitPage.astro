@@ -1,0 +1,314 @@
+---
+import Base from "@layouts/Base.astro";
+import BrandLogo from "@ui/BrandLogo.astro";
+import Button from "@ui/Button.astro";
+import TeamMark from "@ui/TeamMark.astro";
+import Scoreline from "@ui/Scoreline.astro";
+import ThemeToggle from "@layout/ThemeToggle.astro";
+import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
+import BroadcastPreview from "@components/mediakit/BroadcastPreview.astro";
+import MediaEvidence from "@components/mediakit/MediaEvidence.astro";
+import { Icon } from "astro-icon/components";
+import { channels, site, social } from "@config/site";
+import { mediakitCopy } from "@content/mediakit";
+import { getTournament, getPrizeTotal, getParticipants, getMatches, tournamentPath } from "@lib/competition";
+import { getRoadmapStages, getRoadmapNumeral } from "@lib/roadmap";
+import { formatDate, formatMoney, formatDateRange } from "@lib/format";
+import { resolveLocale, useTranslations, localizePath } from "@lib/i18n";
+
+const locale = resolveLocale(Astro.currentLocale);
+const c = mediakitCopy[locale];
+const t = useTranslations(locale);
+const tournament = await getTournament("season-one");
+const [participants, matches, stages] = await Promise.all([
+  getParticipants(tournament), getMatches(tournament.id), getRoadmapStages(locale),
+]);
+const dates = formatDateRange(tournament.startDate, tournament.endDate, locale);
+const total = getPrizeTotal(tournament);
+const currency = tournament.prizePool?.currency ?? "USD";
+const contact = `mailto:${site.email}?subject=${encodeURIComponent(c.emailSubject)}`;
+const tourPath = tournamentPath(tournament.id, locale);
+const regionName = tournament.region === "South America"
+  ? { es: "Sudamérica", en: "South America", ru: "Южная Америка" }[locale]
+  : tournament.region;
+const final = matches.find((match) => match.stage === "grandFinal");
+const openings = matches.filter((match) => match.stage === "groupStage" && match.home && match.away);
+const placementIcons = ["ph:layout-duotone", "ph:megaphone-duotone", "ph:broadcast-duotone", "ph:microphone-stage-duotone"];
+const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility], ["season", c.nav.season]];
+---
+
+<Base title={c.metaTitle} description={c.metaDescription} noindex>
+  <div class="mediakit">
+    <header class="kit-header wrap">
+      <a class="home-link" href={localizePath("/", locale)} aria-label={`Nexus Series · ${c.home}`}><BrandLogo height={32} /></a>
+      <nav class="header-links" aria-label={c.documentLabel}>{nav.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}</nav>
+      <div class="header-actions"><LocaleSwitcher /><ThemeToggle /><a class="header-contact" href="#contact">{c.talk}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
+    </header>
+
+    <main id="main">
+      <section class="cover wrap" aria-labelledby="kit-title">
+        <div class="cover-title"><h1 id="kit-title" class="display">{c.heroLines[0]}<span>{c.heroLines.slice(1).join(" ")}</span></h1></div>
+        <div class="cover-pitch"><p class="document-label">{c.documentLabel}</p><p class="lede">{c.heroCopy}</p><Button label={c.requestProposal} href={contact} icon="ph:handshake-bold" /></div>
+        <div class="edition-strip"><span class="edition-name"><Icon name="simple-icons:dota2" aria-hidden="true" />{tournament.name}</span><span><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{dates}</span><span><Icon name="ph:globe-hemisphere-west-duotone" aria-hidden="true" />{regionName} · {c.online}</span><a href={tourPath}>{c.tournamentLink}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
+      </section>
+
+      <section id="tournament" class="wrap kit-section tournament-section" aria-labelledby="tournament-title">
+        <div class="tournament-layout">
+          <div class="tournament-story"><h2 id="tournament-title">{c.tournamentTitle.join(" ")}</h2><p class="lede">{c.tournamentCopy}</p>
+            <div class="teams-heading"><h3><Icon name="ph:users-three-duotone" aria-hidden="true" />{c.teamsTitle}</h3><span>{c.invited}</span></div>
+            <ul class="team-list">{participants.map(({ team }) => <li><span class="team-emblem"><TeamMark team={team} size={48} /></span><span>{team.name}</span></li>)}</ul>
+          </div>
+          <aside class="tournament-brief" aria-label={tournament.name}>
+            <div class="brief-header"><Icon name="ph:trophy-duotone" aria-hidden="true" /><span>{tournament.name}</span><span>Dota 2</span></div>
+            <dl class="facts">
+              <div class="prize-fact"><dt>{c.prizePool}</dt><dd>{total !== null ? formatMoney(total, currency, locale) : t.competition.tbd}<small>{currency}</small></dd></div>
+              <div><dt>{c.participants}</dt><dd>{participants.length}<small>{c.teamsLabel}</small></dd></div>
+            </dl>
+            <div class="format-strip">{(tournament.phases ?? []).map((phase) => <div><Icon name={phase.key === "groupStage" ? "ph:users-four-duotone" : "ph:tree-structure-duotone"} aria-hidden="true" /><span><strong>{t.competition.phase[phase.key]}</strong><small>{t.competition.format[phase.format]}</small></span><b>Bo{phase.bestOf}</b></div>)}{final && <div><Icon name="ph:flag-checkered-duotone" aria-hidden="true" /><span><strong>{t.competition.stage.grandFinal}</strong></span><b>Bo{final.bestOf}</b></div>}</div>
+            {tournament.liquipediaUrl && <a class="liquipedia-link" href={tournament.liquipediaUrl} target="_blank" rel="noopener noreferrer"><img src="/logos/liquipedia.png" alt="" width="36" height="26" loading="lazy" /><span>{c.liquipediaLink}</span><Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a>}
+          </aside>
+        </div>
+        <details id="schedule" class="disclosure schedule-section"><summary><span><Icon name="ph:calendar-dots-duotone" aria-hidden="true" />{c.scheduleToggle}</span><Icon name="ph:plus-bold" aria-hidden="true" /></summary><div class="disclosure-body">
+          <div class="schedule-heading"><h3>{c.openingMatches}</h3><span>PET / CEST</span></div>
+          <div class="match-list">{openings.map((match) => <article class="match-row" aria-label={`${match.home!.name} ${c.versus} ${match.away!.name}`}><div class="match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{c.group} {match.group} · Bo{match.bestOf}</span></div><Scoreline match={match} showTime /></article>)}</div>
+          <div class="schedule-footer"><p class="note">{c.scheduleNote}</p><a class="text-link" href={`${tourPath}#matches`}>{c.fullSchedule}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
+        </div></details>
+      </section>
+
+      <section id="visibility" class="visibility-section" aria-labelledby="visibility-title"><div class="wrap kit-section">
+        <div class="section-intro"><h2 id="visibility-title">{c.visibilityTitle.join(" ")}</h2><p class="lede">{c.visibilityCopy}</p></div>
+        <div class="placements">{c.placements.map((placement, index) => <article class="placement"><Icon name={placementIcons[index]!} class="placement-icon" aria-hidden="true" /><div><h3>{placement.title}</h3><p>{placement.description}</p><ul>{placement.items.map((item) => <li><Icon name="ph:check-bold" aria-hidden="true" /><span>{item}</span></li>)}</ul></div></article>)}</div>
+        <div class="channel-strip"><h3>{c.channelsTitle}</h3><div class="channel-links">{channels.map((channel) => <a href={channel.href} target="_blank" rel="noopener noreferrer" aria-label={`Twitch · ${c.languageNames[channel.code as keyof typeof c.languageNames]}`}><Icon name="simple-icons:twitch" aria-hidden="true" /><span>{c.languageNames[channel.code as keyof typeof c.languageNames]}</span><Icon name="ph:arrow-up-right-bold" class="channel-arrow" aria-hidden="true" /></a>)}<a href={social.instagram} target="_blank" rel="noopener noreferrer"><Icon name="simple-icons:instagram" aria-hidden="true" />Instagram<Icon name="ph:arrow-up-right-bold" class="channel-arrow" aria-hidden="true" /></a><a href={social.x} target="_blank" rel="noopener noreferrer"><Icon name="simple-icons:x" aria-hidden="true" />X<Icon name="ph:arrow-up-right-bold" class="channel-arrow" aria-hidden="true" /></a></div></div>
+      </div></section>
+
+      <section id="broadcast" class="wrap kit-section" aria-labelledby="broadcast-title">
+        <div class="section-intro"><h2 id="broadcast-title">{c.broadcastTitle.join(" ")}</h2><p class="lede">{c.broadcastCopy}</p></div>
+        <BroadcastPreview copy={c} matches={openings.slice(0, 2)} />
+      </section>
+
+      <section id="season" class="wrap kit-section season-section" aria-labelledby="season-title">
+        <div class="section-intro"><h2 id="season-title">{c.seasonTitle.join(" ")}</h2><p class="lede">{c.seasonCopy}</p></div>
+        <ol class="season-roadmap">{stages.map((stage, index) => <li style={`--stage-color:${stage.accent}`}><div class="season-identity"><span class="edition-mark" aria-hidden="true">{getRoadmapNumeral(index)}</span><span class="season-status">{index === 0 ? c.currentEdition : c.nextEdition}</span></div><h3>{stage.name}</h3><p class="season-date"><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{stage.dates}</p><div class="season-prize"><Icon name="ph:trophy-duotone" aria-hidden="true" /><div><span>{c.announcedPrize}</span><strong>{formatMoney(stage.prizeTotal, stage.currency, locale)}</strong></div></div></li>)}</ol>
+        <div class="season-offer"><p><Icon name="ph:handshake-duotone" aria-hidden="true" />{c.seasonValue}</p><a class="text-link" href={contact}>{c.seasonCta}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
+      </section>
+
+      <section id="information" class="wrap kit-section information-section" aria-labelledby="information-title"><MediaEvidence /></section>
+
+      <section id="contact" class="wrap contact-section" aria-labelledby="contact-title">
+        <div class="contact-panel"><Icon name="ph:envelope-open-duotone" class="contact-icon" aria-hidden="true" /><div><h2 id="contact-title">{c.contactTitle.join(" ")}</h2><p class="lede">{c.contactCopy}</p><a class="email-link" href={contact}>{site.email}</a></div><Button label={c.requestProposal} href={contact} icon="ph:arrow-up-right-bold" /></div>
+        <details class="disclosure proposal-details"><summary><span><Icon name="ph:handshake-duotone" aria-hidden="true" />{c.proposalToggle}</span><Icon name="ph:plus-bold" aria-hidden="true" /></summary><div class="disclosure-body"><ol class="proposal-steps">{c.proposalSteps.map((step) => <li><h3>{step.title}</h3><p>{step.description}</p></li>)}</ol><p class="note terms-note">{c.termsNote}</p></div></details>
+      </section>
+    </main>
+    <footer class="wrap kit-footer"><BrandLogo height={22} /><p>{c.footer}</p><a href={localizePath("/", locale)}>nexusseries.org</a></footer>
+  </div>
+</Base>
+
+<style>
+  .mediakit { --kit-blue: color-mix(in srgb, var(--c-brand-lift) 85%, var(--c-text)); }
+  .wrap { width: min(1360px, calc(100% - 96px)); margin-inline: auto; }
+  .mediakit :global([data-icon]) { width: 20px; height: 20px; flex-shrink: 0; }
+  .kit-header { display: flex; align-items: center; justify-content: space-between; gap: 32px; min-height: 96px; border-bottom: 1px solid var(--c-line); position: relative; z-index: 5; }
+  .home-link { flex-shrink: 0; }
+  .header-links, .header-actions { display: flex; align-items: center; gap: 28px; }
+  .header-links { margin-left: auto; }
+  .header-links a { color: var(--c-text-muted); font-size: 0.875rem; padding-block: 14px; }
+  .header-links a:hover { color: var(--c-text); }
+  .header-actions { gap: 10px; }
+  .header-contact { display: flex; align-items: center; gap: 8px; margin-left: 8px; font-size: 0.875rem; font-weight: 600; }
+  .cover { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px 72px; padding-top: 64px; }
+  h1 { font-size: clamp(2.9rem, 5.25vw, 5.4rem); max-width: 13ch; line-height: 1; }
+  h1 span { display: block; color: var(--c-accent-lift); }
+  .cover-pitch { align-self: center; max-width: 52ch; }
+  .document-label { color: var(--kit-blue); font-weight: 600; font-size: 0.875rem; margin-bottom: 16px; }
+  .lede { color: var(--c-text-muted); font-size: 1.0625rem; line-height: 1.75; max-width: 58ch; }
+  .cover-pitch :global(.btn) { margin-top: 24px; }
+  .edition-strip { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 16px 28px; border-block: 1px solid var(--c-line); padding-block: 18px; font-size: 0.8125rem; color: var(--c-text-muted); }
+  .edition-strip > span, .edition-strip > a { display: flex; align-items: center; gap: 9px; }
+  .edition-strip .edition-name { color: var(--c-text); font-weight: 650; }
+  .edition-name :global([data-icon]) { color: var(--kit-blue); }
+  .edition-strip a { margin-left: auto; color: var(--c-text); font-weight: 600; }
+  h2 { font-family: var(--font-display); font-weight: 750; font-size: clamp(1.8rem, 3.15vw, 3rem); line-height: 1.1; letter-spacing: -0.025em; text-wrap: balance; }
+  h3 { font-family: var(--font-display); font-weight: 650; }
+  .kit-section { padding-block: 88px; scroll-margin-top: 24px; }
+  .section-intro { display: grid; grid-template-columns: 1fr 1fr; align-items: end; gap: 64px; margin-bottom: 40px; }
+  .tournament-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+  .tournament-story > .lede { margin-top: 20px; }
+  .teams-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 36px; }
+  .teams-heading h3 { display: flex; align-items: center; gap: 10px; font: 600 0.9375rem/1.5 var(--font-body); }
+  .teams-heading h3 :global([data-icon]) { color: var(--kit-blue); }
+  .teams-heading > span { color: var(--c-text-muted); font-size: 0.8125rem; }
+  .team-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px 12px; padding: 0; margin-top: 24px; list-style: none; }
+  .team-list li { display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center; min-width: 0; }
+  .team-emblem { display: grid; place-items: center; width: 60px; height: 60px; border-radius: var(--radius-card); background: #101830; }
+  .team-list li > span:last-child { font-size: 0.75rem; line-height: 1.4; color: var(--c-text-muted); }
+  .tournament-brief { border: 1px solid var(--c-line-strong); border-radius: var(--radius-card); overflow: hidden; background: var(--c-bg-elev); }
+  .brief-header { display: flex; align-items: center; gap: 10px; padding: 20px 24px; border-bottom: 1px solid var(--c-line); font-size: 0.875rem; font-weight: 600; }
+  .brief-header :global([data-icon]) { color: var(--c-accent-lift); width: 24px; height: 24px; }
+  .brief-header > span:last-child { margin-left: auto; font-weight: 400; color: var(--c-text-muted); }
+  .facts { display: grid; grid-template-columns: 1.25fr 1fr; padding: 24px; gap: 24px; }
+  dt { color: var(--c-text-muted); font-size: 0.8125rem; margin-bottom: 10px; }
+  dd { font: 750 clamp(1.5rem, 2.2vw, 2.1rem)/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+  dd small { display: block; font: 400 0.75rem/1.4 var(--font-body); margin-top: 6px; color: var(--c-text-muted); }
+  .prize-fact dd { color: var(--c-accent-lift); }
+  .format-strip { padding-inline: 24px; }
+  .format-strip > div { display: flex; align-items: center; gap: 12px; padding-block: 14px; border-top: 1px solid var(--c-line); }
+  .format-strip :global([data-icon]) { color: var(--kit-blue); }
+  .format-strip > div > span { flex: 1; min-width: 0; }
+  .format-strip strong { display: block; font-size: 0.875rem; font-weight: 550; }
+  .format-strip small { color: var(--c-text-muted); font-size: 0.75rem; }
+  .format-strip b { font-size: 0.75rem; color: var(--c-accent-lift); font-weight: 600; }
+  .liquipedia-link { display: flex; align-items: center; gap: 12px; padding: 18px 24px; background: var(--c-bg-elev-2); font-size: 0.8125rem; font-weight: 550; }
+  .liquipedia-link img { object-fit: contain; }
+  .liquipedia-link > span { flex: 1; }
+  .liquipedia-link:hover { color: var(--c-accent-lift); }
+  .disclosure { border-block: 1px solid var(--c-line); }
+  .disclosure > summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 22px; font-size: 0.875rem; font-weight: 550; cursor: pointer; list-style: none; }
+  .disclosure > summary > span { display: flex; align-items: center; gap: 12px; }
+  .disclosure > summary > span :global([data-icon]) { color: var(--kit-blue); }
+  .disclosure > summary::-webkit-details-marker { display: none; }
+  .disclosure > summary:hover { color: var(--c-accent-lift); }
+  .disclosure > summary > :global([data-icon]) { width: 16px; height: 16px; margin-right: 4px; }
+  .disclosure[open] > summary > :global([data-icon]) { transform: rotate(45deg); }
+  .disclosure-body { padding-block: 8px 28px; }
+  .schedule-section { margin-top: 40px; }
+  .schedule-heading { display: flex; justify-content: space-between; gap: 16px; font-size: 0.875rem; padding-block: 12px; }
+  .schedule-heading > span { color: var(--c-text-muted); }
+  .match-row { padding-block: 24px; border-top: 1px solid var(--c-line); }
+  .match-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 18px; color: var(--c-text-muted); font-size: 0.8125rem; }
+  .schedule-footer { display: flex; align-items: baseline; justify-content: space-between; gap: 32px; margin-top: 16px; }
+  .note { color: var(--c-text-muted); font-size: 0.8125rem; line-height: 1.65; }
+  .text-link { display: inline-flex; align-items: center; gap: 10px; font-size: 0.875rem; font-weight: 600; }
+  .text-link:hover { color: var(--c-accent-lift); }
+  .visibility-section { background: var(--c-bg-elev); border-block: 1px solid var(--c-line); }
+  .placements { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--c-line-strong); }
+  .placement { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 20px; padding: 32px 32px 32px 0; border-bottom: 1px solid var(--c-line); }
+  .placement:nth-child(even) { padding-left: 36px; padding-right: 0; border-left: 1px solid var(--c-line); }
+  .placement :global(.placement-icon) { width: 32px; height: 32px; color: var(--c-accent-lift); }
+  .placement h3 { font-size: 1.2rem; line-height: 1.3; }
+  .placement p { color: var(--c-text-muted); font-size: 0.9375rem; line-height: 1.7; margin-top: 12px; max-width: 55ch; }
+  .placement ul { list-style: none; padding: 0; margin-top: 20px; }
+  .placement li { display: flex; gap: 10px; align-items: baseline; font-size: 0.8125rem; line-height: 1.6; margin-top: 8px; color: var(--c-text-muted); }
+  .placement li :global([data-icon]) { width: 12px; height: 12px; color: var(--c-accent-lift); }
+  .channel-strip { padding-top: 28px; display: flex; align-items: center; gap: 28px; }
+  .channel-strip h3 { font: 550 0.875rem/1.5 var(--font-body); }
+  .channel-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; }
+  .channel-links a { display: flex; align-items: center; gap: 8px; min-height: 44px; font-size: 0.8125rem; }
+  .channel-links a:hover { color: var(--c-accent-lift); }
+  .channel-links :global([data-icon]) { width: 17px; height: 17px; }
+  .channel-links :global(.channel-arrow) { width: 12px; height: 12px; color: var(--c-text-muted); }
+  .season-roadmap { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; padding: 0; gap: 20px; }
+  .season-roadmap li { position: relative; border-radius: var(--radius-card); overflow: hidden; padding: 28px; border: 1px solid var(--c-line-strong); background: linear-gradient(145deg, color-mix(in srgb, var(--stage-color) 10%, var(--c-bg-elev)), var(--c-bg-elev) 65%); }
+  .season-roadmap li::before { content: ""; position: absolute; top: 0; left: 28px; width: 52px; height: 2px; background: var(--stage-color); }
+  .season-identity { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+  .edition-mark { display: grid; place-items: center; width: 52px; height: 56px; flex-shrink: 0; border: 1px solid color-mix(in srgb, var(--stage-color) 45%, transparent); border-radius: var(--radius-control); background: color-mix(in srgb, var(--stage-color) 12%, transparent); color: var(--c-text); font: 750 1.75rem/1 var(--font-display); }
+  .season-status { color: var(--c-text-muted); font-size: 0.8125rem; line-height: 1.5; }
+  .season-roadmap h3 { font-size: 1.4rem; }
+  .season-date { display: flex; gap: 8px; align-items: center; margin-top: 14px; color: var(--c-text-muted); font-size: 0.8125rem; line-height: 1.5; }
+  .season-date :global([data-icon]) { width: 16px; height: 16px; }
+  .season-prize { display: flex; align-items: center; gap: 12px; padding-top: 24px; margin-top: 24px; border-top: 1px solid var(--c-line); }
+  .season-prize > :global([data-icon]) { width: 24px; height: 24px; color: var(--c-text-muted); }
+  .season-prize span { display: block; font-size: 0.75rem; color: var(--c-text-muted); }
+  .season-prize strong { display: block; font: 650 1.6rem/1.3 var(--font-display); margin-top: 5px; font-variant-numeric: tabular-nums; }
+  .season-offer { display: flex; align-items: baseline; justify-content: space-between; gap: 40px; margin-top: 28px; }
+  .season-offer p { display: flex; gap: 12px; align-items: flex-start; max-width: 70ch; color: var(--c-text-muted); font-size: 0.875rem; line-height: 1.7; }
+  .season-offer p :global([data-icon]) { color: var(--c-accent-lift); }
+  .season-offer a { max-width: 28ch; }
+  .contact-section { padding-bottom: 48px; scroll-margin-top: 24px; }
+  .information-section { border-top: 1px solid var(--c-line); }
+  .contact-panel { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: start; gap: 28px; padding: 44px; border-radius: var(--radius-card); border: 1px solid color-mix(in srgb, var(--c-accent) 45%, var(--c-line)); background: var(--c-bg-elev); }
+  .contact-panel :global(.contact-icon) { width: 44px; height: 44px; color: var(--c-accent-lift); }
+  .contact-panel .lede { margin-top: 18px; max-width: 62ch; }
+  .contact-panel :global(.btn) { align-self: center; }
+  .email-link { display: inline-block; color: var(--c-accent-lift); margin-top: 20px; text-decoration: underline; text-underline-offset: 5px; font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .proposal-details { margin-top: 28px; }
+  .proposal-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; padding-left: 24px; list-style: decimal; margin-top: 16px; }
+  .proposal-steps li::marker { color: var(--c-accent-lift); font-weight: 600; }
+  .proposal-steps h3 { font-size: 1rem; margin-bottom: 12px; }
+  .proposal-steps p { color: var(--c-text-muted); font-size: 0.875rem; line-height: 1.7; }
+  .terms-note { margin-top: 28px; max-width: 100ch; }
+  .kit-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--c-line); padding-block: 28px; color: var(--c-text-muted); font-size: 0.75rem; }
+  @media (max-width: 1100px) {
+    .header-links { gap: 18px; }
+    .header-contact { display: none; }
+    .cover { gap: 32px 40px; }
+    .tournament-layout { grid-template-columns: 1fr 1fr; gap: 32px; }
+    .team-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .team-list li { flex-direction: row; text-align: left; }
+    .team-emblem { flex-shrink: 0; }
+    .season-roadmap { gap: 14px; }
+    .season-roadmap li { padding: 24px 20px; }
+    .contact-panel { grid-template-columns: 40px 1fr; padding: 32px; }
+    .contact-panel :global(.btn) { grid-column: 2; justify-self: start; }
+  }
+  @media (max-width: 800px) {
+    .wrap { width: calc(100% - 48px); }
+    .kit-header { gap: 20px; min-height: 84px; }
+    .header-links { display: none; }
+    .cover { padding-top: 40px; gap: 32px; }
+    h1 { font-size: clamp(2.7rem, 5.8vw, 4rem); }
+    .cover-pitch .lede { font-size: 0.9375rem; }
+    .document-label { font-size: 0.8125rem; }
+    .edition-strip { gap: 12px 24px; }
+    .edition-strip a { margin-left: 0; }
+    .kit-section { padding-block: 64px; }
+    .section-intro { gap: 32px; }
+    .tournament-layout { grid-template-columns: 1fr; gap: 36px; }
+    .team-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .team-list li { flex-direction: column; text-align: center; }
+    .facts { grid-template-columns: 1fr 1fr; }
+    .placement { gap: 14px; padding-right: 24px; }
+    .placement:nth-child(even) { padding-left: 24px; }
+    .channel-strip { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .season-roadmap h3 { font-size: 1.125rem; }
+    .season-identity { flex-direction: column; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+    .season-prize strong { font-size: 1.35rem; }
+    .season-offer, .schedule-footer { flex-direction: column; align-items: flex-start; gap: 20px; }
+    .season-offer a { max-width: none; }
+  }
+  @media (max-width: 600px) {
+    .wrap { width: calc(100% - 40px); }
+    .kit-header { min-height: 76px; }
+    .home-link :global(.brand-logo) { width: 100px !important; height: 32px !important; }
+    .cover { grid-template-columns: 1fr; gap: 24px; padding-top: 32px; }
+    h1 { font-size: clamp(2.7rem, 10vw, 3.6rem); max-width: 12ch; }
+    .cover-pitch .lede { font-size: 1rem; }
+    .document-label { margin-bottom: 12px; }
+    .cover-pitch :global(.btn) { margin-top: 20px; }
+    .mediakit :global(.btn) { max-width: 100%; min-height: 46px; white-space: normal; text-align: center; padding-inline: 16px; font-size: 0.75rem; letter-spacing: 0.04em; }
+    .edition-strip { font-size: 0.75rem; gap: 12px 18px; padding-block: 16px; }
+    .edition-strip .edition-name, .edition-strip > span:nth-child(3) { flex-basis: 100%; }
+    .edition-strip a { font-size: 0.75rem; }
+    .section-intro { grid-template-columns: 1fr; gap: 20px; margin-bottom: 28px; }
+    h2 { font-size: 1.9rem; }
+    .lede { font-size: 1rem; }
+    .kit-section { padding-block: 56px; }
+    .team-list { gap: 20px 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .team-list li { flex-direction: row; text-align: left; gap: 10px; }
+    .team-emblem { width: 48px; height: 48px; }
+    .team-emblem :global(img) { width: 38px !important; height: 38px !important; }
+    .team-list li > span:last-child { font-size: 0.6875rem; }
+    .brief-header, .facts { padding: 20px; }
+    .format-strip { padding-inline: 20px; }
+    .liquipedia-link { padding: 18px 20px; }
+    .placements { grid-template-columns: 1fr; }
+    .placement, .placement:nth-child(even) { padding: 26px 0; border-left: 0; grid-template-columns: 32px minmax(0, 1fr); gap: 16px; }
+    .placement h3 { font-size: 1.125rem; }
+    .placement p { font-size: 0.9375rem; }
+    .season-roadmap { grid-template-columns: 1fr; gap: 16px; }
+    .season-roadmap li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; padding: 24px; }
+    .season-identity { grid-column: 1 / -1; flex-direction: row; align-items: center; margin-bottom: 10px; }
+    .edition-mark { width: 40px; height: 42px; font-size: 1.4rem; }
+    .season-roadmap h3 { grid-column: 1; font-size: 1.125rem; }
+    .season-date { grid-column: 1; margin-top: 0; font-size: 0.75rem; align-items: flex-start; }
+    .season-prize { grid-column: 2; grid-row: 2 / 4; padding: 0; margin: 0; border: 0; text-align: right; }
+    .season-prize > :global([data-icon]) { display: none; }
+    .season-prize span { max-width: 13ch; font-size: 0.6875rem; }
+    .season-prize strong { font-size: 1.125rem; }
+    .contact-panel { grid-template-columns: minmax(0, 1fr); padding: 24px; gap: 20px; }
+    .contact-panel :global(.btn) { grid-column: 1; justify-self: stretch; }
+    .contact-panel :global(.contact-icon) { width: 36px; height: 36px; }
+    .proposal-steps { grid-template-columns: 1fr; gap: 24px; }
+    .kit-footer { flex-wrap: wrap; gap: 20px; padding-block: 24px; }
+    .kit-footer p { flex-basis: 100%; order: 2; line-height: 1.6; }
+  }
+</style>

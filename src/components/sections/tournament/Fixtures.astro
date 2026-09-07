@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 import Section from "@ui/Section.astro";
 import Scoreline from "@ui/Scoreline.astro";
 import type { ResolvedMatch } from "@lib/competition";
-import { dayKey, formatDay, formatTime } from "@lib/format";
+import { dayKey, formatDay } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 import { channels } from "@config/site";
 
@@ -19,11 +19,11 @@ const c = t.competition;
 
 const playable = matches.filter((m) => m.home && m.away);
 
-const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).entries()].map(
+const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima"), m.startsAt])).entries()].map(
   ([day, date]) => ({
     day,
     date,
-    matches: playable.filter((m) => dayKey(m.startsAt) === day),
+    matches: playable.filter((m) => dayKey(m.startsAt, "America/Lima") === day),
   }),
 );
 ---
@@ -35,7 +35,6 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
     {
       days.length > 0 && (
         <div class="reveal flex flex-wrap items-center gap-x-5 gap-y-3">
-          <p class="text-sm text-muted">{c.timeZoneNote}</p>
           <p class="flex flex-wrap items-center gap-2">
             <span class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
               {c.info.broadcast}
@@ -56,6 +55,7 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
       )
     }
   </div>
+  {days.length > 0 && <p class="mt-4 text-[0.8125rem] text-muted">{c.timeZoneNote}</p>}
 
   {
     days.length === 0 ? (
@@ -64,7 +64,7 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
       <div class="mt-10 flex flex-col gap-10">
         {days.map((group, i) => (
           <div class="reveal" style={`--reveal-delay:${i * 60}ms`}>
-            <h3 class="display-sm text-sm text-accent-lift">{formatDay(group.date, locale)}</h3>
+            <h3 class="display-sm text-sm text-accent-lift">{formatDay(group.date, locale, "America/Lima")}</h3>
 
             <ul class="mt-4 flex flex-col gap-3">
               {group.matches.map((match) => (
@@ -83,14 +83,8 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt), m.startsAt])).
                         <span>{c.bestOf(match.bestOf)}</span>
                       </>
                     )}
-
-                    {match.score && (
-                      <span class="ml-auto normal-case tracking-normal">
-                        {formatTime(match.startsAt, locale)}
-                      </span>
-                    )}
                   </p>
-                  <Scoreline match={match} trailing={formatTime(match.startsAt, locale)} />
+                  <Scoreline match={match} showTime />
                 </li>
               ))}
             </ul>

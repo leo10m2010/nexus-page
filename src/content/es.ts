@@ -112,7 +112,7 @@ export const es: Dictionary = {
       thirdPlace: "Tercer puesto",
     },
     teamCount: (n) => `${n} equipos`,
-    timeZoneNote: "Todos los horarios en UTC.",
+    timeZoneNote: "Fechas de Perú (PET). Hora europea en CEST/CET. +1 indica el día siguiente en Europa.",
     section: {
       format: "Formato",
       participants: "Participantes",

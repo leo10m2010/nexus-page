@@ -2,7 +2,7 @@
 import Section from "@ui/Section.astro";
 import Scoreline from "@ui/Scoreline.astro";
 import { getSchedule } from "@lib/competition";
-import { formatDay, formatTime } from "@lib/format";
+import { formatDay } from "@lib/format";
 import { useTranslations } from "@lib/i18n";
 
 const t = useTranslations(Astro.currentLocale);
@@ -27,7 +27,7 @@ const locale = Astro.currentLocale;
         {days.map((group) => (
           <div>
             <h3 class="display-sm text-sm text-accent-lift">
-              {formatDay(group.date, locale)}
+              {formatDay(group.date, locale, "America/Lima")}
             </h3>
             <ul class="mt-4 flex flex-col gap-3">
               {group.matches.map((match) => (
@@ -36,7 +36,7 @@ const locale = Astro.currentLocale;
                     {match.tournament.name} <span class="px-1">/</span>{" "}
                     {t.competition.stage[match.stage]}
                   </p>
-                  <Scoreline match={match} trailing={formatTime(match.startsAt, locale)} />
+                  <Scoreline match={match} showTime />
                 </li>
               ))}
             </ul>

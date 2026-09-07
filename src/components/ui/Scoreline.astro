@@ -1,5 +1,6 @@
 ---
 import TeamMark from "@ui/TeamMark.astro";
+import BroadcastTime from "@ui/BroadcastTime.astro";
 import type { ResolvedMatch } from "@lib/competition";
 import { useTranslations } from "@lib/i18n";
 
@@ -7,8 +8,9 @@ interface Props {
   match: ResolvedMatch;
 
   trailing?: string;
+  showTime?: boolean;
 }
-const { match, trailing } = Astro.props;
+const { match, trailing, showTime = false } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 const homeScore = match.score?.home;
 const awayScore = match.score?.away;
@@ -16,8 +18,8 @@ const homeWon = match.score ? homeScore! > awayScore! : false;
 const awayWon = match.score ? awayScore! > homeScore! : false;
 ---
 
-<div class="flex items-center gap-4 sm:gap-6">
-  <div class="flex min-w-0 flex-1 items-center gap-3">
+<div class:list={["scoreline flex items-center gap-4 sm:gap-6", { "scheduled-line": showTime }]}>
+  <div class="team-seat home-seat flex min-w-0 flex-1 items-center gap-3">
     <TeamMark team={match.home} size={36} />
     <span class={`[overflow-wrap:anywhere] text-[0.9375rem] sm:truncate ${homeWon ? "text-ink" : "text-muted"}`}>
       {match.home?.name ?? t.competition.tbd}
@@ -26,20 +28,36 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
 
   {
     match.score ? (
+      <div class="result-center">
       <span class="display-sm shrink-0 text-xl tabular-nums sm:text-2xl">
         <span class={homeWon ? "text-ink" : "text-muted"}>{homeScore}</span>
         <span class="px-1.5 text-muted">:</span>
         <span class={awayWon ? "text-ink" : "text-muted"}>{awayScore}</span>
       </span>
+      {showTime && <BroadcastTime date={match.startsAt} compact />}
+      </div>
+    ) : showTime ? (
+      <BroadcastTime date={match.startsAt} />
     ) : (
       <span class="display-sm shrink-0 text-sm text-accent-lift tabular-nums">{trailing}</span>
     )
   }
 
-  <div class="flex min-w-0 flex-1 items-center justify-end gap-3">
+  <div class="team-seat away-seat flex min-w-0 flex-1 items-center justify-end gap-3">
     <span class={`[overflow-wrap:anywhere] text-right text-[0.9375rem] sm:truncate ${awayWon ? "text-ink" : "text-muted"}`}>
       {match.away?.name ?? t.competition.tbd}
     </span>
     <TeamMark team={match.away} size={36} />
   </div>
 </div>
+
+<style>
+  .result-center { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; gap: 8px; }
+  .scheduled-line { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; min-height: 60px; }
+  @media (max-width: 600px) {
+    .scheduled-line { gap: 10px; }
+    .scheduled-line .team-seat { flex-direction: column; gap: 8px; text-align: center; }
+    .scheduled-line .away-seat { flex-direction: column-reverse; }
+    .scheduled-line .team-seat > span { font-size: 0.8125rem; text-align: center; line-height: 1.35; }
+  }
+</style>

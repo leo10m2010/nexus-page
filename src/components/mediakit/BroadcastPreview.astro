@@ -1,0 +1,119 @@
+---
+import { Icon } from "astro-icon/components";
+import type { MediakitCopy } from "@content/mediakit";
+import type { ResolvedMatch } from "@lib/competition";
+import { getBroadcastTimes } from "@lib/format";
+
+interface Props { copy: MediakitCopy; matches: ResolvedMatch[] }
+const { copy: c, matches } = Astro.props;
+const scenes = ["waiting", "draft", "roster", "game"];
+const icons = ["ph:hourglass-duotone", "ph:squares-four-duotone", "ph:users-three-duotone", "ph:game-controller-duotone"];
+---
+
+<div class="broadcast-preview" data-broadcast-preview>
+  <div class="preview-header"><span><Icon name="ph:monitor-play-duotone" aria-hidden="true" />{c.previewOriginal}</span><span>Nexus Series I / Dota 2</span></div>
+  <div class="preview-layout">
+    <div class="scene-controls" hidden data-scene-controls role="group" aria-label={c.previewLabel}>{c.broadcastScenes.map((scene, index) => <button type="button" data-scene-button={index} aria-pressed={index === 1 ? "true" : "false"} aria-controls={`scene-${scenes[index]}`}><Icon name={icons[index]!} aria-hidden="true" /><span>{scene.label}</span><Icon name="ph:caret-right-bold" class="scene-arrow" aria-hidden="true" /></button>)}</div>
+    <div class="scene-stage">
+      {c.broadcastScenes.map((scene, index) => <figure data-scene-panel={index} id={`scene-${scenes[index]}`}>
+        <div class={`preview-canvas scene-${scenes[index]}`}>
+          <img src={`/media/mediakit-${scenes[index]}.webp`} alt={`${c.previewOriginal}: ${scene.label}`} width="1600" height="900" loading={index === 1 ? "eager" : "lazy"} fetchpriority={index === 1 ? "high" : "auto"} />
+          {index === 0 && <><span class="waiting-schedule-title">{c.nav.schedule} / PET · CEST</span>{matches.map((match, i) => { const times = getBroadcastTimes(match.startsAt, Astro.currentLocale); return <div class="waiting-times" style={`top:${i === 0 ? 36.5 : 52.5}%`}><span>{times.pet.time}<small>PET</small></span><span>{times.europe.time}<small>{times.europe.zone}</small></span></div>; })}</>}
+          {index === 3 && <p class="game-feed-note">{c.gameFeedNote}</p>}
+          <span class="sponsor-marker" hidden role="img" aria-label={c.sponsorSlot}><Icon name="ph:crosshair-bold" aria-hidden="true" /></span>
+        </div>
+        <figcaption><div><h3>{scene.title}</h3><p>{scene.description}</p></div><a class="preview-expand" href={`/media/mediakit-${scenes[index]}.webp`} target="_blank" rel="noopener noreferrer"><Icon name="ph:arrows-out-simple-bold" aria-hidden="true" /><span>{c.previewExpand}</span></a></figcaption>
+      </figure>)}
+    </div>
+  </div>
+  <div class="preview-footer"><button type="button" data-sponsor-toggle aria-pressed="false" hidden><Icon name="ph:crosshair-duotone" aria-hidden="true" /><span>{c.previewHighlight}</span></button><p>{c.previewNote}</p></div>
+</div>
+
+<script>
+  const preview = document.querySelector<HTMLElement>("[data-broadcast-preview]");
+  if (preview) {
+    const controls = preview.querySelector<HTMLElement>("[data-scene-controls]");
+    const buttons = [...preview.querySelectorAll<HTMLButtonElement>("[data-scene-button]")];
+    const panels = [...preview.querySelectorAll<HTMLElement>("[data-scene-panel]")];
+    const sponsorToggle = preview.querySelector<HTMLButtonElement>("[data-sponsor-toggle]");
+    const select = (index: number) => {
+      buttons.forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
+      panels.forEach((panel, i) => { panel.hidden = i !== index; });
+    };
+    select(1);
+    if (controls) controls.hidden = false;
+    buttons.forEach((button, index) => button.addEventListener("click", () => select(index)));
+    if (sponsorToggle) {
+      sponsorToggle.hidden = false;
+      sponsorToggle.addEventListener("click", () => {
+        const active = sponsorToggle.getAttribute("aria-pressed") !== "true";
+        sponsorToggle.setAttribute("aria-pressed", String(active));
+        preview.querySelectorAll<HTMLElement>(".sponsor-marker").forEach((marker) => { marker.hidden = !active; });
+      });
+    }
+  }
+</script>
+
+<style>
+  .broadcast-preview { min-width: 0; border: 1px solid var(--c-line-strong); border-radius: var(--radius-card); background: var(--c-bg-elev); overflow: hidden; }
+  .preview-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 18px 24px; border-bottom: 1px solid var(--c-line); font-size: 0.8125rem; color: var(--c-text-muted); }
+  .preview-header > span:first-child { display: flex; gap: 10px; align-items: center; color: var(--c-text); font-weight: 600; }
+  .preview-header :global([data-icon]) { color: var(--c-brand-lift); }
+  .preview-layout { display: grid; grid-template-columns: 190px minmax(0, 1fr); }
+  .preview-layout:has(.scene-controls[hidden]) { grid-template-columns: 1fr; }
+  .scene-controls:not([hidden]) { display: flex; flex-direction: column; gap: 8px; padding: 20px 14px; border-right: 1px solid var(--c-line); }
+  .scene-controls button { display: flex; align-items: center; gap: 10px; padding: 14px 10px; min-height: 52px; width: 100%; text-align: left; color: var(--c-text-muted); font-weight: 500; font-size: 0.8125rem; line-height: 1.5; cursor: pointer; border: 1px solid transparent; border-radius: var(--radius-control); transition: background-color 160ms, color 160ms; }
+  .scene-controls button :global([data-icon]) { width: 22px; height: 22px; }
+  .scene-controls button > span { flex: 1; }
+  .scene-controls button :global(.scene-arrow) { width: 12px; height: 12px; opacity: 0; }
+  .scene-controls button:hover { background: var(--c-bg-elev-2); color: var(--c-text); }
+  .scene-controls button[aria-pressed="true"] { color: var(--c-text); border-color: var(--c-line-strong); background: var(--c-bg-elev-2); }
+  .scene-controls button[aria-pressed="true"] > :global([data-icon]:first-child) { color: var(--c-accent-lift); }
+  .scene-controls button[aria-pressed="true"] :global(.scene-arrow) { opacity: 1; }
+  .scene-stage { min-width: 0; }
+  .preview-canvas { position: relative; background: #04101e; aspect-ratio: 16 / 9; isolation: isolate; overflow: hidden; }
+  .preview-canvas > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .waiting-schedule-title { position: absolute; left: 60%; top: 24%; width: 25%; height: 6%; display: flex; align-items: center; justify-content: center; background: #061322; color: #eeedee; font: 700 clamp(0.375rem, 1.1vw, 1rem)/1 var(--font-display); text-align: center; }
+  .waiting-times { position: absolute; left: 62.9%; width: 18.3%; height: 11%; background: #081b31; border-radius: 6px; display: flex; align-items: center; justify-content: space-evenly; color: #eeedee; font: 750 clamp(0.5rem, 1.5vw, 1.35rem)/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .waiting-times > span { text-align: center; }
+  .waiting-times > span + span { color: #69a6f5; }
+  .waiting-times small { display: block; font: 500 0.5em/1.5 var(--font-body); margin-top: 3px; }
+  .sponsor-marker:not([hidden]) { position: absolute; display: grid; place-items: center; width: clamp(24px, 3vw, 40px); height: clamp(24px, 3vw, 40px); border-radius: 50%; border: 1px solid #f3d199; background: #d2a355; color: #06080f; transform: translate(-50%, -50%); }
+  .sponsor-marker :global([data-icon]) { width: 60%; height: 60%; }
+  .scene-waiting .sponsor-marker { left: 88%; top: 83%; }
+  .scene-draft .sponsor-marker { left: 51%; top: 64.3%; }
+  .scene-roster .sponsor-marker { left: 50%; top: 93%; }
+  .scene-game .sponsor-marker { left: 79%; top: 95%; }
+  .game-feed-note { position: absolute; left: 22%; right: 22%; top: 45%; color: #aebcd0; text-align: center; font-size: clamp(0.625rem, 1.2vw, 1rem); line-height: 1.6; }
+  figcaption { display: flex; align-items: flex-start; justify-content: space-between; gap: 32px; padding: 22px 24px; border-top: 1px solid var(--c-line); }
+  figcaption h3 { font: 650 1rem/1.4 var(--font-body); }
+  figcaption p { color: var(--c-text-muted); max-width: 65ch; font-size: 0.875rem; line-height: 1.7; margin-top: 8px; }
+  .preview-expand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 0.75rem; font-weight: 550; min-height: 44px; max-width: 24ch; }
+  .preview-expand:hover { color: var(--c-accent-lift); }
+  .preview-expand :global([data-icon]) { width: 18px; height: 18px; }
+  .preview-footer { display: flex; align-items: center; gap: 32px; padding: 14px 24px; border-top: 1px solid var(--c-line); }
+  .preview-footer button:not([hidden]) { display: flex; align-items: center; gap: 8px; min-height: 44px; text-align: left; font-size: 0.8125rem; font-weight: 550; cursor: pointer; max-width: 34ch; flex-shrink: 0; }
+  .preview-footer button[aria-pressed="true"] { color: var(--c-accent-lift); }
+  .preview-footer button:hover { color: var(--c-accent-lift); }
+  .preview-footer p { color: var(--c-text-muted); font-size: 0.75rem; line-height: 1.65; max-width: 100ch; }
+  @media (max-width: 1000px) {
+    .preview-layout { grid-template-columns: 1fr; }
+    .scene-controls:not([hidden]) { flex-direction: row; padding: 12px; gap: 8px; border-right: 0; border-bottom: 1px solid var(--c-line); }
+    .scene-controls button { flex: 1; width: auto; justify-content: center; padding: 10px; min-height: 48px; }
+    .scene-controls button > span { flex: 0 1 auto; }
+    .scene-controls button :global(.scene-arrow) { display: none; }
+  }
+  @media (max-width: 700px) {
+    .preview-header { padding: 16px; }
+    .preview-header > span:last-child { display: none; }
+    figcaption { flex-direction: column; gap: 12px; padding: 20px; }
+    .preview-footer { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px 20px 20px; }
+    .preview-footer button:not([hidden]) { max-width: none; flex-shrink: 1; }
+  }
+  @media (max-width: 500px) {
+    .scene-controls:not([hidden]) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 10px; }
+    .scene-controls button { justify-content: flex-start; font-size: 0.75rem; }
+    .scene-controls button :global([data-icon]) { width: 20px; height: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .scene-controls button { transition: none; } }
+</style>

@@ -1,0 +1,42 @@
+---
+import { getBroadcastTimes } from "@lib/format";
+
+interface Props {
+  date: Date;
+  locale?: string;
+  compact?: boolean;
+}
+
+const { date, locale = Astro.currentLocale, compact = false } = Astro.props;
+const { pet, europe } = getBroadcastTimes(date, locale);
+const nextDay = pet.date !== europe.date;
+---
+
+<span class:list={["broadcast-time", { compact }]}>
+  <time class="clock" datetime={date.toISOString()} aria-label={`${pet.date}, ${pet.time} PET`} title={`${pet.date} · ${pet.time} PET`}>
+    <strong>{pet.time}</strong><span class="zone">PET</span>
+  </time>
+  <time class="clock" datetime={date.toISOString()} aria-label={`${europe.date}, ${europe.time} ${europe.zone}`} title={`${europe.date} · ${europe.time} ${europe.zone}`}>
+    <strong>{europe.time}{nextDay && <sup aria-hidden="true">+1</sup>}</strong><span class="zone">{europe.zone}</span>
+  </time>
+</span>
+
+<style>
+  .broadcast-time { display: inline-grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 18px; font-variant-numeric: tabular-nums; text-transform: none; letter-spacing: normal; }
+  .clock { display: flex; align-items: center; flex-direction: column; gap: 5px; white-space: nowrap; }
+  .clock + .clock { border-left: 1px solid var(--c-line-strong); padding-left: 18px; }
+  strong { font: 700 1.5rem/1.1 var(--font-display); color: var(--c-text); }
+  .zone { font: 500 0.6875rem/1.2 var(--font-body); letter-spacing: 0.05em; color: var(--c-text-muted); }
+  sup { color: var(--c-accent-lift); font: 600 0.5625rem/1 var(--font-body); margin-left: 2px; }
+  .compact { gap: 10px; width: 100%; }
+  .compact .clock { flex-direction: row; justify-content: center; gap: 4px; }
+  .compact .clock + .clock { padding-left: 10px; }
+  .compact strong { font-size: 0.8125rem; }
+  .compact .zone { font-size: 0.5625rem; letter-spacing: 0; }
+  @media (max-width: 600px) {
+    .broadcast-time { gap: 8px; }
+    .clock + .clock { padding-left: 8px; }
+    strong { font-size: 1.0625rem; }
+    .zone { font-size: 0.625rem; }
+  }
+</style>

@@ -1,9 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
 import TeamMark from "@ui/TeamMark.astro";
+import BroadcastTime from "@ui/BroadcastTime.astro";
 import Section from "@ui/Section.astro";
 import type { BracketRound, BracketSide, ResolvedMatch } from "@lib/competition";
-import { formatDate, formatMoney } from "@lib/format";
+import { formatMoney, formatDate } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 
 interface Props {
@@ -63,6 +64,7 @@ const championPrize = winnerPayout && prizePool
 
 <Section id={id} bordered>
   <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.bracket}</h2>
+  <p class="mt-4 text-[0.8125rem] text-muted">{c.timeZoneNote}</p>
 
   <div class="bracket-shell reveal mt-10">
     <div
@@ -95,9 +97,10 @@ const championPrize = winnerPayout && prizePool
                           {pair.map((match) => (
                             <article class="bracket-match">
                               <p class="bracket-meta">
-                                <span>{formatDate(match.startsAt, locale)}</span>
+                                <time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time>
                                 {match.bestOf && <span>{c.bestOf(match.bestOf)}</span>}
                               </p>
+                              <div class="bracket-time"><BroadcastTime date={match.startsAt} locale={locale} compact /></div>
 
                               {(["home", "away"] as const).map((seat) => (
                                 <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
@@ -309,6 +312,9 @@ const championPrize = winnerPayout && prizePool
     text-transform: uppercase;
     color: var(--c-text-muted);
   }
+
+  .bracket-meta time { text-transform: none; letter-spacing: normal; font-size: 0.6875rem; }
+  .bracket-time { padding: 0.5rem 0.625rem; border-bottom: 1px solid var(--c-line); }
 
   .bracket-seat {
     display: flex;

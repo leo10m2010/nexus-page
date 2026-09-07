@@ -112,7 +112,7 @@ export const ru: Dictionary = {
       thirdPlace: "Матч за третье место",
     },
     teamCount: (n) => `Команд: ${n}`,
-    timeZoneNote: "Всё время указано в UTC.",
+    timeZoneNote: "Даты указаны по времени Перу (PET). Время Европы: CEST/CET. +1 означает следующий день в Европе.",
     section: {
       format: "Формат",
       participants: "Участники",

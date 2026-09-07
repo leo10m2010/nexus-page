@@ -33,10 +33,10 @@ broadcastTalent:
     language: es
     icon: simple-icons:kick
     href: https://kick.com/PAPITA
-  - name: KosdaBence
+  - name: doedie666
     language: en
     icon: simple-icons:twitch
-    href: https://www.twitch.tv/nexusmedia_en
+    href: https://www.twitch.tv/doedie666
 participants:
   - team: amaru-gaming
     via: invited

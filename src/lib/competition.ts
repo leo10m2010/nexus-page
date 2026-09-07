@@ -253,7 +253,7 @@ export async function getSchedule(
 
   const groups = new Map<string, ResolvedMatch[]>();
   for (const match of upcoming) {
-    const key = dayKey(match.startsAt);
+    const key = dayKey(match.startsAt, "America/Lima");
     groups.set(key, [...(groups.get(key) ?? []), match]);
   }
 

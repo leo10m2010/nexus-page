@@ -10,7 +10,8 @@
     "check": "astro check",
     "build:fast": "astro build",
     "og": "node scripts/build-og.mjs",
-    "check:data": "node scripts/check-data.mjs"
+    "check:data": "node scripts/check-data.mjs",
+    "test:mediakit": "npm run build && node scripts/test-mediakit.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
@@ -26,6 +27,8 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
+    "playwright": "^1.63.0",
     "typescript": "^6.0.3",
     "yaml": "^2.9.0"
   }

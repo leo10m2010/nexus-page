@@ -1,0 +1,92 @@
+---
+import { getCollection } from "astro:content";
+import { Icon } from "astro-icon/components";
+import { site } from "@config/site";
+import { resolveLocale } from "@lib/i18n";
+
+const copy = {
+  es: {
+    heading: "Alianzas y propuesta comercial",
+    intro: "Conoce los aliados publicados de Nexus y conversemos sobre una propuesta adaptada a tu marca.",
+    proposal: "Un acuerdo con entregables claros",
+    proposalNote: "Definimos los espacios de marca, las publicaciones, las menciones y el calendario de cada edición. Las referencias y materiales de colaboraciones se comparten según disponibilidad y autorización.",
+    partners: "Aliados publicados",
+    partnersNote: "Presentes actualmente en nuestro sitio. No representa un historial de sponsors anteriores.",
+    empty: "Actualmente no hay aliados publicados activos.",
+    visit: "Ver sponsor",
+    cta: "Solicitar propuesta comercial",
+    subject: "Propuesta comercial y referencias | Nexus Series",
+    body: "Hola, equipo de Nexus Series:\n\nNos interesa colaborar con Nexus. Quisiéramos conocer los espacios de patrocinio, el calendario de publicaciones y las condiciones para nuestra marca. También agradeceríamos referencias y materiales de colaboraciones que puedan compartir.\n\nEmpresa:\nEdiciones de interés:\nObjetivo de la colaboración:\nContacto:\n\nGracias.",
+  },
+  en: {
+    heading: "Partnerships and commercial proposal",
+    intro: "Meet Nexus's listed partners and discuss a proposal tailored to your brand.",
+    proposal: "An agreement with clear deliverables",
+    proposalNote: "We define brand placements, posts, mentions and scheduling for each edition. Collaboration references and materials are shared subject to availability and permission.",
+    partners: "Listed partners",
+    partnersNote: "Currently featured on our website. This is not a record of past sponsors.",
+    empty: "There are currently no active listed partners.",
+    visit: "Visit sponsor",
+    cta: "Request a commercial proposal",
+    subject: "Commercial proposal and references | Nexus Series",
+    body: "Hello Nexus Series team,\n\nWe are interested in partnering with Nexus. Please share sponsorship placements, publishing schedules and terms for our brand. We would also appreciate any collaboration references and materials you have permission to share.\n\nCompany:\nEditions of interest:\nPartnership objective:\nContact:\n\nThank you.",
+  },
+  ru: {
+    heading: "Партнёры и коммерческое предложение",
+    intro: "Познакомьтесь с партнёрами Nexus, указанными на сайте, и обсудите предложение для вашего бренда.",
+    proposal: "Соглашение с понятным составом работ",
+    proposalNote: "Определим размещения бренда, публикации, упоминания и график для каждого турнира. Материалы и рекомендации по сотрудничеству предоставляются при наличии и разрешении на их передачу.",
+    partners: "Партнёры на сайте",
+    partnersNote: "Сейчас представлены на нашем сайте. Это не список спонсоров прошлых проектов.",
+    empty: "Сейчас на сайте нет активных опубликованных партнёров.",
+    visit: "Перейти к спонсору",
+    cta: "Запросить коммерческое предложение",
+    subject: "Коммерческое предложение и рекомендации | Nexus Series",
+    body: "Здравствуйте, команда Nexus Series!\n\nНас интересует сотрудничество с Nexus. Расскажите о спонсорских размещениях, графике публикаций и условиях для нашего бренда. Также будем благодарны за материалы и рекомендации по сотрудничеству, которыми вы можете поделиться.\n\nКомпания:\nИнтересующие турниры:\nЦель сотрудничества:\nКонтакт:\n\nСпасибо!",
+  },
+};
+const c = copy[resolveLocale(Astro.currentLocale)];
+const sponsors = (await getCollection("sponsors")).flatMap((entry) => entry.data.sponsors).filter((sponsor) => sponsor.active);
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent(c.subject)}&body=${encodeURIComponent(c.body)}`;
+---
+
+<div class="media-evidence">
+  <header><h2 id="information-title">{c.heading}</h2><p>{c.intro}</p></header>
+  <div class="evidence-columns">
+    <div class="proposal-copy"><Icon name="ph:handshake-duotone" aria-hidden="true" /><h3>{c.proposal}</h3><p>{c.proposalNote}</p><a class="commercial-cta" href={mailto}><Icon name="ph:envelope-simple-bold" aria-hidden="true" />{c.cta}</a></div>
+    <div class="published-partners"><h3>{c.partners}</h3><p>{c.partnersNote}</p>
+      {sponsors.length ? <ul class="partner-list">{sponsors.map((sponsor) => <li><div class="partner-logo" data-surface={sponsor.surface}><img src={sponsor.logo} alt="" loading="lazy" decoding="async" /></div><strong>{sponsor.name}</strong>{sponsor.url && <a href={sponsor.url} target="_blank" rel="noopener noreferrer" aria-label={`${c.visit}: ${sponsor.name}`}>{c.visit}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a>}</li>)}</ul> : <p>{c.empty}</p>}
+    </div>
+  </div>
+</div>
+
+<style>
+  .media-evidence { display: grid; gap: 32px; min-width: 0; color: var(--c-text); font: 400 1rem/1.65 var(--font-body); overflow-wrap: anywhere; }
+  h2 { font: 750 clamp(30px, 3.5vw, 48px)/1.12 var(--font-display); letter-spacing: -0.03em; text-wrap: balance; }
+  h3 { font: 650 1.125rem/1.4 var(--font-display); }
+  p { color: var(--c-text-muted); }
+  header p { max-width: 72ch; margin-top: 24px; }
+  .evidence-columns { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 48px; }
+  .proposal-copy { padding-top: 24px; border-top: 1px solid var(--c-line); }
+  .proposal-copy > :global([data-icon]) { width: 32px; height: 32px; color: var(--c-accent-lift); margin-bottom: 20px; }
+  .proposal-copy p { margin-top: 16px; font-size: 0.9375rem; }
+  .published-partners { padding: 24px; background: var(--c-bg-elev); border-radius: var(--radius-card); }
+  .published-partners > p { margin-top: 8px; font-size: 0.9375rem; }
+  .partner-list { display: grid; gap: 24px; margin-top: 24px; list-style: none; padding: 0; }
+  .partner-list li { display: grid; justify-items: start; gap: 8px; min-width: 0; }
+  .partner-logo { display: grid; place-items: center; width: 100%; height: 112px; padding: 20px; margin-bottom: 8px; background: var(--c-bg-elev-2); }
+  .partner-logo[data-surface="dark"] { background: #06080f; }
+  .partner-logo[data-surface="light"] { background: #f5f5f2; }
+  .partner-logo img { display: block; width: 100%; max-width: 280px; height: 72px; object-fit: contain; }
+  .partner-list strong { font-size: 0.9375rem; font-weight: 600; }
+  a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 0.875rem; font-weight: 600; }
+  a :global([data-icon]) { width: 20px; height: 20px; flex: none; }
+  .partner-list a { color: var(--c-accent-lift); text-decoration: underline; text-underline-offset: 4px; }
+  .partner-list a:hover { color: var(--c-text); }
+  .commercial-cta { margin-top: 24px; padding: 14px 20px; border-radius: var(--radius-control); background: var(--c-accent-lift); color: var(--c-on-accent); line-height: 1.5; }
+  .commercial-cta:hover { background: var(--c-accent); }
+  @media (max-width: 700px) {
+    .evidence-columns { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+    .commercial-cta { max-width: 100%; text-align: center; }
+  }
+</style>

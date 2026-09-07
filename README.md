@@ -248,10 +248,10 @@ tengas los logos reales, déjalos en `public/teams/` y añade la ruta al archivo
 
 ### Horarios
 
-Todo se muestra en UTC y así lo dice la página. Es una web estática: una "hora
-local" calculada al compilar sería la hora de la máquina que compila, no la de
-quien mira. UTC es lo que publican los calendarios de competición y no admite
-ambigüedad.
+Los datos conservan sus timestamps UTC. Las fechas de las jornadas se agrupan
+en `America/Lima` (PET); las dos horas del partido se calculan con zonas IANA
+explícitas: Perú y `Europe/Berlin` (CEST/CET según la fecha). `+1` indica el día
+siguiente en Europa. La conversión no depende de la zona de la máquina que compila.
 
 ## Idiomas
 
@@ -451,4 +451,36 @@ npm run og
 `scripts/build-og.mjs` rasteriza `white.svg` a doble densidad antes de reducirlo,
 para que el wordmark no quede blando. Va `white.svg` y no `normal.svg` porque la
 tarjeta es oscura y el secundario se perdería en el fondo.
+
+## Mediakit comercial
+
+Rutas sin enlaces desde la portada: `/mediakit/` (EN), `/es/mediakit/` (ES)
+y `/ru/mediakit/` (RU). Están marcadas `noindex` y excluidas del sitemap;
+el acceso por URL no equivale a protección con contraseña.
+
+- `src/components/MediakitPage.astro`: composición y datos del torneo.
+- `src/content/mediakit.ts`: textos en los tres idiomas.
+- `src/components/mediakit/BroadcastPreview.astro`: artes originales y marcadores opcionales de patrocinio.
+- `src/components/mediakit/MediaEvidence.astro`: aliados publicados y solicitud de propuesta comercial, sin estadísticas de audiencia ni métricas inventadas.
+
+Las imágenes WebP se derivan de las artes de producción sin modificar los PNG
+originales. Para regenerarlas, ejecuta `node scripts/prepare-mediakit-media.mjs`
+con la ruta del directorio de originales como argumento.
+
+### Pruebas del mediakit
+
+```bash
+npx playwright install chromium
+npm run test:mediakit
+```
+
+El comando compila la web, inicia un preview de pruebas independiente y verifica
+los tres idiomas de 320 a 1920 px, escritorio/tablet/móvil, temas claro/oscuro,
+imágenes, desbordamientos, horarios centrados, controles de teclado y táctiles,
+marcadores de sponsor y accesibilidad con Axe. Las capturas y el reporte quedan
+en `.mediakit-test/`, excluido de Git. Las capturas requieren revisión visual;
+no son una comparación automática contra un diseño aprobado.
+
+Para probar un servidor ya iniciado, configura `MEDIAKIT_BASE_URL` antes de
+ejecutar `node scripts/test-mediakit.mjs`.
 
