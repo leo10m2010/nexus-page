@@ -19,10 +19,11 @@ const t = useTranslations(locale);
 ---
 
 <!doctype html>
-<html lang={localeMeta[locale].htmlLang}>
+<html lang={localeMeta[locale].htmlLang} translate="no">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="google" content="notranslate" />
     <link rel="icon" type="image/svg+xml" href="/logos/app.svg" />
     <link rel="apple-touch-icon" href="/logos/app.svg" />
     <meta name="theme-color" content="#06080f" media="(prefers-color-scheme: dark)" />

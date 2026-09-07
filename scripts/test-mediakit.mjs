@@ -9,6 +9,8 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const artifacts = new URL('../.mediakit-test/', import.meta.url);
 const base = process.env.MEDIAKIT_BASE_URL || 'http://127.0.0.1:4322';
 const routes = { en: '/mediakit', es: '/es/mediakit', ru: '/ru/mediakit' };
+const localeFlags = { en: 'us', es: 'es', ru: 'ru' };
+const localeHeadings = { en: 'Your brand.', es: 'Tu marca.', ru: 'Ваш бренд.' };
 const report = { base, started: new Date().toISOString(), checks: [], screenshots: [], axe: [], runtime: [] };
 let server, browser, serverError, serverLog = '';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -72,6 +74,12 @@ try {
     try {
       await test('navigation', async () => assert.equal((await page.goto(new URL(routes[locale], base).href)).status(), 200));
       await test('initial contract', async () => {
+        assert.equal(await page.locator('html').getAttribute('lang'), locale);
+        assert.equal(await page.locator('html').getAttribute('translate'), 'no');
+        assert.equal(await page.locator('meta[name="google"]').getAttribute('content'), 'notranslate');
+        assert.equal((await page.locator('[data-locale-toggle]').innerText()).trim(), locale.toUpperCase());
+        assert.equal(await page.locator('[data-locale-toggle] svg').getAttribute('data-icon'), `flag:${localeFlags[locale]}-4x3`);
+        assert.ok((await page.locator('#kit-title').textContent()).startsWith(localeHeadings[locale]));
         assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
         assert.equal(await page.locator('.team-list img').count(), 8);
         assert.equal(await page.locator('.season-roadmap li').count(), 3);
@@ -195,9 +203,45 @@ try {
     } finally { await context.close(); report.runtime.push({ id, errors }); await test('console/pageerror', () => assert.deepEqual(errors, [])); }
     console.log(`Checked ${id}`);
   }
-  for (const home of ['/', '/es/', '/ru/']) await check(`home ${home}: no mediakit links`, async () => {
-    const page = await browser.newPage();
-    try { assert.equal((await page.goto(new URL(home, base).href, { timeout: 15000 })).status(), 200); assert.equal(await page.locator('a[href*="mediakit"]').count(), 0); } finally { await page.close(); }
+  await check('mobile locale navigation keeps route, flag and page language aligned', async () => {
+    const context = await browser.newContext({ viewport: { width: 390, height: 844 }, locale: 'es-PE', isMobile: true, hasTouch: true });
+    try {
+      const page = await context.newPage();
+      for (const path of ['/', '/competition/season-one/', '/mediakit/']) {
+        await page.goto(new URL(path, base).href);
+        for (const locale of ['es', 'ru', 'en']) {
+          await page.locator('[data-locale-toggle]').click();
+          await page.locator(`#locale-menu a[hreflang="${locale}"]`).click();
+          const localizedPath = locale === 'en' ? path : `/${locale}${path}`;
+          await page.waitForURL(new URL(localizedPath, base).href);
+          assert.equal(await page.locator('html').getAttribute('lang'), locale);
+          assert.equal((await page.locator('[data-locale-toggle]').innerText()).trim(), locale.toUpperCase());
+          assert.equal(await page.locator('[data-locale-toggle] svg').getAttribute('data-icon'), `flag:${localeFlags[locale]}-4x3`);
+          assert.equal(await page.locator('#locale-menu [aria-current="true"]').getAttribute('hreflang'), locale);
+          if (path === '/mediakit/') assert.ok((await page.locator('#kit-title').textContent()).startsWith(localeHeadings[locale]));
+        }
+      }
+    } finally { await context.close(); }
+  });
+  for (const home of ['/', '/es/', '/ru/']) await check(`home ${home}: localized partner button and reduced motion`, async () => {
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
+    try {
+      assert.equal((await page.goto(new URL(home, base).href, { timeout: 15000 })).status(), 200);
+      const destination = `${home}mediakit/`;
+      const partners = page.locator('a.btn-partner');
+      assert.equal(await partners.count(), 4);
+      for (const link of await partners.all()) assert.equal(await link.getAttribute('href'), destination);
+      const desktop = page.locator('.site-header .btn-partner:visible');
+      assert.equal(await desktop.count(), 1);
+      assert.equal(await desktop.evaluate((el) => getComputedStyle(el, '::after').animationName), 'partner-shine');
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      assert.equal(await desktop.evaluate((el) => getComputedStyle(el, '::after').animationName), 'none');
+      await desktop.click(); await page.waitForURL(new URL(destination, base).href);
+      await page.setViewportSize({ width: 390, height: 844 }); await page.goto(new URL(home, base).href);
+      await page.locator('[data-menu-toggle]').click();
+      const mobile = page.locator('#mobile-menu .btn-partner');
+      await mobile.click(); await page.waitForURL(new URL(destination, base).href);
+    } finally { await page.close(); }
   });
   await check('no-JavaScript fallback', async () => {
     const context = await browser.newContext({ javaScriptEnabled: false });

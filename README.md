@@ -454,8 +454,8 @@ tarjeta es oscura y el secundario se perdería en el fondo.
 
 ## Mediakit comercial
 
-Rutas sin enlaces desde la portada: `/mediakit/` (EN), `/es/mediakit/` (ES)
-y `/ru/mediakit/` (RU). Están marcadas `noindex` y excluidas del sitemap;
+El botón de patrocinio enlaza a `/mediakit/` (EN), `/es/mediakit/` (ES)
+o `/ru/mediakit/` (RU), según el idioma de la página. Las rutas siguen marcadas `noindex` y excluidas del sitemap;
 el acceso por URL no equivale a protección con contraseña.
 
 - `src/components/MediakitPage.astro`: composición y datos del torneo.

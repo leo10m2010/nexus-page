@@ -45,7 +45,7 @@ export const ctas = {
   },
   partnership: {
     intent: "partnership",
-    href: "#contact",
+    href: "/mediakit/",
   },
 } as const satisfies Record<CtaIntent, Omit<Cta, "label">>;
 

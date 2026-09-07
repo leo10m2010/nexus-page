@@ -1,12 +1,14 @@
 ---
 import { Icon } from "astro-icon/components";
-import type { Link } from "@types";
+import type { CtaIntent, Link } from "@types";
+import { localizePath, resolveLocale } from "@lib/i18n";
 
 interface Props extends Link {
   variant?: "primary" | "ghost";
   icon?: string;
   block?: boolean;
   class?: string;
+  intent?: CtaIntent;
 }
 
 const {
@@ -17,14 +19,17 @@ const {
   icon,
   block = false,
   class: klass = "",
+  intent,
 } = Astro.props;
 
 const rel = external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+const isPartner = intent === "partnership";
+const destination = isPartner ? localizePath(href, resolveLocale(Astro.currentLocale)) : href;
 ---
 
 <a
-  class={`btn btn-${variant} ${block ? "w-full" : ""} ${klass}`}
-  href={href}
+  class={`btn btn-${variant} ${isPartner ? "btn-partner" : ""} ${block ? "w-full" : ""} ${klass}`}
+  href={destination}
   {...rel}
 >
   {icon && <Icon name={icon} class="size-[17px]" />}
