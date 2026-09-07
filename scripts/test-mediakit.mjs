@@ -83,6 +83,11 @@ try {
         assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
         assert.equal(await page.locator('.team-list img').count(), 8);
         assert.equal(await page.locator('.season-roadmap li').count(), 3);
+        const kick = page.locator('.channel-links a[href="https://kick.com/nexusmedia-oficial"]');
+        assert.equal(await kick.count(), 1);
+        assert.match(await kick.getAttribute('aria-label'), /^Kick · /);
+        assert.equal(await kick.locator('svg').first().getAttribute('data-icon'), 'simple-icons:kick');
+        assert.equal(await page.locator('.channel-links a[href*="twitch.tv/"]').count(), 3);
         assert.equal(await page.locator('[data-print]').count(), 0);
         assert.equal(await page.locator('.header-links a:visible').count(), 3);
         const contact = new URL(await page.locator('.cover-pitch .btn').getAttribute('href'));
@@ -241,6 +246,35 @@ try {
       await page.locator('[data-menu-toggle]').click();
       const mobile = page.locator('#mobile-menu .btn-partner');
       await mobile.click(); await page.waitForURL(new URL(destination, base).href);
+    } finally { await page.close(); }
+  });
+  for (const locale of ['es', 'en', 'ru']) await check(`${locale}: official Kick channel and Maggo Dota profile`, async () => {
+    const page = await browser.newPage({ reducedMotion: 'reduce' });
+    const prefix = locale === 'en' ? '' : `/${locale}`;
+    try {
+      for (const width of [390, 768, 1440]) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(new URL(`${prefix}/`, base).href);
+        const list = page.locator('[data-broadcast-channels]');
+        assert.equal(await list.locator('a').count(), 4);
+        const labels = await list.locator('a').evaluateAll((links) => links.map((link) => link.textContent.replace(/\s+/g, ' ').trim()));
+        assert.equal(new Set(labels).size, 4, 'Platforms are not visually distinguished');
+        assert.equal(await list.locator('a[href="https://kick.com/nexusmedia-oficial"] svg[data-icon="simple-icons:kick"]').count(), 1);
+        assert.equal(await page.locator('.watch-link[href="https://kick.com/nexusmedia-oficial"] svg[data-icon="simple-icons:kick"]').count(), 1);
+        await list.scrollIntoViewIfNeeded();
+        assert.ok(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
+        if (locale === 'es') await list.screenshot({ path: fileURLToPath(new URL(`channels-${width}.png`, artifacts)) });
+        await page.goto(new URL(`${prefix}/competition/season-one/`, base).href);
+        const maggo = page.locator('#talent a[href="https://kick.com/maggodota"]');
+        assert.match(await maggo.innerText(), /Maggo Dota/i);
+        assert.equal(await maggo.locator('svg[data-icon="simple-icons:kick"]').count(), 1);
+        assert.equal(await page.locator('#talent a[href="https://kick.com/PAPITA"]').count(), 1);
+        assert.equal(await page.locator('#talent a[href="https://www.twitch.tv/doedie666"]').count(), 1);
+        assert.equal(await page.locator('#matches a[href="https://kick.com/nexusmedia-oficial"]').count(), 1);
+        await maggo.scrollIntoViewIfNeeded();
+        assert.ok(await page.locator('.talent-grid').evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
+        if (locale === 'es') await page.locator('.talent-grid').screenshot({ path: fileURLToPath(new URL(`talent-${width}.png`, artifacts)) });
+      }
     } finally { await page.close(); }
   });
   await check('no-JavaScript fallback', async () => {

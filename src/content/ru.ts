@@ -34,7 +34,7 @@ export const ru: Dictionary = {
   },
 
   channels: {
-    intro: "Прямые трансляции на Twitch на трёх языках.",
+    intro: "Смотрите официальные трансляции.",
     languages: { es: "Испанский", en: "Английский", ru: "Русский" },
   },
 

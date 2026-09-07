@@ -59,7 +59,7 @@ Alias de importación configurados en `tsconfig.json`: `@config/*`, `@content/*`
 | --- | --- |
 | Cambiar un enlace, correo o handle | `config/site.ts`, y solo ahí |
 | Cambiar un texto | `content/home.ts` |
-| Añadir un canal de Twitch | el array `channels` en `config/site.ts` |
+| Añadir un canal de Twitch o Kick | `src/data/settings/channels.json` o Ajustes globales del CMS |
 | Añadir un ítem al menú | `config/nav.ts` |
 | Cambiar o añadir una foto | `lib/images.ts` |
 | Añadir una sección | un archivo en `components/sections/`, y montarlo en `pages/index.astro` |
@@ -340,7 +340,7 @@ Seis secciones, seis familias de layout distintas, sin repetir patrón:
 
 1. **Hero** - titular a todo el ancho en dos líneas exactas, y debajo un split
    asimétrico: texto y CTAs a la izquierda, panel de marca a la derecha.
-2. **Canales** - banda fina con los tres canales de Twitch.
+2. **Canales** - banda con los canales oficiales de Twitch y Kick, identificados por plataforma e idioma.
 3. **About** - bloque editorial a ancho completo, cuerpo a dos columnas.
 4. **Vision** - bento asimétrico de tres celdas con pesos visuales distintos.
 5. **Partners** - tablero de patrocinio dividido por filetes.

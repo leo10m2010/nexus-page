@@ -24,6 +24,8 @@ export interface Channel {
   flag: string;
   language: string;
   href: string;
+  platform: "Twitch" | "Kick";
+  icon: string;
 }
 
 export interface HeadlineLine {

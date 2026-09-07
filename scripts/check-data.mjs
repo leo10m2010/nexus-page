@@ -32,18 +32,24 @@ if (!Array.isArray(channels) || channels.length < 1) {
   problems.push("settings/channels.json: add at least one official channel");
 } else {
   const allowedCodes = new Set(["ES", "EN", "RU"]);
-  const channelCodes = new Set();
+  const channelKeys = new Set();
+  const channelUrls = new Set();
   for (const channel of channels) {
     if (!allowedCodes.has(channel.code)) {
       problems.push(`settings/channels.json: invalid language code "${channel.code}"`);
     }
-    if (channelCodes.has(channel.code)) {
-      problems.push(`settings/channels.json: language "${channel.code}" is repeated`);
+    const platform = /^https:\/\/(?:www\.)?twitch\.tv\/[A-Za-z0-9_]+\/?$/.test(channel.href ?? "") ? "Twitch"
+      : /^https:\/\/(?:www\.)?kick\.com\/[A-Za-z0-9_-]+\/?$/.test(channel.href ?? "") ? "Kick" : null;
+    if (!platform) {
+      problems.push(`settings/channels.json: "${channel.code}" needs a valid Twitch or Kick URL`);
+      continue;
     }
-    channelCodes.add(channel.code);
-    if (!/^https:\/\/(?:www\.)?twitch\.tv\/[A-Za-z0-9_]+\/?$/.test(channel.href ?? "")) {
-      problems.push(`settings/channels.json: "${channel.code}" needs a valid Twitch URL`);
-    }
+    const key = `${platform}:${channel.code}`;
+    if (channelKeys.has(key)) problems.push(`settings/channels.json: "${key}" is repeated`);
+    channelKeys.add(key);
+    const url = channel.href.toLowerCase().replace("www.", "").replace(/\/$/, "");
+    if (channelUrls.has(url)) problems.push(`settings/channels.json: channel URL "${channel.href}" is repeated`);
+    channelUrls.add(url);
   }
 }
 

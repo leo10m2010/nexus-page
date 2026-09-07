@@ -31,10 +31,10 @@ const channelMeta = {
 type ConfiguredChannelCode = keyof typeof channelMeta;
 const configuredChannels = channelSettings.channels as Array<{ code: ConfiguredChannelCode; href: string }>;
 
-export const channels: Channel[] = configuredChannels.map((channel) => ({
-  ...channel,
-  ...channelMeta[channel.code],
-}));
+export const channels: Channel[] = configuredChannels.map((channel) => {
+  const platform = new URL(channel.href).hostname.replace(/^www\./, "") === "kick.com" ? "Kick" : "Twitch";
+  return { ...channel, ...channelMeta[channel.code], platform, icon: `simple-icons:${platform.toLowerCase()}` };
+});
 
 export const ctas = {
   community: {
@@ -83,12 +83,11 @@ export const socialLinks: (Link & { icon: string })[] = [
   { icon: "simple-icons:x", label: "X / Twitter", href: social.x, external: true },
   { icon: "simple-icons:instagram", label: "Instagram", href: social.instagram, external: true },
   { icon: "simple-icons:discord", label: "Discord", href: social.discord, external: true },
-  {
-    icon: "simple-icons:twitch",
-    label: "Twitch",
-    href: (channels.find((channel) => channel.code === "EN") ?? channels[0])!.href,
-    external: true,
-  },
+  ...["Twitch", "Kick"].flatMap((platform) => {
+    const channel = channels.find((c) => c.platform === platform && c.code === (platform === "Kick" ? "ES" : "EN"))
+      ?? channels.find((c) => c.platform === platform);
+    return channel ? [{ icon: channel.icon, label: platform, href: channel.href, external: true }] : [];
+  }),
 ];
 
 export const sameAs: string[] = [social.x, social.instagram, social.discord, ...channels.map((c) => c.href)];

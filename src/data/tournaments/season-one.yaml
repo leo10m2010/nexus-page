@@ -29,6 +29,10 @@ phases:
     teamCount: 4
     bestOf: 3
 broadcastTalent:
+  - name: Maggo Dota
+    language: es
+    icon: simple-icons:kick
+    href: https://kick.com/maggodota
   - name: Papita
     language: es
     icon: simple-icons:kick

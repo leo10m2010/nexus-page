@@ -87,10 +87,10 @@ const year = new Date().getFullYear();
               >
                 <Icon name={`flag:${c.flag}-4x3`} class="watch-flag" aria-hidden="true" />
                 <span class="min-w-0">
-                  <strong>{t.channels.languages[c.code.toLowerCase() as ChannelCode]}</strong>
+                  <strong>{c.platform} · {t.channels.languages[c.code.toLowerCase() as ChannelCode]}</strong>
                   <span>@{channelHandle(c.href)}</span>
                 </span>
-                <Icon name="simple-icons:twitch" class="watch-platform" aria-hidden="true" />
+                <Icon name={c.icon} class="watch-platform" aria-hidden="true" />
               </a>
             </li>
           ))
@@ -174,7 +174,7 @@ const year = new Date().getFullYear();
   }
 
   .watch-link:hover { padding-left: 0.25rem; color: var(--c-text); }
-  .watch-link:hover .watch-platform { color: #9146ff; }
+  .watch-link:hover .watch-platform { color: var(--c-accent-lift); }
 
   .watch-link:focus-visible {
     outline: 2px solid var(--c-accent-lift);
