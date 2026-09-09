@@ -45,7 +45,7 @@ export function createSyncHandler({ fetcher = fetch, loadRevision = loadLiquiped
       if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id ?? "") || id.length > 80) throw fail("Torneo inválido.");
       if (!["preview", "apply"].includes(request.action)) throw fail("Acción inválida.");
       const api = async (path, method = "GET", body) => {
-        const response = await fetcher(`https://api.github.com/repos/${repo}/${path}`, {
+        const response = await fetcher(`https://api.github.com/repos/${repo}${path ? `/${path}` : ""}`, {
           method, headers: { Authorization: headers.authorization, Accept: "application/vnd.github+json", "Content-Type": "application/json", "User-Agent": "NexusSeriesSync/1.0" },
           ...(body ? { body: JSON.stringify(body) } : {}), signal: AbortSignal.timeout(20000),
         });

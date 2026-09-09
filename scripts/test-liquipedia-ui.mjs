@@ -20,11 +20,12 @@ try {
     const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: "reduce" });
     const page = await context.newPage(), writes = [], errors = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    let conflict = false;
+    let conflict = false, gatewayFailure = false;
     await context.route("**/api/auth", (route) => route.fulfill({ contentType: "text/html", body: `<script>addEventListener('message', e => { if (e.source === opener && e.origin === location.origin) opener.postMessage('authorization:github:success:' + JSON.stringify({token:'mock_token_for_ui_tests_only'}), location.origin); }); opener.postMessage('authorizing:github', location.origin);</script>` }));
     await context.route("**/api/liquipedia/sync", async (route) => {
       const body = route.request().postDataJSON();
       assert.equal(route.request().headers().authorization, "Bearer mock_token_for_ui_tests_only");
+      if (gatewayFailure) { await route.fulfill({ status: 502, contentType: "text/html", body: "<h1>Bad Gateway</h1>" }); return; }
       if (body.action === "apply") {
         writes.push(body);
         await route.fulfill({ status: conflict ? 409 : 200, json: conflict ? { error: "La web cambió. Revisa de nuevo." } : { updated: 1, message: "Cambios guardados. La web se actualizará al terminar el despliegue." } });
@@ -73,6 +74,12 @@ try {
     await page.locator("#sync-save").click(); await page.locator('#sync-confirm button[value="confirm"]').click();
     await page.waitForFunction(() => document.getElementById("sync-status").dataset.error === "true");
     assert.equal(await page.locator("#sync-save").isDisabled(), true);
+    gatewayFailure = true;
+    const attempts = writes.length;
+    await page.locator("#sync-preview").click();
+    await page.waitForFunction(() => document.getElementById("sync-status").textContent.includes("HTTP 502"));
+    assert.equal(await page.locator("#sync-save").isDisabled(), true);
+    assert.equal(writes.length, attempts);
     assert.deepEqual(errors, []);
     await page.goto(`${base}/es/competition/season-one/`);
     await page.locator("#matches").evaluate((el) => scrollTo({ top: el.getBoundingClientRect().top + scrollY - 130, behavior: "instant" }));

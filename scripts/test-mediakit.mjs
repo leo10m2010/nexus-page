@@ -303,6 +303,9 @@ try {
         assert.equal(await maggo.locator('svg[data-icon="simple-icons:kick"]').count(), 1);
         assert.equal(await page.locator('#talent a[href="https://kick.com/PAPITA"]').count(), 1);
         assert.equal(await page.locator('#talent a[href="https://www.twitch.tv/doedie666"]').count(), 1);
+        const russianCaster = page.locator('#talent a[href="https://www.twitch.tv/nexusmedia_ru"]');
+        assert.match(await russianCaster.innerText(), /neloboda/i);
+        assert.equal(await russianCaster.locator('svg[data-icon="flag:ru-4x3"]').count(), 1);
         assert.equal(await page.locator('#matches a[href="https://kick.com/nexusmedia-oficial"]').count(), 1);
         await maggo.scrollIntoViewIfNeeded();
         assert.ok(await page.locator('.talent-grid').evaluate((el) => el.scrollWidth <= el.clientWidth + 1));

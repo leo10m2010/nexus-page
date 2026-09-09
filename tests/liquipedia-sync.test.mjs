@@ -100,9 +100,11 @@ function githubMock({ push = true, race = false } = {}) {
   };
   const entries = Object.keys(files).map((path, index) => ({ path, type: "blob", sha: `blob${index}`, size: files[path].length }));
   const fetcher = async (url, options) => {
-    const path = url.split("/repos/leo10m2010/nexus-page/")[1];
-    calls.push({ path, ...options, body: options.body ? JSON.parse(options.body) : null });
+    const root = "https://api.github.com/repos/leo10m2010/nexus-page";
+    const path = url === root ? "" : url.slice(root.length + 1);
+    calls.push({ url, path, ...options, body: options.body ? JSON.parse(options.body) : null });
     const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
+    if (url === `${root}/`) return json({ message: "Not Found" }, 404);
     if (path === "") return json({ permissions: { push } });
     if (path === "git/ref/heads/main") return json({ object: { sha: "head1" } });
     if (path === "git/commits/head1") return json({ tree: { sha: "tree1" } });
@@ -131,6 +133,15 @@ test("preview performs no writes and does not expose tokens", async () => {
   const result = await handler(event({ action: "preview" }));
   assert.equal(result.statusCode, 200); assert.equal(JSON.parse(result.body).rows[0].selectable, true);
   assert.ok(mock.calls.every((call) => call.method === "GET")); assert.ok(!result.body.includes(token));
+  assert.equal(mock.calls[0].url, "https://api.github.com/repos/leo10m2010/nexus-page");
+});
+test("a trailing slash on GitHub repository lookup reproduces the reported 502", async () => {
+  const mock = githubMock();
+  const fetcher = (url, options) => mock.fetcher(url === "https://api.github.com/repos/leo10m2010/nexus-page" ? `${url}/` : url, options);
+  const result = await createSyncHandler({ fetcher, loadRevision: async () => remote() })(event({ action: "preview" }));
+  assert.equal(result.statusCode, 502);
+  assert.match(JSON.parse(result.body).error, /GitHub \(HTTP 404\)/);
+  assert.ok(mock.calls.every((call) => call.method === "GET"));
 });
 test("approval writes one atomic non-force commit and preserves comments", async () => {
   const mock = githubMock(), handler = createSyncHandler({ fetcher: mock.fetcher, loadRevision: async (page, revision) => { assert.equal(page, "NEXUS SERIES/1"); assert.equal(revision, 42); return remote(); } });

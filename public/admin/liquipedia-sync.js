@@ -15,7 +15,13 @@
   };
   const request = async (body) => {
     const response = await fetch("/api/liquipedia/sync", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(body), signal: AbortSignal.timeout(90000) });
-    const result = await response.json();
+    let result;
+    try { result = await response.json(); }
+    catch {
+      throw new Error(body.action === "apply"
+        ? "No se pudo confirmar el guardado. Revisa de nuevo antes de repetir la operación."
+        : `No se pudo leer la respuesta del servidor (HTTP ${response.status}). Inténtalo de nuevo.`);
+    }
     if (!response.ok) { if (response.status === 401) token = ""; throw new Error(result.error || "No se pudo completar la actualización."); }
     return result;
   };

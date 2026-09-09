@@ -41,6 +41,10 @@ broadcastTalent:
     language: en
     icon: simple-icons:twitch
     href: https://www.twitch.tv/doedie666
+  - name: neloboda
+    language: ru
+    icon: simple-icons:twitch
+    href: https://www.twitch.tv/nexusmedia_ru
 participants:
   - team: amaru-gaming
     via: invited
