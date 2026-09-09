@@ -16,6 +16,8 @@ export interface Match {
   tournament: string;
   stage: MatchStage;
   startsAt: Date;
+  liquipediaUrl?: string;
+  liquipediaRevision?: number;
   home?: string;
   away?: string;
   score?: { home: number; away: number };
@@ -132,6 +134,8 @@ function flattenBracket(document: BracketDocument): Match[] {
     tournament: document.tournament,
     stage: match.stage,
     startsAt: match.startsAt,
+    liquipediaUrl: match.liquipediaUrl,
+    liquipediaRevision: match.liquipediaRevision,
     home: resolveSide(match, "home"),
     away: resolveSide(match, "away"),
     score: match.score,
@@ -302,11 +306,18 @@ export async function getBracket(tournamentId: string): Promise<BracketSide[]> {
 }
 
 export async function getGroups(tournamentId: string): Promise<Group[]> {
-  const played = (await getMatches(tournamentId)).filter(
+  const [allMatches, tournament] = await Promise.all([getMatches(tournamentId), getTournament(tournamentId)]);
+  const played = allMatches.filter(
     (m) => m.group && m.score && m.home && m.away,
   );
 
   const byGroup = new Map<string, Map<string, StandingRow>>();
+  for (const match of allMatches.filter((m) => m.group)) {
+    const table = byGroup.get(match.group!) ?? new Map<string, StandingRow>();
+    byGroup.set(match.group!, table);
+    for (const team of [match.home, match.away]) if (team && !table.has(team.id)) table.set(team.id, { team, wins: 0, losses: 0, mapsWon: 0, mapsLost: 0 });
+  }
+  const isGsl = tournament.phases?.some((phase) => phase.key === "groupStage" && phase.format === "modifiedGsl");
 
   for (const match of played) {
     const { home: homeScore, away: awayScore } = match.score!;
@@ -339,6 +350,7 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
       rows: [...table.values()].sort(
         (a, b) =>
           b.wins - a.wins ||
+          (isGsl ? a.losses - b.losses : 0) ||
           b.mapsWon - b.mapsLost - (a.mapsWon - a.mapsLost) ||
           a.team.name.localeCompare(b.team.name),
       ),

@@ -20,18 +20,18 @@ const locale = Astro.currentLocale;
       <p class="lede reveal mt-8">{t.competition.empty}</p>
     ) : (
 
-      <div class="mt-10 grid gap-4 lg:grid-cols-2">
+      <div class="mt-10 grid gap-3 md:grid-cols-2">
         {results.map((match) => (
-          <article class="card-tile rounded-card px-6 py-6 sm:px-8">
+          <article class="card-tile min-w-0 rounded-card p-5">
             <p class="mb-4 flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
               <span>{match.tournament.name}</span>
               <span>/</span>
               <span>{t.competition.stage[match.stage]}</span>
               <span class="ml-auto normal-case tracking-normal">
-                {formatDate(match.startsAt, locale)}
+                {formatDate(match.startsAt, locale, "America/Lima")}
               </span>
             </p>
-            <Scoreline match={match} />
+            <Scoreline match={match} showTime compact />
           </article>
         ))}
       </div>

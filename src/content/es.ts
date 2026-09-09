@@ -99,6 +99,7 @@ export const es: Dictionary = {
       doubleElimination: "Doble eliminación",
       singleElimination: "Eliminación directa",
       roundRobin: "Todos contra todos",
+      modifiedGsl: "GSL modificado",
     },
     stage: {
       groupStage: "Fase de grupos",
@@ -113,6 +114,7 @@ export const es: Dictionary = {
     },
     teamCount: (n) => `${n} equipos`,
     timeZoneNote: "Fechas de Perú (PET). Hora europea en CEST/CET. +1 indica el día siguiente en Europa.",
+    matchState: { finished: "Finalizado", pending: "Pendiente", unassigned: "Equipos por definir" },
     section: {
       format: "Formato",
       participants: "Participantes",

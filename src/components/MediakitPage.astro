@@ -70,7 +70,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
         </div>
         <details id="schedule" class="disclosure schedule-section"><summary><span><Icon name="ph:calendar-dots-duotone" aria-hidden="true" />{c.scheduleToggle}</span><Icon name="ph:plus-bold" aria-hidden="true" /></summary><div class="disclosure-body">
           <div class="schedule-heading"><h3>{c.openingMatches}</h3><span>PET / CEST</span></div>
-          <div class="match-list">{openings.map((match) => <article class="match-row" aria-label={`${match.home!.name} ${c.versus} ${match.away!.name}`}><div class="match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{c.group} {match.group} · Bo{match.bestOf}</span></div><Scoreline match={match} showTime /></article>)}</div>
+          <div class="match-list">{openings.map((match) => <article class="match-row" data-match-state={match.score ? "finished" : "pending"} aria-label={`${match.home!.name} ${c.versus} ${match.away!.name}`}><div class="match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{c.group} {match.group} · Bo{match.bestOf} · {match.score ? t.competition.matchState.finished : t.competition.matchState.pending}</span></div><Scoreline match={match} showTime compact={Boolean(match.score)} /></article>)}</div>
           <div class="schedule-footer"><p class="note">{c.scheduleNote}</p><a class="text-link" href={`${tourPath}#matches`}>{c.fullSchedule}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
         </div></details>
       </section>
@@ -173,7 +173,13 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
   .schedule-section { margin-top: 40px; }
   .schedule-heading { display: flex; justify-content: space-between; gap: 16px; font-size: 0.875rem; padding-block: 12px; }
   .schedule-heading > span { color: var(--c-text-muted); }
-  .match-row { padding-block: 24px; border-top: 1px solid var(--c-line); }
+  .match-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .match-row { min-width: 0; padding-block: 24px; border-top: 1px solid var(--c-line); }
+  .match-row[data-match-state="finished"] { padding: 20px; border: 1px solid var(--c-line); border-radius: var(--radius-card); background: var(--c-bg-elev); }
+  @media (min-width: 768px) {
+    .match-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .match-row:not([data-match-state="finished"]) { grid-column: 1 / -1; }
+  }
   .match-meta { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; margin-bottom: 18px; color: var(--c-text-muted); font-size: 0.8125rem; }
   .schedule-footer { display: flex; align-items: baseline; justify-content: space-between; gap: 32px; margin-top: 16px; }
   .note { color: var(--c-text-muted); font-size: 0.8125rem; line-height: 1.65; }

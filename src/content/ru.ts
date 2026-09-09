@@ -99,6 +99,7 @@ export const ru: Dictionary = {
       doubleElimination: "Двойное выбывание",
       singleElimination: "Одиночное выбывание",
       roundRobin: "Круговая система",
+      modifiedGsl: "Модифицированный GSL",
     },
     stage: {
       groupStage: "Групповой этап",
@@ -113,6 +114,7 @@ export const ru: Dictionary = {
     },
     teamCount: (n) => `Команд: ${n}`,
     timeZoneNote: "Даты указаны по времени Перу (PET). Время Европы: CEST/CET. +1 означает следующий день в Европе.",
+    matchState: { finished: "Завершён", pending: "Ожидается", unassigned: "Команды определяются" },
     section: {
       format: "Формат",
       participants: "Участники",

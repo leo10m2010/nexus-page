@@ -1,0 +1,60 @@
+---
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/inter-tight/wght.css";
+import "@styles/global.css";
+import { getCollection } from "astro:content";
+
+const tournaments = await getCollection("tournaments");
+---
+<!doctype html>
+<html lang="es" data-theme="dark" translate="no">
+  <head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><meta name="robots" content="noindex, nofollow" /><title>Actualizar partidos | Nexus</title><link rel="icon" href="/logos/app.svg" /></head>
+  <body>
+    <main class="sync-shell">
+      <header><a href="/admin/">Volver al panel</a><h1>Actualizar partidos</h1><p>Revisa los resultados y horarios de Liquipedia. Nada se guarda hasta que confirmes.</p></header>
+      <div class="sync-controls"><button id="sync-login" type="button">Conectar GitHub</button><label>Torneo<select id="sync-tournament">{tournaments.map(({data}) => <option value={data.id}>{data.name}</option>)}</select></label><button id="sync-preview" type="button" disabled>Revisar cambios de Liquipedia</button></div>
+      <p id="sync-status" role="status" aria-live="polite">Conecta la cuenta con la que administras la web.</p>
+      <section id="sync-review" aria-label="Cambios disponibles" hidden>
+        <div class="review-header"><h2>Revisa antes de guardar</h2><a id="sync-source" target="_blank" rel="noopener noreferrer">Ver fuente</a></div>
+        <p id="sync-summary"></p><p id="sync-warnings"></p>
+        <label id="sync-format-row" hidden><input type="checkbox" id="sync-format" /><span id="sync-format-label"></span></label>
+        <ul id="sync-matches"></ul>
+        <div class="save-bar"><p>Solo se actualizarán los partidos seleccionados. Casters, canales, sponsors y logos no se modifican.</p><button id="sync-save" type="button" disabled>Guardar seleccionados</button></div>
+        <p class="attribution">Datos de Liquipedia, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>.</p>
+      </section>
+      <dialog id="sync-confirm"><form method="dialog"><h2>¿Guardar estos cambios?</h2><p id="sync-confirm-copy"></p><p>Se creará una actualización en GitHub y comenzará el despliegue de la web.</p><div><button value="cancel">Volver a revisar</button><button value="confirm">Confirmar y guardar</button></div></form></dialog>
+    </main>
+    <script src="/admin/liquipedia-sync.js" is:inline></script>
+  </body>
+</html>
+<style>
+  .sync-shell { width: min(1000px, calc(100% - 40px)); margin: 40px auto 80px; }
+  h1 { font: 750 clamp(2rem, 4vw, 3rem)/1.15 var(--font-display); margin-top: 24px; }
+  h2 { font: 650 1.25rem/1.4 var(--font-display); }
+  p { color: var(--c-text-muted); line-height: 1.65; margin-block: 12px; }
+  a { color: var(--c-accent-lift); text-decoration: underline; text-underline-offset: 4px; }
+  button, select { border: 1px solid var(--c-line-strong); border-radius: var(--radius-control); padding: 12px 16px; min-height: 46px; background: var(--c-bg-elev-2); color: var(--c-text); font: 550 0.9375rem/1.4 var(--font-body); }
+  button { cursor: pointer; } button:hover:not(:disabled) { border-color: var(--c-accent-lift); } button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #sync-preview, #sync-save { background: var(--c-accent); color: var(--c-on-accent); }
+  .sync-controls { display: flex; gap: 20px; align-items: end; flex-wrap: wrap; padding-block: 28px; }
+  .sync-controls label { display: grid; gap: 8px; }
+  #sync-status { padding: 16px 20px; background: var(--c-bg-elev); border-radius: var(--radius-control); }
+  #sync-status[data-error="true"], #sync-warnings { color: #ffb5a9; }
+  .review-header { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-top: 32px; }
+  #sync-matches { list-style: none; padding: 0; margin: 24px 0; }
+  #sync-matches :global(li) { padding: 20px; margin-top: 12px; border: 1px solid var(--c-line); border-radius: var(--radius-card); background: var(--c-bg-elev); }
+  #sync-matches :global(label) { display: flex; align-items: start; gap: 12px; cursor: pointer; }
+  #sync-matches :global(strong) { display: block; font-weight: 650; }
+  #sync-matches :global(.match-state) { display: block; margin-top: 8px; color: var(--c-accent-lift); font-size: 0.875rem; }
+  #sync-matches :global(.change-line), #sync-matches :global(.issue) { margin-top: 10px; font-size: 0.875rem; line-height: 1.6; overflow-wrap: anywhere; }
+  #sync-matches :global(.issue) { color: #ffb5a9; }
+  input[type="checkbox"], #sync-matches :global(input[type="checkbox"]) { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--c-accent-lift); }
+  #sync-format-row:not([hidden]) { display: flex; gap: 12px; padding: 20px; border: 1px solid var(--c-accent); border-radius: var(--radius-control); }
+  .save-bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--c-line); }
+  .save-bar button { flex-shrink: 0; }
+  .attribution { font-size: 0.8125rem; }
+  dialog { margin: auto; width: min(520px, calc(100% - 40px)); padding: 28px; background: var(--c-bg-elev); color: var(--c-text); border: 1px solid var(--c-line-strong); border-radius: var(--radius-card); }
+  dialog::backdrop { background: rgb(0 0 0 / .75); }
+  dialog form > div { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+  @media (max-width: 600px) { .sync-controls, .save-bar { align-items: stretch; flex-direction: column; } .review-header { align-items: flex-start; flex-direction: column; gap: 12px; } }
+</style>

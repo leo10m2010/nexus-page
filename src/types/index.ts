@@ -113,7 +113,7 @@ export interface Dictionary {
     empty: string;
     status: Record<"upcoming" | "live" | "finished", string>;
     format: Record<
-      "doubleElimination" | "singleElimination" | "roundRobin",
+      "doubleElimination" | "singleElimination" | "roundRobin" | "modifiedGsl",
       string
     >;
     stage: Record<
@@ -130,6 +130,7 @@ export interface Dictionary {
     >;
     teamCount: (n: number) => string;
     timeZoneNote: string;
+    matchState: { finished: string; pending: string; unassigned: string };
 
     section: Record<"format" | "participants" | "standings" | "bracket" | "matches" | "talent", string>;
 

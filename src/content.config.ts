@@ -86,7 +86,7 @@ const tournaments = defineCollection({
         .array(
           z.object({
             key: z.enum(["groupStage", "playoffs", "finals"]),
-            format: z.enum(["doubleElimination", "singleElimination", "roundRobin"]),
+            format: z.enum(["doubleElimination", "singleElimination", "roundRobin", "modifiedGsl"]),
             teamCount: z.number().int().positive().optional(),
             bestOf: bestOf.optional(),
             advance: z.number().int().positive().optional(),
@@ -143,6 +143,8 @@ const matches = defineCollection({
         "thirdPlace",
       ]),
       startsAt: z.coerce.date(),
+      liquipediaUrl: z.url().optional(),
+      liquipediaRevision: z.number().int().positive().optional(),
       home: z.string().optional(),
       away: z.string().optional(),
       score: z
@@ -191,6 +193,8 @@ const bracketMatch = z
       "thirdPlace",
     ]),
     startsAt: z.coerce.date(),
+    liquipediaUrl: z.url().optional(),
+    liquipediaRevision: z.number().int().positive().optional(),
     home: z.string().optional(),
     away: z.string().optional(),
     homeSource: bracketSource.optional(),

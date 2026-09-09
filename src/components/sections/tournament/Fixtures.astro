@@ -6,6 +6,7 @@ import type { ResolvedMatch } from "@lib/competition";
 import { dayKey, formatDay } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 import { channels } from "@config/site";
+import type { ChannelCode } from "@types";
 
 interface Props {
   id: string;
@@ -16,8 +17,9 @@ const { id, matches } = Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const c = t.competition;
+const platforms = [...new Set(channels.map((channel) => channel.platform))];
 
-const playable = matches.filter((m) => m.home && m.away);
+const playable = matches.filter((m) => m.stage === "groupStage" || (m.home && m.away));
 
 const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima"), m.startsAt])).entries()].map(
   ([day, date]) => ({
@@ -34,27 +36,19 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
 
     {
       days.length > 0 && (
-        <div class="reveal flex flex-wrap items-center gap-x-5 gap-y-3">
-          <p class="flex flex-wrap items-center gap-2">
-            <span class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
-              {c.info.broadcast}
-            </span>
-            {channels.map((channel) => (
-              <a
-                href={channel.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${channel.platform} · ${t.channels.languages[channel.code.toLowerCase() as "es" | "en" | "ru"]}`}
-                class="flex items-center gap-1.5 rounded-control border border-line-strong px-2 py-1 font-display text-[0.6875rem] font-bold tracking-[0.14em] uppercase transition-colors hover:border-accent hover:text-accent-lift"
-              >
-                <Icon name={`flag:${channel.flag}-4x3`} class="h-2.5 w-[0.875rem] shrink-0" aria-hidden="true" />
-                <Icon name={channel.icon} class="size-3 shrink-0" aria-hidden="true" />
-                {channel.platform}
-                {channel.code}
-              </a>
-            ))}
-          </p>
-        </div>
+        <nav class="broadcast-links reveal" aria-label={t.a11y.broadcastChannels}>
+          <span class="broadcast-label">{c.info.broadcast}</span>
+          {platforms.map((platform) => <div class="platform-group" role="group" aria-label={platform}>
+            <span class="platform-name"><span class="platform-mark" style={`--platform-color:${platform === "Kick" ? "#53fc18" : "#bf94ff"}`}><Icon name={`simple-icons:${platform.toLowerCase()}`} aria-hidden="true" /></span>{platform}</span>
+            <div class="platform-languages">{channels.filter((channel) => channel.platform === platform).map((channel) => {
+              const language = t.channels.languages[channel.code.toLowerCase() as ChannelCode];
+              return <a href={channel.href} target="_blank" rel="noopener noreferrer" aria-label={`${platform} · ${language}`} title={`${platform} · ${language}`}>
+                <Icon name={`flag:${channel.flag}-4x3`} aria-hidden="true" />
+                <span class="language-name">{language}</span><span class="language-code" aria-hidden="true">{channel.code}</span>
+              </a>;
+            })}</div>
+          </div>)}
+        </nav>
       )
     }
   </div>
@@ -69,10 +63,11 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
           <div class="reveal" style={`--reveal-delay:${i * 60}ms`}>
             <h3 class="display-sm text-sm text-accent-lift">{formatDay(group.date, locale, "America/Lima")}</h3>
 
-            <ul class="mt-4 flex flex-col gap-3">
+            <ul class="fixture-grid mt-4">
               {group.matches.map((match) => (
-                <li class="card-tile rounded-card px-5 py-5 sm:px-7">
-                  <p class="mb-3 flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
+                <li data-stage={match.stage} data-match-state={match.score ? "finished" : !match.home || !match.away ? "unassigned" : "pending"} class:list={["card-tile rounded-card px-5 py-5", { "pending-card": !match.score }]}>
+                  <div class="match-card-header">
+                  <p class="flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
                     <span>{c.stage[match.stage]}</span>
                     {match.group && (
                       <>
@@ -87,7 +82,10 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
                       </>
                     )}
                   </p>
-                  <Scoreline match={match} showTime />
+                  <p class={`text-xs font-semibold ${match.score ? "text-accent-lift" : "text-muted"}`}>{match.score ? c.matchState.finished : !match.home || !match.away ? c.matchState.unassigned : c.matchState.pending}</p>
+                  </div>
+                  <Scoreline match={match} showTime compact={Boolean(match.score)} />
+                  {match.liquipediaUrl && <a class="mt-3 inline-block text-xs text-muted underline underline-offset-4" href={match.liquipediaUrl} target="_blank" rel="noopener noreferrer">{c.dataFromLiquipedia} · CC BY-SA 3.0</a>}
                 </li>
               ))}
             </ul>
@@ -97,3 +95,34 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
     )
   }
 </Section>
+
+<style>
+  .broadcast-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; max-width: 100%; }
+  .broadcast-label { font-size: 0.75rem; color: var(--c-text-muted); }
+  .platform-group { display: flex; align-items: center; gap: 10px; max-width: 100%; padding: 4px 6px 4px 12px; border: 1px solid var(--c-line-strong); border-radius: var(--radius-control); background: var(--c-bg-elev); }
+  .platform-name { display: flex; align-items: center; gap: 8px; flex-shrink: 0; font-size: 0.8125rem; font-weight: 650; }
+  .platform-mark { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 5px; background: #10131c; color: var(--platform-color); }
+  .platform-mark :global(svg) { width: 16px; height: 16px; }
+  .platform-languages { display: flex; flex-wrap: wrap; gap: 4px; min-width: 0; padding-left: 8px; border-left: 1px solid var(--c-line); }
+  .platform-languages a { display: flex; align-items: center; justify-content: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 8px 10px; border-radius: 5px; color: var(--c-text-muted); font-size: 0.75rem; font-weight: 550; text-decoration: none; transition: color 160ms, background-color 160ms; }
+  .platform-languages a:hover, .platform-languages a:focus-visible { color: var(--c-text); background: var(--c-bg-elev-2); }
+  .platform-languages a :global(svg) { width: 16px; height: 12px; flex-shrink: 0; }
+  .language-code { display: none; }
+  @media (max-width: 600px) {
+    .broadcast-links { width: 100%; gap: 8px; }
+    .broadcast-label { flex-basis: 100%; margin-bottom: 2px; }
+    .platform-group { width: 100%; padding-left: 10px; }
+    .platform-name { min-width: 78px; }
+    .language-name { display: none; }
+    .language-code { display: inline; }
+    .platform-languages a { padding-inline: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .platform-languages a { transition: none; } }
+  .fixture-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .fixture-grid > li { min-width: 0; }
+  .match-card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  @media (min-width: 768px) {
+    .fixture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pending-card { grid-column: 1 / -1; }
+  }
+</style>

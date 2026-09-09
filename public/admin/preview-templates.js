@@ -4,6 +4,7 @@ var FORMAT_LABELS = {
   doubleElimination: "Doble eliminación",
   singleElimination: "Eliminación simple",
   roundRobin: "Round robin",
+  modifiedGsl: "GSL modificado",
 };
 
 var STATUS_LABELS = {

@@ -6,3 +6,6 @@ group: A
 startsAt: "2026-09-06T17:00:00Z"
 home: amaru-gaming
 away: pibble-corp
+score: { home: 0, away: 2 }
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
+liquipediaRevision: 2425630

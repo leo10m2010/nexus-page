@@ -17,3 +17,8 @@
   from = "/api/liquipedia/team"
   to = "/.netlify/functions/liquipedia-team"
   status = 200
+
+[[redirects]]
+  from = "/api/liquipedia/sync"
+  to = "/.netlify/functions/liquipedia-sync"
+  status = 200

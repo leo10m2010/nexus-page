@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
+import { parse } from 'yaml';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
@@ -11,6 +12,9 @@ const base = process.env.MEDIAKIT_BASE_URL || 'http://127.0.0.1:4322';
 const routes = { en: '/mediakit', es: '/es/mediakit', ru: '/ru/mediakit' };
 const localeFlags = { en: 'us', es: 'es', ru: 'ru' };
 const localeHeadings = { en: 'Your brand.', es: 'Tu marca.', ru: 'Ваш бренд.' };
+const matchDirectory = new URL('../src/data/matches/', import.meta.url);
+const groupMatches = (await Promise.all((await readdir(matchDirectory)).filter((name) => name.endsWith('.yaml')).map(async (name) => parse(await readFile(new URL(name, matchDirectory), 'utf8'))))).filter((match) => match.tournament === 'season-one' && match.stage === 'groupStage');
+const assignedMatches = groupMatches.filter((match) => match.home && match.away).length;
 const report = { base, started: new Date().toISOString(), checks: [], screenshots: [], axe: [], runtime: [] };
 let server, browser, serverError, serverLog = '';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -162,7 +166,14 @@ try {
       await test('schedule geometry', async () => {
         await page.locator('details#schedule > summary').click();
         const rows = page.locator('#schedule .scheduled-line');
-        assert.equal(await rows.count(), 4);
+        assert.equal(await rows.count(), assignedMatches);
+        const completed = page.locator('#schedule [data-match-state="finished"]');
+        if (await completed.count() > 1) {
+          const first = await completed.nth(0).boundingBox(), second = await completed.nth(1).boundingBox();
+          assert.ok(first && second);
+          if (width >= 768) assert.ok(Math.abs(first.y - second.y) < 2 && second.x > first.x, 'Finished matches must share a compact row');
+          else assert.ok(second.y > first.y && Math.abs(first.x - second.x) < 2, 'Mobile results must stack');
+        }
         for (const row of await rows.all()) {
           const times = row.locator('.broadcast-time');
           assert.equal(await times.locator('time').count(), 2);
@@ -265,6 +276,28 @@ try {
         assert.ok(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
         if (locale === 'es') await list.screenshot({ path: fileURLToPath(new URL(`channels-${width}.png`, artifacts)) });
         await page.goto(new URL(`${prefix}/competition/season-one/`, base).href);
+        const broadcasts = page.locator('#matches .broadcast-links');
+        assert.equal(await broadcasts.locator('.platform-group').count(), 2);
+        assert.equal(await broadcasts.locator('a').count(), 4);
+        for (const link of await broadcasts.locator('a').all()) {
+          const box = await link.boundingBox();
+          assert.ok(box && box.height >= 44 && box.width >= 44, 'Broadcast links need comfortable touch targets');
+          assert.ok(await link.getAttribute('aria-label'));
+        }
+        assert.ok(await broadcasts.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
+        for (const state of ['finished', 'pending', 'unassigned']) {
+          const expected = groupMatches.filter((match) => (match.score ? 'finished' : !match.home || !match.away ? 'unassigned' : 'pending') === state).length;
+          assert.equal(await page.locator(`#matches [data-stage="groupStage"][data-match-state="${state}"]`).count(), expected);
+        }
+        for (const grid of await page.locator('#matches .fixture-grid').all()) {
+          const results = grid.locator('[data-match-state="finished"]');
+          for (const result of await results.all()) {
+            const card = await result.boundingBox(), container = await grid.boundingBox();
+            assert.ok(card && container);
+            if (width >= 768) assert.ok(card.width < container.width * 0.51, 'Finished result is not compact');
+            else assert.ok(Math.abs(card.width - container.width) < 2);
+          }
+        }
         const maggo = page.locator('#talent a[href="https://kick.com/maggodota"]');
         assert.match(await maggo.innerText(), /Maggo Dota/i);
         assert.equal(await maggo.locator('svg[data-icon="simple-icons:kick"]').count(), 1);
@@ -284,7 +317,7 @@ try {
       assert.equal(await page.locator('[data-scene-panel]:visible').count(), 4);
       assert.equal(await page.locator('[data-sponsor-toggle]:visible').count(), 0);
       await page.locator('#schedule > summary').click();
-      assert.equal(await page.locator('#schedule .scheduled-line:visible').count(), 4);
+      assert.equal(await page.locator('#schedule .scheduled-line:visible').count(), assignedMatches);
     } finally { await context.close(); }
   });
   await check('sitemap excludes mediakit', async () => {

@@ -379,6 +379,20 @@ function parseInput(input) {
   return { query: title, exact: true };
 }
 
+export async function loadLiquipediaRevision(input, revision) {
+  const { query } = parseInput(input);
+  const payload = await fetchJson(buildApiUrl(DOTA_API, {
+    action: "query", prop: "info|revisions", inprop: "url", format: "json", formatversion: 2,
+    rvprop: "ids|timestamp|content", rvslots: "main",
+    ...(revision ? { revids: revision } : { titles: query, redirects: 1 }),
+  }));
+  const page = payload.query?.pages?.find((candidate) => !candidate.missing);
+  const data = page?.revisions?.[0];
+  if (!page || !data?.slots?.main?.content) throw new LiquipediaImportError("No se pudo leer la revisión del torneo.", 502);
+  if (revision && page.title.replace(/_/g, " ").trim().toLowerCase() !== query.replace(/_/g, " ").trim().toLowerCase()) throw new LiquipediaImportError("La revisión no pertenece al torneo.", 400);
+  return { page: page.title, revision: data.revid, timestamp: data.timestamp, url: page.fullurl, wikitext: data.slots.main.content };
+}
+
 async function loadExactPage(title) {
   const payload = await fetchJson(buildApiUrl(DOTA_API, {
     action: "query",

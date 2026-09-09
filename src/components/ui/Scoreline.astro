@@ -9,8 +9,9 @@ interface Props {
 
   trailing?: string;
   showTime?: boolean;
+  compact?: boolean;
 }
-const { match, trailing, showTime = false } = Astro.props;
+const { match, trailing, showTime = false, compact = false } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 const homeScore = match.score?.home;
 const awayScore = match.score?.away;
@@ -18,7 +19,7 @@ const homeWon = match.score ? homeScore! > awayScore! : false;
 const awayWon = match.score ? awayScore! > homeScore! : false;
 ---
 
-<div class:list={["scoreline flex items-center gap-4 sm:gap-6", { "scheduled-line": showTime }]}>
+<div class:list={["scoreline flex items-center gap-4 sm:gap-6", { "scheduled-line": showTime, "compact-scoreline": compact }]}>
   <div class="team-seat home-seat flex min-w-0 flex-1 items-center gap-3">
     <TeamMark team={match.home} size={36} />
     <span class={`[overflow-wrap:anywhere] text-[0.9375rem] sm:truncate ${homeWon ? "text-ink" : "text-muted"}`}>
@@ -54,6 +55,11 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
 <style>
   .result-center { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; gap: 8px; }
   .scheduled-line { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; min-height: 60px; }
+  .compact-scoreline { gap: 12px; }
+  .compact-scoreline .team-seat { flex-direction: column; gap: 8px; text-align: center; }
+  .compact-scoreline .away-seat { flex-direction: column-reverse; }
+  .compact-scoreline .team-seat :global(img) { padding: 3px; background: #101830; }
+  .compact-scoreline .team-seat > span { white-space: normal; overflow: visible; text-overflow: clip; text-align: center; font-size: 0.8125rem; line-height: 1.35; }
   @media (max-width: 600px) {
     .scheduled-line { gap: 10px; }
     .scheduled-line .team-seat { flex-direction: column; gap: 8px; text-align: center; }

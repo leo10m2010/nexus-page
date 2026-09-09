@@ -17,7 +17,7 @@ export default defineConfig({
     icon({ iconDir: 'src/icons' }),
     // Emits sitemap-index.xml with reciprocal hreflang entries per locale.
     sitemap({
-      filter: (page) => !new URL(page).pathname.split('/').includes('mediakit'),
+      filter: (page) => !new URL(page).pathname.split('/').some((segment) => ['mediakit', 'admin'].includes(segment)),
       i18n: { defaultLocale: 'en', locales: { en: 'en', es: 'es', ru: 'ru' } },
     }),
   ],

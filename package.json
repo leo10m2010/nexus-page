@@ -11,7 +11,9 @@
     "build:fast": "astro build",
     "og": "node scripts/build-og.mjs",
     "check:data": "node scripts/check-data.mjs",
-    "test:mediakit": "npm run build && node scripts/test-mediakit.mjs"
+    "test:mediakit": "npm run build && node scripts/test-mediakit.mjs",
+    "test:liquipedia": "node --test tests/liquipedia-sync.test.mjs",
+    "test:liquipedia:ui": "node scripts/test-liquipedia-ui.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

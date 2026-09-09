@@ -452,6 +452,30 @@ npm run og
 para que el wordmark no quede blando. Va `white.svg` y no `normal.svg` porque la
 tarjeta es oscura y el secundario se perdería en el fondo.
 
+## Actualizar partidos desde Liquipedia
+
+En `/admin/`, abre **Revisar partidos de Liquipedia**. También está disponible
+en `/admin/sync/`.
+
+1. Conecta GitHub con una cuenta que pueda editar este repositorio.
+2. Pulsa **Revisar cambios de Liquipedia** y marca los partidos que quieres actualizar.
+3. Pulsa **Guardar seleccionados** y confirma. La web se reconstruye tras el guardado.
+
+Los resultados completos aparecen como **Finalizado**. Los pendientes no reciben
+marcadores inventados. El importador no modifica casters, canales, sponsors ni
+logos, y rechaza el guardado si hubo otro cambio en GitHub durante la revisión.
+Las referencias estables y los alias están en `src/data/liquipedia/season-one.json`.
+Un cruce nuevo o un formato no reconocido requiere revisión manual.
+
+La conexión real usa las funciones Netlify y el OAuth GitHub existente en el
+dominio publicado. No se realiza ningún guardado remoto durante estas pruebas:
+
+```bash
+npm run test:liquipedia
+npm run build
+npm run test:liquipedia:ui
+```
+
 ## Mediakit comercial
 
 El botón de patrocinio enlaza a `/mediakit/` (EN), `/es/mediakit/` (ES)

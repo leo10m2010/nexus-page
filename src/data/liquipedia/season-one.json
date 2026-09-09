@@ -1,0 +1,33 @@
+{
+  "page": "NEXUS SERIES/1",
+  "aliases": { "Pibbles Corp": "pibble-corp" },
+  "formatRevision": 2425630,
+  "revisions": {
+    "gFbW62putA/M1": 2425630,
+    "gFbW62putA/M2": 2425630,
+    "gFbW62putA/M3": 2425630,
+    "gFbW62putA/M4": 2425630,
+    "gFbW62putB/M1": 2425630,
+    "gFbW62putB/M2": 2425630,
+    "gFbW62putB/M3": 2425630,
+    "gFbW62putB/M4": 2425630
+  },
+  "matches": {
+    "gFbW62putA/M1": "s1-ga1",
+    "gFbW62putA/M2": "s1-ga2",
+    "gFbW62putA/M3": "s1-ga3",
+    "gFbW62putA/M4": "s1-ga4",
+    "gFbW62putA/M5": "s1-ga5",
+    "gFbW62putB/M1": "s1-gb1",
+    "gFbW62putB/M2": "s1-gb2",
+    "gFbW62putB/M3": "s1-gb3",
+    "gFbW62putB/M4": "s1-gb4",
+    "gFbW62putB/M5": "s1-gb5",
+    "gFbW62putZ/R1M1": "s1-ubsf1",
+    "gFbW62putZ/R1M2": "s1-ubsf2",
+    "gFbW62putZ/R2M1": "s1-ubf",
+    "gFbW62putZ/R1M3": "s1-lbsf",
+    "gFbW62putZ/R2M2": "s1-lbf",
+    "gFbW62putZ/R3M1": "s1-gf"
+  }
+}

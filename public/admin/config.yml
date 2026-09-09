@@ -457,6 +457,7 @@ collections:
             widget: "select"
             options:
               - { label: "Doble eliminación", value: "doubleElimination" }
+              - { label: "GSL modificado", value: "modifiedGsl" }
               - { label: "Eliminación simple", value: "singleElimination" }
               - { label: "Round robin", value: "roundRobin" }
           - { label: "Cantidad de equipos", name: "teamCount", widget: "number", value_type: "int", min: 1, required: false }
@@ -508,6 +509,8 @@ collections:
     fields:
       - { label: "Tipo", name: "phase", widget: "hidden", default: "groupStage" }
       - { label: "Etapa", name: "stage", widget: "hidden", default: "groupStage" }
+      - { label: "Fuente de Liquipedia", name: "liquipediaUrl", widget: "hidden", required: false }
+      - { label: "Revisión de Liquipedia", name: "liquipediaRevision", widget: "hidden", required: false }
       - label: "Torneo"
         name: "tournament"
         widget: "relation"
@@ -590,6 +593,8 @@ collections:
             widget: "select"
             options: ["lowerRound", "quarterfinal", "semifinal", "upperFinal", "lowerFinal", "final", "grandFinal", "thirdPlace"]
           - { label: "Fecha", name: "startsAt", widget: "datetime" }
+          - { label: "Fuente de Liquipedia", name: "liquipediaUrl", widget: "hidden", required: false }
+          - { label: "Revisión de Liquipedia", name: "liquipediaRevision", widget: "hidden", required: false }
           - { label: "Equipo local", name: "home", widget: "string", required: false }
           - { label: "Equipo visitante", name: "away", widget: "string", required: false }
           - label: "Origen local"
