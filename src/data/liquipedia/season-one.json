@@ -1,6 +1,8 @@
 {
   "page": "NEXUS SERIES/1",
-  "aliases": { "Pibbles Corp": "pibble-corp" },
+  "aliases": {
+    "Pibbles Corp": "pibble-corp"
+  },
   "formatRevision": 2425630,
   "revisions": {
     "gFbW62putA/M1": 2426393,
@@ -12,7 +14,7 @@
     "gFbW62putB/M2": 2426393,
     "gFbW62putB/M3": 2426393,
     "gFbW62putB/M4": 2426393,
-    "gFbW62putB/M5": 2426393,
+    "gFbW62putB/M5": 2426411,
     "gFbW62putZ/R1M1": 2426393,
     "gFbW62putZ/R1M2": 2426393
   },
@@ -33,5 +35,6 @@
     "gFbW62putZ/R1M3": "s1-lbsf",
     "gFbW62putZ/R2M2": "s1-lbf",
     "gFbW62putZ/R3M1": "s1-gf"
-  }
+  },
+  "lastImportedAt": "2026-09-10T12:35:02.622Z"
 }
