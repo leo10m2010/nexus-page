@@ -16,11 +16,12 @@ matches:
     stage: semifinal
     home: pibble-corp
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
-    liquipediaRevision: 2426393
+    liquipediaRevision: 2426411
     startsAt: "2026-09-11T23:00:00Z"
     bracket: upper
     round: 1
     slot: 2
+    away: rebeldes
   - id: s1-ubf
     stage: upperFinal
     startsAt: "2026-09-12T23:00:00Z"
