@@ -115,9 +115,11 @@ for (const m of matches) {
   if (m.home != null && m.home === m.away) {
     problems.push(`matches.yaml: "${m.id}" has the same team on both sides`);
   }
-  if (m.score && (m.home == null || m.away == null)) {
+  if ((m.score || m.walkover) && (m.home == null || m.away == null)) {
     problems.push(`matches.yaml: "${m.id}" has a score but one of the two sides is empty`);
   }
+  if (m.walkover != null && (!["home", "away"].includes(m.walkover) || m.score)) problems.push(`matches.yaml: "${m.id}" has an invalid administrative result`);
+  if (m.groupRound != null && !["opening", "elimination", "winners", "decider"].includes(m.groupRound)) problems.push(`matches.yaml: "${m.id}" has an invalid group round`);
   if (m.score) {
     const validScore = [m.score.home, m.score.away].every(
       (value) => Number.isInteger(value) && value >= 0,
@@ -252,6 +254,7 @@ for (const bracket of brackets) {
     if (match.home != null && match.home === match.away) {
       problems.push(`brackets.yaml: "${match.id}" has the same team on both sides`);
     }
+    if (match.walkover != null && (!["home", "away"].includes(match.walkover) || match.score)) problems.push(`brackets.yaml: "${match.id}" has an invalid administrative result`);
     if (match.score) {
       const validScore = [match.score.home, match.score.away].every(
         (value) => Number.isInteger(value) && value >= 0,
@@ -314,6 +317,7 @@ for (const bracket of brackets) {
   for (const match of bracket.matches) visit(match);
 
   const hasWinningScore = (match) => {
+    if (["home", "away"].includes(match.walkover) && !match.score) return true;
     if (!match.score || match.score.home === match.score.away) return false;
     const bestOf = match.bestOf ?? bracket.defaultBestOf;
     const winsNeeded = Math.floor(bestOf / 2) + 1;
@@ -331,14 +335,14 @@ for (const bracket of brackets) {
     const home = resolveSide(sourceMatch, "home", nextStack);
     const away = resolveSide(sourceMatch, "away", nextStack);
     if (!home || !away || !hasWinningScore(sourceMatch)) return null;
-    const homeWins = sourceMatch.score.home > sourceMatch.score.away;
+    const homeWins = sourceMatch.walkover ? sourceMatch.walkover === "home" : sourceMatch.score.home > sourceMatch.score.away;
     return source.outcome === "winner" ? (homeWins ? home : away) : (homeWins ? away : home);
   };
 
   for (const match of bracket.matches) {
     const home = resolveSide(match, "home");
     const away = resolveSide(match, "away");
-    if (match.score && (!home || !away)) {
+    if ((match.score || match.walkover) && (!home || !away)) {
       problems.push(`brackets.yaml: "${match.id}" has a score before both seats are resolved`);
     }
     if (home && home === away) {

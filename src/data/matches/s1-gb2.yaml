@@ -3,9 +3,10 @@ phase: groupStage
 tournament: season-one
 stage: groupStage
 group: B
+groupRound: opening
 startsAt: "2026-09-07T20:10:00Z"
 home: giordota-team
 away: the-house-esports
 score: { home: 2, away: 0 }
 liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
-liquipediaRevision: 2425630
+liquipediaRevision: 2426393

@@ -114,7 +114,8 @@ export const es: Dictionary = {
     },
     teamCount: (n) => `${n} equipos`,
     timeZoneNote: "Fechas de Perú (PET). Hora europea en CEST/CET. +1 indica el día siguiente en Europa.",
-    matchState: { finished: "Finalizado", pending: "Pendiente", unassigned: "Equipos por definir" },
+    matchState: { finished: "Finalizado", pending: "Pendiente", unassigned: "Equipos por definir", walkover: "Por retirada" },
+    groupRound: { opening: "Apertura", elimination: "Eliminación", winners: "Ganadores", decider: "Partido decisivo" },
     section: {
       format: "Formato",
       participants: "Participantes",

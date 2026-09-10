@@ -375,6 +375,7 @@
   }
 
   function hasBracketScore(match, defaultBestOf) {
+    if (match && ["home", "away"].includes(match.walkover) && !match.score) return true;
     if (!hasBracketScoreValues(match)) return false;
     var winsNeeded = Math.floor(bracketBestOf(match, defaultBestOf) / 2) + 1;
     return Number(match.score.home) !== Number(match.score.away) &&
@@ -398,9 +399,9 @@
     nextPath.add(match.id);
     var home = resolveBracketTeamId(matches, sourceMatch, "home", defaultBestOf, nextPath);
     var away = resolveBracketTeamId(matches, sourceMatch, "away", defaultBestOf, nextPath);
-    if (!home || !away || Number(sourceMatch.score.home) === Number(sourceMatch.score.away)) return null;
+    if (!home || !away) return null;
 
-    var homeWins = Number(sourceMatch.score.home) > Number(sourceMatch.score.away);
+    var homeWins = sourceMatch.walkover ? sourceMatch.walkover === "home" : Number(sourceMatch.score.home) > Number(sourceMatch.score.away);
     if (source.outcome === "winner") return homeWins ? home : away;
     return homeWins ? away : home;
   }
@@ -422,7 +423,7 @@
   function clearBracketDescendantScores(matches, sourceId) {
     var matchById = new Map(matches.map(function (match) { return [match.id, match]; }));
     matches.forEach(function (match) {
-      if (bracketDependsOn(match, sourceId, matchById) && match.score) delete match.score;
+      if (bracketDependsOn(match, sourceId, matchById)) { delete match.score; delete match.walkover; }
     });
   }
 
@@ -431,7 +432,7 @@
     var home = resolveBracketTeamId(matches, match, "home", defaultBestOf);
     var away = resolveBracketTeamId(matches, match, "away", defaultBestOf);
     if (!home || !away) return "";
-    return Number(match.score.home) > Number(match.score.away)
+    return (match.walkover ? match.walkover === "home" : Number(match.score.home) > Number(match.score.away))
       ? home + "|" + away
       : away + "|" + home;
   }
@@ -562,6 +563,7 @@
       if (match.home && match.home === match.away) {
         return label + " no puede enfrentar al mismo equipo consigo mismo.";
       }
+      if (match.walkover != null && (!["home", "away"].includes(match.walkover) || match.score)) return label + " tiene un resultado administrativo inválido.";
       if (match.score != null) {
         if (!match.score || typeof match.score !== "object" || Array.isArray(match.score)) {
           return label + " tiene un resultado inválido.";
@@ -623,7 +625,7 @@
       if (resolvedHome && resolvedAway && resolvedHome === resolvedAway) {
         return bracketValidationLabel(resolvedMatch, resolvedIndex) + " resuelve el mismo equipo en ambos lados.";
       }
-      if (resolvedMatch.score && (!resolvedHome || !resolvedAway)) {
+      if ((resolvedMatch.score || resolvedMatch.walkover) && (!resolvedHome || !resolvedAway)) {
         return bracketValidationLabel(resolvedMatch, resolvedIndex) + " no puede tener resultado hasta resolver ambos equipos.";
       }
     }
@@ -681,6 +683,7 @@
       if (value) match[side] = value;
       else delete match[side];
       if (match.score) delete match.score;
+      delete match.walkover;
       clearBracketDescendantScores(matches, match.id);
       this.commit(matches);
     },
@@ -690,6 +693,7 @@
       var match = matches[index];
       var defaultBestOf = this.getDefaultBestOf();
       var previousOutcome = bracketOutcomeSignature(matches, match, defaultBestOf);
+      delete match.walkover;
       var score = Object.assign({}, match.score || {});
       if (value === "") delete score[side];
       else score[side] = Number(value);
@@ -701,6 +705,15 @@
       if (previousOutcome !== bracketOutcomeSignature(matches, match, defaultBestOf)) {
         clearBracketDescendantScores(matches, match.id);
       }
+      this.commit(matches);
+    },
+
+    updateWalkover: function (index, value) {
+      var matches = cloneBracketMatches(this.getMatches()), match = matches[index];
+      var previous = bracketOutcomeSignature(matches, match, this.getDefaultBestOf());
+      if (value) { match.walkover = value; delete match.score; }
+      else delete match.walkover;
+      if (previous !== bracketOutcomeSignature(matches, match, this.getDefaultBestOf())) clearBracketDescendantScores(matches, match.id);
       this.commit(matches);
     },
 
@@ -770,7 +783,7 @@
       var completeScore = hasBracketScore(match, defaultBestOf);
       var hasScoreValues = hasBracketScoreValues(match);
       var tied = hasScoreValues && Number(match.score.home) === Number(match.score.away);
-      var homeWins = completeScore && !tied && Number(match.score.home) > Number(match.score.away);
+      var homeWins = completeScore && !tied && (match.walkover ? match.walkover === "home" : Number(match.score.home) > Number(match.score.away));
       var winnerId = completeScore && !tied ? (homeWins ? homeId : awayId) : null;
       var winnerMeta = winnerId ? getTeamMeta(winnerId, cache) : null;
       var effectiveBestOf = bracketBestOf(match, defaultBestOf);
@@ -824,7 +837,7 @@
         ),
         h(
           "fieldset",
-          { className: "nx-bracket-editor-score", disabled: !scoreEnabled },
+          { className: "nx-bracket-editor-score", disabled: !scoreEnabled || Boolean(match.walkover) },
           h("legend", null, "Resultado · Bo" + effectiveBestOf),
           h(
             "label",
@@ -856,6 +869,10 @@
             })
           )
         ),
+        h("label", { className: "nx-bracket-editor-field" },
+          h("span", { className: "nx-bracket-editor-label" }, "Resultado por retirada"),
+          h("select", { value: match.walkover || "", disabled: !scoreEnabled, onChange: function (event) { self.updateWalkover(index, event.target.value); } },
+            h("option", { value: "" }, "No aplica"), h("option", { value: "home" }, "Gana el equipo local (W/FF)"), h("option", { value: "away" }, "Gana el equipo visitante (FF/W)"))),
         !homeId || !awayId
           ? h("p", { className: "nx-bracket-editor-note" }, "El resultado se habilita cuando ambos equipos estén definidos.")
           : tied

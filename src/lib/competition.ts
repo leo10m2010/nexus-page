@@ -21,6 +21,8 @@ export interface Match {
   home?: string;
   away?: string;
   score?: { home: number; away: number };
+  walkover?: "home" | "away";
+  groupRound?: GroupMatch["groupRound"];
   bestOf?: number;
   bracket?: BracketMatch["bracket"];
   round?: number;
@@ -66,6 +68,14 @@ export interface Group {
   rows: StandingRow[];
 }
 
+export function hasMatchResult(match: Pick<Match, "score" | "walkover">): boolean {
+  return Boolean(match.score || match.walkover);
+}
+
+export function getMatchWinner(match: Pick<Match, "score" | "walkover">): "home" | "away" | null {
+  return match.walkover ?? (match.score && match.score.home !== match.score.away ? (match.score.home > match.score.away ? "home" : "away") : null);
+}
+
 const STATUS_ORDER = { live: 0, upcoming: 1, finished: 2 } as const;
 
 const NAMED_STAGES = new Set<Match["stage"]>([
@@ -90,6 +100,7 @@ function getPhaseForStage(tournament: Tournament, stage: Match["stage"]): Phase 
 }
 
 function hasWinningScore(match: BracketMatch, document: BracketDocument): boolean {
+  if (match.walkover) return true;
   if (!match.score || match.score.home === match.score.away) return false;
   const bestOf = match.bestOf ?? document.defaultBestOf;
   const winsNeeded = Math.floor(bestOf / 2) + 1;
@@ -120,11 +131,11 @@ function flattenBracket(document: BracketDocument): Match[] {
     const away = resolveSide(sourceMatch, "away");
     resolving.delete(match.id);
 
-    if (!home || !away || !sourceMatch.score || !hasWinningScore(sourceMatch, document)) {
+    if (!home || !away || !hasWinningScore(sourceMatch, document)) {
       return undefined;
     }
 
-    const homeWins = sourceMatch.score.home > sourceMatch.score.away;
+    const homeWins = getMatchWinner(sourceMatch) === "home";
     if (source.outcome === "winner") return homeWins ? home : away;
     return homeWins ? away : home;
   };
@@ -139,6 +150,7 @@ function flattenBracket(document: BracketDocument): Match[] {
     home: resolveSide(match, "home"),
     away: resolveSide(match, "away"),
     score: match.score,
+    walkover: match.walkover,
     bestOf: match.bestOf ?? document.defaultBestOf,
     bracket: match.bracket,
     round: match.round,
@@ -251,7 +263,7 @@ export async function getSchedule(
   tournamentId?: string,
 ): Promise<{ day: string; date: Date; matches: ResolvedMatch[] }[]> {
   const upcoming = (await getResolvedMatches())
-    .filter((m) => !m.score && m.home && m.away)
+    .filter((m) => !hasMatchResult(m) && m.home && m.away)
     .filter((m) => !tournamentId || m.tournament.id === tournamentId)
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
@@ -270,7 +282,7 @@ export async function getSchedule(
 
 export async function getResults(limit?: number, tournamentId?: string): Promise<ResolvedMatch[]> {
   const played = (await getResolvedMatches())
-    .filter((m) => m.score)
+    .filter(hasMatchResult)
     .filter((m) => !tournamentId || m.tournament.id === tournamentId)
     .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime());
 
@@ -308,7 +320,7 @@ export async function getBracket(tournamentId: string): Promise<BracketSide[]> {
 export async function getGroups(tournamentId: string): Promise<Group[]> {
   const [allMatches, tournament] = await Promise.all([getMatches(tournamentId), getTournament(tournamentId)]);
   const played = allMatches.filter(
-    (m) => m.group && m.score && m.home && m.away,
+    (m) => m.group && hasMatchResult(m) && m.home && m.away,
   );
 
   const byGroup = new Map<string, Map<string, StandingRow>>();
@@ -320,13 +332,13 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
   const isGsl = tournament.phases?.some((phase) => phase.key === "groupStage" && phase.format === "modifiedGsl");
 
   for (const match of played) {
-    const { home: homeScore, away: awayScore } = match.score!;
+    const { home: homeScore, away: awayScore } = match.score ?? { home: 0, away: 0 };
     const table = byGroup.get(match.group!) ?? new Map<string, StandingRow>();
     byGroup.set(match.group!, table);
 
-    for (const [team, won, lost] of [
-      [match.home!, homeScore, awayScore],
-      [match.away!, awayScore, homeScore],
+    for (const [team, won, lost, side] of [
+      [match.home!, homeScore, awayScore, "home"],
+      [match.away!, awayScore, homeScore, "away"],
     ] as const) {
       const row = table.get(team.id) ?? {
         team,
@@ -337,7 +349,7 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
       };
       row.mapsWon += won;
       row.mapsLost += lost;
-      if (won > lost) row.wins += 1;
+      if (getMatchWinner(match) === side) row.wins += 1;
       else row.losses += 1;
       table.set(team.id, row);
     }

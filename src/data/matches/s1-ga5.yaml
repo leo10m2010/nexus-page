@@ -3,4 +3,10 @@ phase: groupStage
 tournament: season-one
 stage: groupStage
 group: A
+groupRound: decider
 startsAt: "2026-09-08T23:00:00Z"
+home: chandogs
+away: estar-backs
+walkover: home
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
+liquipediaRevision: 2426393

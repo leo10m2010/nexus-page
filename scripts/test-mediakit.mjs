@@ -286,8 +286,26 @@ try {
         }
         assert.ok(await broadcasts.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
         for (const state of ['finished', 'pending', 'unassigned']) {
-          const expected = groupMatches.filter((match) => (match.score ? 'finished' : !match.home || !match.away ? 'unassigned' : 'pending') === state).length;
+          const expected = groupMatches.filter((match) => (match.score || match.walkover ? 'finished' : !match.home || !match.away ? 'unassigned' : 'pending') === state).length;
           assert.equal(await page.locator(`#matches [data-stage="groupStage"][data-match-state="${state}"]`).count(), expected);
+        }
+        const administrative = page.locator('#matches [data-stage="groupStage"]').filter({ has: page.locator('.walkover-caption') });
+        assert.equal(await administrative.count(), groupMatches.filter((match) => match.walkover).length);
+        for (const card of await administrative.all()) {
+          const result = await card.locator('.result-center > .display-sm').innerText();
+          assert.match(result, /FF/); assert.match(result, /W/); assert.doesNotMatch(result, /\d/);
+        }
+        const amaruMatches = groupMatches.filter((match) => (match.score || match.walkover) && [match.home, match.away].includes('amaru-gaming'));
+        if (amaruMatches.length) {
+          let wins = 0, mapsWon = 0, mapsLost = 0;
+          for (const match of amaruMatches) {
+            const side = match.home === 'amaru-gaming' ? 'home' : 'away', other = side === 'home' ? 'away' : 'home';
+            if ((match.walkover || (match.score.home > match.score.away ? 'home' : 'away')) === side) wins++;
+            mapsWon += match.score?.[side] ?? 0; mapsLost += match.score?.[other] ?? 0;
+          }
+          const cells = await page.locator('#standings tbody tr').filter({ hasText: 'Amaru Gaming' }).locator('td').allTextContents();
+          assert.equal(cells[2].replace(/\s/g, ''), `${wins}-${amaruMatches.length - wins}`);
+          assert.equal(cells[3].replace(/\s/g, ''), `${mapsWon}-${mapsLost}`);
         }
         for (const grid of await page.locator('#matches .fixture-grid').all()) {
           const results = grid.locator('[data-match-state="finished"]');

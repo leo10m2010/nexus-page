@@ -4,12 +4,19 @@ defaultBestOf: 3
 matches:
   - id: s1-ubsf1
     stage: semifinal
+    home: teamdk
+    away: chandogs
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
+    liquipediaRevision: 2426393
     startsAt: "2026-09-11T20:00:00Z"
     bracket: upper
     round: 1
     slot: 1
   - id: s1-ubsf2
     stage: semifinal
+    home: pibble-corp
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
+    liquipediaRevision: 2426393
     startsAt: "2026-09-11T23:00:00Z"
     bracket: upper
     round: 1

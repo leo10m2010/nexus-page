@@ -36,6 +36,7 @@ const repeatsSide = (side: BracketSide, round: BracketRound): boolean =>
   sides.length > 1 && side.rounds.length === 1 && heading(round) === c.bracketSide[side.side];
 
 const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
+  if (match.walkover) return match.walkover === side;
   if (!match.score) return false;
   const { home, away } = match.score;
   if (match.bestOf) {
@@ -108,7 +109,7 @@ const championPrize = winnerPayout && prizePool
 
                                   <span class="truncate">{match[seat]?.name ?? c.tbd}</span>
                                   <span class="bracket-score tabular-nums">
-                                    {match.score ? match.score[seat] : "-"}
+                                    {match.walkover ? (match.walkover === seat ? "W" : "FF") : match.score ? match.score[seat] : "-"}
                                   </span>
                                   {winner(match, seat) && <span class="sr-only">, {c.winner}</span>}
                                 </div>

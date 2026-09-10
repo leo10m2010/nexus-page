@@ -10,7 +10,8 @@ export function serializeApproved(original, result) {
   const files = new Map();
   const update = (path, steps, value) => {
     if (!files.has(path)) files.set(path, parseDocument(original.files[path].text));
-    files.get(path).setIn(steps, value);
+    if (value === undefined) files.get(path).deleteIn(steps);
+    else files.get(path).setIn(steps, value);
   };
   const all = [...result.snapshot.groupMatches, ...(result.snapshot.bracket?.matches ?? [])];
   for (const id of result.changedIds) {
@@ -19,7 +20,7 @@ export function serializeApproved(original, result) {
     const group = original.groupMatches.some((m) => m.id === id);
     const path = group ? `src/data/matches/${id}.yaml` : `src/data/brackets/${original.tournament.id}.yaml`;
     const prefix = group ? [] : ["matches", original.bracket.matches.findIndex((m) => m.id === id)];
-    for (const field of ["home", "away", "startsAt", "score", "liquipediaRevision", "liquipediaUrl"]) if (JSON.stringify(next[field]) !== JSON.stringify(old[field])) update(path, [...prefix, field], next[field]);
+    for (const field of ["home", "away", "startsAt", "score", "walkover", "groupRound", "liquipediaRevision", "liquipediaUrl"]) if (JSON.stringify(next[field]) !== JSON.stringify(old[field])) update(path, [...prefix, field], next[field]);
   }
   if (result.formatChanged) {
     const index = original.tournament.phases.findIndex((p) => p.key === "groupStage");

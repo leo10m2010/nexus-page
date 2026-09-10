@@ -130,7 +130,8 @@ export interface Dictionary {
     >;
     teamCount: (n: number) => string;
     timeZoneNote: string;
-    matchState: { finished: string; pending: string; unassigned: string };
+    matchState: { finished: string; pending: string; unassigned: string; walkover: string };
+    groupRound: Record<"opening" | "elimination" | "winners" | "decider", string>;
 
     section: Record<"format" | "participants" | "standings" | "bracket" | "matches" | "talent", string>;
 

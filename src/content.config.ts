@@ -147,6 +147,8 @@ const matches = defineCollection({
       liquipediaRevision: z.number().int().positive().optional(),
       home: z.string().optional(),
       away: z.string().optional(),
+      walkover: z.enum(["home", "away"]).optional(),
+      groupRound: z.enum(["opening", "elimination", "winners", "decider"]).optional(),
       score: z
         .object({
           home: z.number().int().min(0),
@@ -168,9 +170,10 @@ const matches = defineCollection({
       if (match.score && match.score.home === match.score.away) {
         ctx.addIssue({ code: "custom", path: ["score"], message: "El resultado no puede terminar empatado" });
       }
-      if (match.score && (!match.home || !match.away)) {
+      if ((match.score || match.walkover) && (!match.home || !match.away)) {
         ctx.addIssue({ code: "custom", path: ["score"], message: "Completa ambos equipos antes del resultado" });
       }
+      if (match.score && match.walkover) ctx.addIssue({ code: "custom", path: ["walkover"], message: "El resultado administrativo no lleva marcador por mapas" });
     }),
 });
 
@@ -199,6 +202,7 @@ const bracketMatch = z
     away: z.string().optional(),
     homeSource: bracketSource.optional(),
     awaySource: bracketSource.optional(),
+    walkover: z.enum(["home", "away"]).optional(),
     score: z
       .object({
         home: z.number().int().min(0),
@@ -223,6 +227,7 @@ const bracketMatch = z
     if (match.score && match.score.home === match.score.away) {
       ctx.addIssue({ code: "custom", path: ["score"], message: "El resultado no puede terminar empatado" });
     }
+    if (match.score && match.walkover) ctx.addIssue({ code: "custom", path: ["walkover"], message: "El resultado administrativo no lleva marcador por mapas" });
   });
 
 const brackets = defineCollection({

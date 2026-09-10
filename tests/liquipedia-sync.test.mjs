@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parse, stringify } from "yaml";
 import { parseWikiDate, parseTournamentMatches, compareTournament, applyApproved } from "../netlify/lib/liquipedia-matches.js";
-import { createSyncHandler } from "../netlify/lib/liquipedia-sync.js";
+import { createSyncHandler, serializeApproved } from "../netlify/lib/liquipedia-sync.js";
 
 const sourceUrl = "https://liquipedia.net/dota2/NEXUS_SERIES/1";
 const wiki = (maps = ["2", "2", "skip"], date = "September 6, 2026 - 12:00 {{Abbr/PET}}", away = "Pibbles Corp") => `Two modified-GSL groups of four teams each
@@ -10,6 +10,12 @@ const wiki = (maps = ["2", "2", "skip"], date = "September 6, 2026 - 12:00 {{Abb
 }}
 }}`;
 const remote = (text = wiki()) => ({ revision: 42, timestamp: "2026-09-07T12:00:00Z", page: "NEXUS SERIES/1", url: sourceUrl, wikitext: text });
+const resultOnlyWiki = (home, away) => `{{Matchlist|id=groupA|gsl=losersfirst|M1={{Match
+|opponent1={{TeamOpponent|Amaru Gaming|score=${home}}}
+|opponent2={{TeamOpponent|Pibbles Corp|score=${away}}}
+|date=September 6, 2026 - 12:00 {{Abbr/PET}}
+}}
+}}`;
 const snapshot = () => ({
   tournament: { id: "season-one", name: "Nexus Series I", startDate: "2026-09-06", endDate: "2026-09-15", phases: [{ key: "groupStage", format: "roundRobin", bestOf: 3 }], participants: [{ team: "amaru" }, { team: "pibble" }], broadcastTalent: [{ name: "Keep me" }] },
   teams: [{ id: "amaru", name: "Amaru Gaming" }, { id: "pibble", name: "Pibble Corp" }],
@@ -31,6 +37,50 @@ test("completed series count winners and ignore skipped maps", () => {
   assert.deepEqual(match.score, { home: 0, away: 2 }); assert.equal(match.state, "finished"); assert.equal(match.id, "groupA/M1");
   assert.deepEqual(parseTournamentMatches(wiki(["1", "2", "2"])).matches[0].score, { home: 1, away: 2 });
   assert.deepEqual(parseTournamentMatches(wiki(["1", "2", "1", "1", "skip"])).matches[0].score, { home: 3, away: 1 });
+});
+test("W/FF without map records is selectable using the configured best-of", () => {
+  const data = snapshot(), plan = compareTournament(data, remote(resultOnlyWiki("FF", "W")));
+  assert.deepEqual(plan.rows[0].issues, []);
+  assert.equal(plan.rows[0].selectable, true);
+  assert.equal(plan.rows[0].walkover, "away");
+  assert.equal(plan.rows[0].score, null);
+  assert.equal(plan.rows[0].state, "finished");
+  const result = applyApproved(data, plan, ["groupA/M1"]);
+  assert.equal(result.snapshot.groupMatches[0].walkover, "away");
+  assert.equal(result.snapshot.groupMatches[0].groupRound, "opening");
+  assert.equal(result.snapshot.groupMatches[0].score, undefined);
+});
+test("administrative results replace numeric scores without storing null or invented maps", () => {
+  const data = snapshot(); data.groupMatches[0].score = { home: 0, away: 2 };
+  data.files = { "src/data/matches/s1-ga1.yaml": { text: stringify(data.groupMatches[0]) } };
+  const result = applyApproved(data, compareTournament(data, remote(resultOnlyWiki("FF", "W"))), ["groupA/M1"]);
+  const matchFile = serializeApproved(data, result).find((file) => file.path.endsWith("s1-ga1.yaml"));
+  const saved = parse(matchFile.content);
+  assert.equal(saved.walkover, "away"); assert.ok(!("score" in saved));
+  assert.equal(compareTournament(result.snapshot, remote(resultOnlyWiki("FF", "W"))).rows[0].selectable, false);
+});
+test("numeric opponent scores can finish a series without individual map records", () => {
+  const plan = compareTournament(snapshot(), remote(resultOnlyWiki("2", "1")));
+  assert.equal(plan.rows[0].selectable, true); assert.deepEqual(plan.rows[0].score, { home: 2, away: 1 });
+  assert.equal(compareTournament(snapshot(), remote(resultOnlyWiki("1", "0"))).rows[0].selectable, false);
+});
+test("unknown or conflicting administrative outcomes remain blocked", () => {
+  for (const scores of [["W", "W"], ["FF", ""], ["DQ", "W"]]) {
+    const row = compareTournament(snapshot(), remote(resultOnlyWiki(...scores))).rows[0];
+    assert.equal(row.selectable, false); assert.equal(row.walkover, null); assert.equal(row.score, null);
+  }
+});
+test("map count is not used as the best-of when tournament context is available", () => {
+  const partial = compareTournament(snapshot(), remote(wiki(["2"])));
+  assert.equal(partial.rows[0].score, null); assert.equal(partial.rows[0].selectable, false);
+  const finished = compareTournament(snapshot(), remote(wiki(["2", "2"])));
+  assert.deepEqual(finished.rows[0].score, { home: 0, away: 2 }); assert.equal(finished.rows[0].selectable, true);
+});
+test("pending matches without map templates can still update confirmed schedules", () => {
+  const text = resultOnlyWiki("", "").replace("12:00", "13:00");
+  const row = compareTournament(snapshot(), remote(text)).rows[0];
+  assert.equal(row.selectable, true); assert.equal(row.state, "pending");
+  assert.equal(row.changes.startsAt.after, "2026-09-06T18:00:00Z");
 });
 test("tournament boundaries follow Peru dates rather than the UTC date", () => {
   const early = compareTournament(snapshot(), remote(wiki(undefined, "September 6, 2026 - 01:00 {{Abbr/UTC}}")));

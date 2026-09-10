@@ -114,7 +114,8 @@ export const ru: Dictionary = {
     },
     teamCount: (n) => `Команд: ${n}`,
     timeZoneNote: "Даты указаны по времени Перу (PET). Время Европы: CEST/CET. +1 означает следующий день в Европе.",
-    matchState: { finished: "Завершён", pending: "Ожидается", unassigned: "Команды определяются" },
+    matchState: { finished: "Завершён", pending: "Ожидается", unassigned: "Команды определяются", walkover: "Тех. результат" },
+    groupRound: { opening: "Первый матч", elimination: "Матч на вылет", winners: "Матч победителей", decider: "Решающий матч" },
     section: {
       format: "Формат",
       participants: "Участники",

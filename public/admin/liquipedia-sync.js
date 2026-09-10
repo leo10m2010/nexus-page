@@ -52,15 +52,15 @@
       const item = document.createElement("li"), label = document.createElement("label"), checkbox = document.createElement("input"), copy = document.createElement("span");
       checkbox.type = "checkbox"; checkbox.value = row.sourceId; checkbox.disabled = !row.selectable; checkbox.dataset.selectable = String(row.selectable);
       copy.append(text("strong", `${row.home || "Por definir"} vs ${row.away || "Por definir"}`));
-      copy.append(text("span", row.score ? `Finalizado · ${row.score.home} - ${row.score.away}` : row.state === "incomplete" ? "Resultado incompleto" : "Pendiente", "match-state"));
+      copy.append(text("span", row.walkover ? `Finalizado por retirada · ${row.walkover === "home" ? "W - FF" : "FF - W"}` : row.score ? `Finalizado · ${row.score.home} - ${row.score.away}` : row.state === "incomplete" ? "Resultado incompleto" : "Pendiente", "match-state"));
       copy.append(text("span", dates(row.startsAt), "change-line"));
       label.append(checkbox, copy); item.append(label);
       for (const [field, change] of Object.entries(row.changes)) {
-        const value = (v, before) => v == null ? "Sin dato" : field === "score" ? `${v.home} - ${v.away}` : field === "startsAt" ? dates(v) : field === "home" ? (before ? row.currentHome : row.home) || v : field === "away" ? (before ? row.currentAway : row.away) || v : String(v);
-        item.append(text("p", `${({ startsAt: "Horario", score: "Resultado", home: "Equipo A", away: "Equipo B" })[field]}: ${value(change.before, true)} → ${value(change.after, false)}`, "change-line"));
+        const value = (v, before) => v == null ? "Sin dato" : field === "score" ? `${v.home} - ${v.away}` : field === "walkover" ? (v === "home" ? "W - FF" : "FF - W") : field === "groupRound" ? ({ opening: "Apertura", elimination: "Eliminación", winners: "Ganadores", decider: "Partido decisivo" })[v] : field === "startsAt" ? dates(v) : field === "home" ? (before ? row.currentHome : row.home) || v : field === "away" ? (before ? row.currentAway : row.away) || v : String(v);
+        item.append(text("p", `${({ startsAt: "Horario", score: "Resultado", walkover: "Resultado por retirada", groupRound: "Ronda", home: "Equipo A", away: "Equipo B" })[field]}: ${value(change.before, true)} → ${value(change.after, false)}`, "change-line"));
       }
       for (const issue of row.issues) item.append(text("p", issue, "issue"));
-      if (!row.issues.length && !row.selectable) item.append(text("p", "Sin cambios para guardar.", "change-line"));
+      if (!row.issues.length && !row.selectable) item.append(text("p", "Ya actualizado: no necesita seleccionarse.", "change-line"));
       $("sync-matches").append(item);
     }
   };
@@ -89,7 +89,14 @@
   });
   preview.addEventListener("click", async () => {
     busy = true; plan = null; controls(); status("Consultando partidos y comparando con la web...");
-    try { plan = await request({ action: "preview", tournament: select.value }); render(); status("Revisión lista. Marca lo que quieres guardar."); }
+    try {
+      plan = await request({ action: "preview", tournament: select.value }); render();
+      status(plan.rows.some((row) => row.selectable) || plan.formatChange
+        ? "Revisión lista. Marca los cambios nuevos que quieres guardar."
+        : plan.rows.some((row) => row.issues.length)
+          ? "Hay datos que requieren revisión. Consulta el motivo indicado en cada partido."
+          : "La web ya coincide con Liquipedia. No hay cambios nuevos para guardar.");
+    }
     catch (error) { status(error.message, true); }
     finally { busy = false; controls(); }
   });

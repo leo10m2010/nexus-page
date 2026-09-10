@@ -1,7 +1,7 @@
 ---
 import TeamMark from "@ui/TeamMark.astro";
 import BroadcastTime from "@ui/BroadcastTime.astro";
-import type { ResolvedMatch } from "@lib/competition";
+import { hasMatchResult, getMatchWinner, type ResolvedMatch } from "@lib/competition";
 import { useTranslations } from "@lib/i18n";
 
 interface Props {
@@ -13,10 +13,10 @@ interface Props {
 }
 const { match, trailing, showTime = false, compact = false } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
-const homeScore = match.score?.home;
-const awayScore = match.score?.away;
-const homeWon = match.score ? homeScore! > awayScore! : false;
-const awayWon = match.score ? awayScore! > homeScore! : false;
+const homeScore = match.walkover ? (match.walkover === "home" ? "W" : "FF") : match.score?.home;
+const awayScore = match.walkover ? (match.walkover === "away" ? "W" : "FF") : match.score?.away;
+const homeWon = getMatchWinner(match) === "home";
+const awayWon = getMatchWinner(match) === "away";
 ---
 
 <div class:list={["scoreline flex items-center gap-4 sm:gap-6", { "scheduled-line": showTime, "compact-scoreline": compact }]}>
@@ -28,13 +28,14 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
   </div>
 
   {
-    match.score ? (
+    hasMatchResult(match) ? (
       <div class="result-center">
       <span class="display-sm shrink-0 text-xl tabular-nums sm:text-2xl">
         <span class={homeWon ? "text-ink" : "text-muted"}>{homeScore}</span>
         <span class="px-1.5 text-muted">:</span>
         <span class={awayWon ? "text-ink" : "text-muted"}>{awayScore}</span>
       </span>
+      {match.walkover && <span class="walkover-caption">{t.competition.matchState.walkover}</span>}
       {showTime && <BroadcastTime date={match.startsAt} compact />}
       </div>
     ) : showTime ? (
@@ -54,6 +55,7 @@ const awayWon = match.score ? awayScore! > homeScore! : false;
 
 <style>
   .result-center { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; gap: 8px; }
+  .walkover-caption { font-size: 0.6875rem; color: var(--c-accent-lift); }
   .scheduled-line { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 24px; min-height: 60px; }
   .compact-scoreline { gap: 12px; }
   .compact-scoreline .team-seat { flex-direction: column; gap: 8px; text-align: center; }

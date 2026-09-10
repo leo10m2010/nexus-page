@@ -467,6 +467,11 @@ logos, y rechaza el guardado si hubo otro cambio en GitHub durante la revisión.
 Las referencias estables y los alias están en `src/data/liquipedia/season-one.json`.
 Un cruce nuevo o un formato no reconocido requiere revisión manual.
 
+Los resultados `W/FF` se guardan como victorias administrativas (`walkover`),
+sin inventar un marcador por mapas. Cuentan para la clasificación y la progresión
+del bracket. El formato Bo se hereda del torneo cuando Liquipedia omite los mapas.
+Las casillas sin cambios permanecen deshabilitadas con el mensaje «Ya actualizado».
+
 La conexión real usa las funciones Netlify y el OAuth GitHub existente en el
 dominio publicado. No se realiza ningún guardado remoto durante estas pruebas:
 

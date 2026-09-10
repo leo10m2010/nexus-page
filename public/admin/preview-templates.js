@@ -290,6 +290,7 @@ function previewHasScoreValues(match) {
 }
 
 function previewHasWinningScore(match, defaultBestOf) {
+  if (match && ["home", "away"].includes(match.walkover) && !match.score) return true;
   if (!previewHasScoreValues(match)) return false;
   var bestOf = Number(match.bestOf) || Number(defaultBestOf) || 3;
   var winsNeeded = Math.floor(bestOf / 2) + 1;
@@ -322,9 +323,9 @@ function resolvePreviewTeam(matches, match, side, defaultBestOf, stack) {
   nextPath[match.id] = true;
   var home = resolvePreviewTeam(matches, sourceMatch, "home", defaultBestOf, nextPath);
   var away = resolvePreviewTeam(matches, sourceMatch, "away", defaultBestOf, nextPath);
-  if (!home || !away || Number(sourceMatch.score.home) === Number(sourceMatch.score.away)) return null;
+  if (!home || !away) return null;
 
-  var homeWins = Number(sourceMatch.score.home) > Number(sourceMatch.score.away);
+  var homeWins = sourceMatch.walkover ? sourceMatch.walkover === "home" : Number(sourceMatch.score.home) > Number(sourceMatch.score.away);
   if (source.outcome === "winner") return homeWins ? home : away;
   return homeWins ? away : home;
 }
@@ -356,8 +357,8 @@ function previewBracketMatch(match, matches, defaultBestOf) {
   var away = resolvePreviewTeam(matches, match, "away", defaultBestOf);
   var hasScore = previewHasScoreValues(match);
   var hasWinner = previewHasWinningScore(match, defaultBestOf);
-  var homeWins = hasWinner && Number(match.score.home) > Number(match.score.away);
-  var awayWins = hasWinner && Number(match.score.away) > Number(match.score.home);
+  var homeWins = hasWinner && (match.walkover ? match.walkover === "home" : Number(match.score.home) > Number(match.score.away));
+  var awayWins = hasWinner && !homeWins;
 
   function seat(side, id, wins) {
     var sourceLabel = previewSourceLabel(matches, match, side);
@@ -371,7 +372,7 @@ function previewBracketMatch(match, matches, defaultBestOf) {
         h("strong", null, id ? teamName(id) : "Por definir"),
         sourceLabel ? h("small", null, sourceLabel) : null
       ),
-      h("span", { className: "nx-bracket-preview-score" }, hasScore ? match.score[side] : "–")
+      h("span", { className: "nx-bracket-preview-score" }, match.walkover ? (match.walkover === side ? "W" : "FF") : hasScore ? match.score[side] : "–")
     );
   }
 

@@ -3,8 +3,10 @@ phase: groupStage
 tournament: season-one
 stage: groupStage
 group: B
+groupRound: elimination
 startsAt: "2026-09-09T17:00:00Z"
 home: rebeldes
 away: the-house-esports
+score: { home: 2, away: 1 }
 liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
-liquipediaRevision: 2425630
+liquipediaRevision: 2426393
