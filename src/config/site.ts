@@ -15,6 +15,7 @@ export const site = {
 } as const;
 
 export const social = {
+  facebook: "https://www.facebook.com/profile.php?id=61593838090667",
   discord: "https://discord.gg/yNv97eMAcF",
   instagram: "https://www.instagram.com/nexusmedia_esports",
   instagramHandle: "@nexusmedia_esports",
@@ -51,6 +52,13 @@ export const ctas = {
 
 export const contactRoutes: ContactRoute[] = [
   {
+    icon: "simple-icons:facebook",
+    label: "Facebook",
+    value: "Nexus Series",
+    href: social.facebook,
+    external: true,
+  },
+  {
     icon: "ph:envelope-simple-bold",
     label: "Partnerships",
     value: site.email,
@@ -80,6 +88,7 @@ export const contactRoutes: ContactRoute[] = [
 ];
 
 export const socialLinks: (Link & { icon: string })[] = [
+  { icon: "simple-icons:facebook", label: "Facebook", href: social.facebook, external: true },
   { icon: "simple-icons:x", label: "X / Twitter", href: social.x, external: true },
   { icon: "simple-icons:instagram", label: "Instagram", href: social.instagram, external: true },
   { icon: "simple-icons:discord", label: "Discord", href: social.discord, external: true },
@@ -90,4 +99,4 @@ export const socialLinks: (Link & { icon: string })[] = [
   }),
 ];
 
-export const sameAs: string[] = [social.x, social.instagram, social.discord, ...channels.map((c) => c.href)];
+export const sameAs: string[] = [social.x, social.instagram, social.facebook, social.discord, ...channels.map((c) => c.href)];

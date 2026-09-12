@@ -18,7 +18,10 @@ const tournaments = await getCollection("tournaments");
         <div class="review-header"><h2>Revisa antes de guardar</h2><a id="sync-source" target="_blank" rel="noopener noreferrer">Ver fuente</a></div>
         <p id="sync-summary"></p><p id="sync-warnings"></p>
         <label id="sync-format-row" hidden><input type="checkbox" id="sync-format" /><span id="sync-format-label"></span></label>
-        <ul id="sync-matches"></ul>
+        <p class="review-help">Selecciona los resultados nuevos o los datos que quieras actualizar. Los partidos sin cambios se ocultan en «Ya al día».</p>
+        <p id="sync-empty" hidden></p>
+        <ul id="sync-matches" class="match-list"></ul>
+        <details id="sync-updated" hidden><summary id="sync-updated-label">Ya al día</summary><ul id="sync-updated-matches" class="match-list"></ul></details>
         <div class="save-bar"><p>Solo se actualizarán los partidos seleccionados. Casters, canales, sponsors y logos no se modifican.</p><button id="sync-save" type="button" disabled>Guardar seleccionados</button></div>
         <p class="attribution">Datos de Liquipedia, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 3.0</a>.</p>
       </section>
@@ -41,13 +44,28 @@ const tournaments = await getCollection("tournaments");
   #sync-status { padding: 16px 20px; background: var(--c-bg-elev); border-radius: var(--radius-control); }
   #sync-status[data-error="true"], #sync-warnings { color: #ffb5a9; }
   .review-header { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-top: 32px; }
-  #sync-matches { list-style: none; padding: 0; margin: 24px 0; }
-  #sync-matches :global(li) { padding: 20px; margin-top: 12px; border: 1px solid var(--c-line); border-radius: var(--radius-card); background: var(--c-bg-elev); }
-  #sync-matches :global(label) { display: flex; align-items: start; gap: 12px; cursor: pointer; }
-  #sync-matches :global(strong) { display: block; font-weight: 650; }
-  #sync-matches :global(.match-state) { display: block; margin-top: 8px; color: var(--c-accent-lift); font-size: 0.875rem; }
-  #sync-matches :global(.change-line), #sync-matches :global(.issue) { margin-top: 10px; font-size: 0.875rem; line-height: 1.6; overflow-wrap: anywhere; }
-  #sync-matches :global(.issue) { color: #ffb5a9; }
+  #sync-summary { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+  #sync-review :global([data-state="new"]) { --state-color: #95dcb5; }
+  #sync-review :global([data-state="changed"]) { --state-color: #a8caff; }
+  #sync-review :global([data-state="review"]) { --state-color: #ffb5a9; }
+  #sync-review :global([data-state="synced"]) { --state-color: var(--c-text-muted); }
+  #sync-summary :global(.review-count) { color: var(--state-color); font-size: 0.875rem; }
+  .match-list { list-style: none; padding: 0; margin: 24px 0; }
+  .match-list:empty { display: none; }
+  .match-list :global(li) { padding: 20px; margin-top: 12px; border: 1px solid var(--c-line); border-radius: var(--radius-card); background: var(--c-bg-elev); }
+  .match-list :global(.match-heading) { display: flex; align-items: start; gap: 12px; }
+  .match-list :global(label) { cursor: pointer; }
+  .match-list :global(.match-heading > span) { min-width: 0; overflow-wrap: anywhere; }
+  .match-list :global(strong) { display: block; font-weight: 650; }
+  .match-list :global(.review-state) { display: block; color: var(--state-color); font-size: 0.875rem; font-weight: 650; margin-bottom: 8px; }
+  .match-list :global(.match-state) { display: block; margin-top: 8px; color: var(--c-text-muted); font-size: 0.875rem; }
+  .match-list :global(.change-line), .match-list :global(.issue) { margin-top: 10px; font-size: 0.875rem; line-height: 1.6; overflow-wrap: anywhere; }
+  .match-list :global(.issue) { color: #ffb5a9; }
+  #sync-empty { padding-block: 24px; color: #95dcb5; }
+  #sync-updated { margin-block: 24px; border-top: 1px solid var(--c-line); }
+  #sync-updated summary { padding-block: 16px; cursor: pointer; color: var(--c-text-muted); }
+  #sync-updated summary:hover { color: var(--c-text); }
+  #sync-updated-matches :global(li) { background: transparent; }
   input[type="checkbox"], #sync-matches :global(input[type="checkbox"]) { width: 20px; height: 20px; margin-top: 2px; flex-shrink: 0; accent-color: var(--c-accent-lift); }
   #sync-format-row:not([hidden]) { display: flex; gap: 12px; padding: 20px; border: 1px solid var(--c-accent); border-radius: var(--radius-control); }
   .save-bar { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-top: 24px; border-top: 1px solid var(--c-line); }

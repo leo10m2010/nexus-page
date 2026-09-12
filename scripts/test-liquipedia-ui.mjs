@@ -41,6 +41,7 @@ try {
           { sourceId: "groupA/M2", home: "Chandogs", away: "Estar Backs", startsAt: "2026-09-06T20:25:00Z", score: null, state: "pending", selectable: true, issues: [], changes: { startsAt: { before: "2026-09-06T20:00:00Z", after: "2026-09-06T20:25:00Z" } } },
           { sourceId: "groupA/M3", home: "<img src=x onerror=window.injected=true>", away: null, startsAt: null, score: null, state: "pending", selectable: false, issues: ["Equipo no reconocido"], changes: {} },
           { sourceId: "groupA/M4", home: "Pibbles Corp", away: "Estar Backs", startsAt: "2026-09-08T20:00:00Z", score: null, walkover: "home", state: "finished", selectable: true, issues: [], changes: { walkover: { before: null, after: "home" } } },
+          { sourceId: "groupB/M1", home: "Team A", away: "Team B", startsAt: "2026-09-08T20:00:00Z", score: { home: 2, away: 0 }, state: "finished", selectable: false, issues: [], changes: {} },
         ],
       } });
     });
@@ -53,7 +54,18 @@ try {
     assert.equal(await page.locator("#sync-matches li").count(), 4);
     assert.match(await page.locator("#sync-matches li").last().innerText(), /Finalizado por retirada · W - FF/);
     assert.equal(await page.locator("#sync-matches input:checked").count(), 0);
-    assert.equal(await page.locator("#sync-matches input:disabled").count(), 1);
+    assert.equal(await page.locator("#sync-matches input:disabled").count(), 0);
+    assert.equal(await page.locator('#sync-matches [data-state="new"]').count(), 2);
+    assert.equal(await page.locator('#sync-matches [data-state="changed"]').count(), 1);
+    assert.equal(await page.locator('#sync-matches [data-state="review"]').count(), 1);
+    assert.equal(await page.locator('#sync-updated-matches li').isVisible(), false);
+    await page.locator('#sync-matches input[value="groupA/M1"]').check();
+    await page.locator('#sync-updated-label').click();
+    assert.equal(await page.locator('#sync-updated-matches li').isVisible(), true);
+    assert.equal(await page.locator('#sync-updated-matches input').count(), 0);
+    await page.locator('#sync-updated-label').click();
+    assert.equal(await page.locator('#sync-matches input[value="groupA/M1"]').isChecked(), true);
+    await page.locator('#sync-matches input[value="groupA/M1"]').uncheck();
     assert.equal(await page.locator("#sync-save").isDisabled(), true);
     assert.equal(await page.locator("#sync-matches img").count(), 0);
     assert.equal(await page.evaluate(() => window.injected), undefined);
@@ -90,7 +102,11 @@ try {
     gatewayFailure = false; noChanges = true;
     await page.locator("#sync-preview").click();
     await page.waitForFunction(() => document.getElementById("sync-status").textContent.includes("No hay cambios nuevos"));
-    assert.match(await page.locator("#sync-matches").innerText(), /Ya actualizado/);
+    assert.equal(await page.locator("#sync-matches li").count(), 0);
+    assert.equal(await page.locator("#sync-empty").isVisible(), true);
+    assert.equal(await page.locator("#sync-updated-matches li").isVisible(), false);
+    await page.locator('#sync-updated-label').click();
+    assert.match(await page.locator("#sync-updated-matches").innerText(), /Ya al día/);
     assert.equal(await page.locator("#sync-save").isDisabled(), true);
     assert.deepEqual(errors, []);
     await page.goto(`${base}/es/competition/season-one/`);
