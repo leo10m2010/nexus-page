@@ -16,8 +16,7 @@ prizePool:
     - place: 2
       amount: 2000
     - place: 3
-      to: 4
-      amount: 500
+      amount: 1000
 phases:
   - key: groupStage
     format: modifiedGsl

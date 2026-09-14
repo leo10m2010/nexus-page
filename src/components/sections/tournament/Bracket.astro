@@ -17,6 +17,19 @@ const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const c = t.competition;
 
+// Placement matches are independent of the championship path.
+type DisplaySide = Omit<BracketSide, "side"> & { side: BracketSide["side"] | "thirdPlace" };
+const placementRounds = sides.flatMap((side) => side.rounds)
+  .map((round) => ({ ...round, matches: round.matches.filter((match) => match.stage === "thirdPlace"), stage: "thirdPlace" as const }))
+  .filter((round) => round.matches.length > 0);
+const displaySides: DisplaySide[] = sides.map((side) => ({
+  ...side,
+  rounds: side.rounds.map((round) => ({ ...round, matches: round.matches.filter((match) => match.stage !== "thirdPlace") }))
+    .filter((round) => round.matches.length > 0),
+})).filter((side) => side.rounds.length > 0);
+if (placementRounds.length) displaySides.push({ side: "thirdPlace", rounds: placementRounds });
+const sideHeading = (side: DisplaySide) => side.side === "thirdPlace" ? c.stage.thirdPlace : c.bracketSide[side.side];
+
 const pairs = (matches: ResolvedMatch[]): ResolvedMatch[][] =>
   matches.reduce<ResolvedMatch[][]>((out, match, i) => {
     if (i % 2 === 0) out.push([match]);
@@ -32,8 +45,8 @@ const feeds = (round: BracketRound, next: BracketRound | undefined): boolean =>
 const heading = (round: BracketRound): string =>
   round.stage ? c.stage[round.stage] : c.round(round.round);
 
-const repeatsSide = (side: BracketSide, round: BracketRound): boolean =>
-  sides.length > 1 && side.rounds.length === 1 && heading(round) === c.bracketSide[side.side];
+const repeatsSide = (side: DisplaySide, round: BracketRound): boolean =>
+  displaySides.length > 1 && side.rounds.length === 1 && heading(round) === sideHeading(side);
 
 const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
   if (match.walkover) return match.walkover === side;
@@ -52,7 +65,7 @@ const winningTeam = (match: ResolvedMatch) => {
   return null;
 };
 
-const finalSide = sides.find((side) => side.side === "final");
+const finalSide = displaySides.find((side) => side.side === "final");
 const finalRound = finalSide?.rounds[finalSide.rounds.length - 1];
 const finalMatch = finalRound?.matches[finalRound.matches.length - 1] ?? null;
 const champion = finalMatch ? winningTeam(finalMatch) : null;
@@ -76,7 +89,7 @@ const championPrize = winnerPayout && prizePool
     >
       <div class="bracket-board">
         {
-          sides.map((side) => (
+          displaySides.map((side) => (
             <section
               class={`bracket-track track-${side.side}`}
               data-side={side.side}
@@ -84,7 +97,7 @@ const championPrize = winnerPayout && prizePool
             >
               <h3 id={`${id}-${side.side}`} class="bracket-side-label display-sm">
                 <span aria-hidden="true"></span>
-                {c.bracketSide[side.side]}
+                {sideHeading(side)}
               </h3>
 
               <div class="bracket">
@@ -234,6 +247,12 @@ const championPrize = winnerPayout && prizePool
     grid-column: 3;
     grid-row: 1 / span 2;
     align-self: center;
+  }
+
+  .track-thirdPlace {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    border-top: 1px solid var(--c-line);
   }
 
   .bracket-side-label {

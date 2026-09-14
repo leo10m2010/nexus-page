@@ -56,12 +56,17 @@ matches:
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
   - id: s1-lbf
     stage: lowerFinal
-    startsAt: "2026-09-14T17:00:00Z"
-    homeSource: { match: s1-lbsf, outcome: winner }
-    awaySource: { match: s1-ubf, outcome: loser }
+    startsAt: "2026-09-14T17:10:00Z"
+    homeSource: { match: s1-ubf, outcome: loser }
+    awaySource: { match: s1-lbsf, outcome: winner }
     bracket: lower
     round: 2
     slot: 1
+    score:
+      home: 2
+      away: 0
+    liquipediaRevision: 2427698
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
   - id: s1-gf
     stage: grandFinal
     startsAt: "2026-09-15T20:00:00Z"
@@ -71,3 +76,14 @@ matches:
     bracket: final
     round: 1
     slot: 1
+  - id: s1-third
+    stage: thirdPlace
+    startsAt: "2026-09-14T20:55:00Z"
+    homeSource: { match: s1-lbf, outcome: loser }
+    awaySource: { match: s1-lbsf, outcome: loser }
+    bestOf: 3
+    bracket: final
+    round: 2
+    slot: 1
+    liquipediaRevision: 2427698
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
