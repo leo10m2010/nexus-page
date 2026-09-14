@@ -16,7 +16,9 @@
     "gFbW62putB/M4": 2426393,
     "gFbW62putB/M5": 2426411,
     "gFbW62putZ/R1M1": 2427020,
-    "gFbW62putZ/R1M2": 2427020
+    "gFbW62putZ/R1M2": 2427020,
+    "gFbW62putZ/R2M1": 2427280,
+    "gFbW62putZ/R1M3": 2427280
   },
   "matches": {
     "gFbW62putA/M1": "s1-ga1",
@@ -36,5 +38,5 @@
     "gFbW62putZ/R2M2": "s1-lbf",
     "gFbW62putZ/R3M1": "s1-gf"
   },
-  "lastImportedAt": "2026-09-12T20:55:04.799Z"
+  "lastImportedAt": "2026-09-14T14:50:43.009Z"
 }

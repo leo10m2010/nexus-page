@@ -30,20 +30,30 @@ matches:
       away: 0
   - id: s1-ubf
     stage: upperFinal
-    startsAt: "2026-09-12T23:00:00Z"
+    startsAt: "2026-09-13T00:40:00Z"
     homeSource: { match: s1-ubsf1, outcome: winner }
     awaySource: { match: s1-ubsf2, outcome: winner }
     bracket: upper
     round: 2
     slot: 1
+    score:
+      home: 0
+      away: 2
+    liquipediaRevision: 2427280
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
   - id: s1-lbsf
     stage: lowerRound
-    startsAt: "2026-09-12T20:00:00Z"
+    startsAt: "2026-09-12T20:20:00Z"
     homeSource: { match: s1-ubsf1, outcome: loser }
     awaySource: { match: s1-ubsf2, outcome: loser }
     bracket: lower
     round: 1
     slot: 1
+    score:
+      home: 1
+      away: 2
+    liquipediaRevision: 2427280
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
   - id: s1-lbf
     stage: lowerFinal
     startsAt: "2026-09-14T17:00:00Z"
