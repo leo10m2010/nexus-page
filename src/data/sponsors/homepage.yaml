@@ -11,3 +11,9 @@ sponsors:
     name: Melbet
     logo: /sponsors/melbet.svg
     url: https://melbet-pe.com/es
+  - tier: official
+    surface: auto
+    active: true
+    name: Runestone.gg
+    logo: /sponsors/runestone.svg
+    url: https://runestone.gg/
