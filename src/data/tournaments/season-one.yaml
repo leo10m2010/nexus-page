@@ -1,4 +1,3 @@
-id: season-one
 name: Nexus Series I
 status: live
 startDate: 2026-09-06
@@ -8,6 +7,23 @@ venue: online
 roadmapIcon: /seasons/nexus-series-i.png
 roadmapColor: "#1477e7"
 liquipediaUrl: https://liquipedia.net/dota2/Nexus_Series/1
+participants:
+  - team: amaru-gaming
+    via: invited
+  - team: chandogs
+    via: invited
+  - team: estar-backs
+    via: invited
+  - team: pibble-corp
+    via: invited
+  - team: giordota-team
+    via: invited
+  - team: rebeldes
+    via: invited
+  - team: teamdk
+    via: invited
+  - team: the-house-esports
+    via: invited
 prizePool:
   currency: USD
   distribution:
@@ -32,10 +48,6 @@ broadcastTalent:
     language: es
     icon: simple-icons:kick
     href: https://kick.com/maggodota
-  - name: Papita
-    language: es
-    icon: simple-icons:kick
-    href: https://kick.com/PAPITA
   - name: doedie666
     language: en
     icon: simple-icons:twitch
@@ -44,20 +56,4 @@ broadcastTalent:
     language: ru
     icon: simple-icons:twitch
     href: https://www.twitch.tv/nexusmedia_ru
-participants:
-  - team: amaru-gaming
-    via: invited
-  - team: chandogs
-    via: invited
-  - team: estar-backs
-    via: invited
-  - team: pibble-corp
-    via: invited
-  - team: giordota-team
-    via: invited
-  - team: rebeldes
-    via: invited
-  - team: teamdk
-    via: invited
-  - team: the-house-esports
-    via: invited
+id: season-one
