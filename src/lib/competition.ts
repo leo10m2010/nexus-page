@@ -27,6 +27,8 @@ export interface Match {
   bracket?: BracketMatch["bracket"];
   round?: number;
   slot?: number;
+  homeSource?: BracketMatch["homeSource"];
+  awaySource?: BracketMatch["awaySource"];
   group?: string;
 }
 export type Player = NonNullable<Team["players"]>[number];
@@ -155,6 +157,8 @@ function flattenBracket(document: BracketDocument): Match[] {
     bracket: match.bracket,
     round: match.round,
     slot: match.slot,
+    homeSource: match.homeSource,
+    awaySource: match.awaySource,
   }));
 }
 
@@ -168,7 +172,7 @@ export function getTournamentFormats(tournament: Tournament): Phase["format"][] 
 
 export function getPrizeTotal(tournament: Tournament): number | null {
   const distribution = tournament.prizePool?.distribution;
-  if (!distribution?.length) return null;
+  if (!distribution?.length) return tournament.prizePool?.total ?? null;
   return distribution.reduce(
     (sum, row) => sum + row.amount * ((row.to ?? row.place) - row.place + 1),
     0,
@@ -201,6 +205,14 @@ export async function getTournament(id: string): Promise<Tournament> {
   const found = (await getTournaments()).find((t) => t.id === id);
   if (!found) throw new Error(`No tournament with id "${id}" in tournaments.yaml`);
   return found;
+}
+
+export async function getFeaturedTournament(): Promise<Tournament | null> {
+  const tournaments = await getTournaments();
+  return tournaments.find(tournament => tournament.status === "live")
+    ?? tournaments.find(tournament => tournament.status === "upcoming")
+    ?? [...tournaments].sort((a, b) => b.endDate.getTime() - a.endDate.getTime())[0]
+    ?? null;
 }
 
 export function tournamentPath(id: string, locale: Locale = DEFAULT_LOCALE): string {
@@ -263,6 +275,7 @@ export async function getSchedule(
   tournamentId?: string,
 ): Promise<{ day: string; date: Date; matches: ResolvedMatch[] }[]> {
   const upcoming = (await getResolvedMatches())
+    .filter((m) => m.tournament.status !== "finished")
     .filter((m) => !hasMatchResult(m) && m.home && m.away)
     .filter((m) => !tournamentId || m.tournament.id === tournamentId)
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());

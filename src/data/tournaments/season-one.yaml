@@ -1,6 +1,6 @@
 id: season-one
 name: Nexus Series I
-status: live
+status: finished
 startDate: 2026-09-06
 endDate: 2026-09-15
 region: South America
@@ -32,10 +32,6 @@ broadcastTalent:
     language: es
     icon: simple-icons:kick
     href: https://kick.com/maggodota
-  - name: Papita
-    language: es
-    icon: simple-icons:kick
-    href: https://kick.com/PAPITA
   - name: doedie666
     language: en
     icon: simple-icons:twitch

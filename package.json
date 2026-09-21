@@ -13,12 +13,14 @@
     "check:data": "node scripts/check-data.mjs",
     "test:mediakit": "npm run build && node scripts/test-mediakit.mjs",
     "test:liquipedia": "node --test tests/liquipedia-sync.test.mjs",
+    "test:presentation": "node --experimental-strip-types --test tests/tournament-presentation.test.mjs",
     "test:liquipedia:ui": "node scripts/test-liquipedia-ui.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource-variable/archivo": "^5.3.0",
     "@fontsource-variable/inter-tight": "^5.3.0",
+    "@fontsource/bebas-neue": "^5.3.0",
     "@iconify-json/flag": "^1.2.12",
     "@iconify-json/ph": "^1.2.2",
     "@iconify-json/simple-icons": "^1.2.93",

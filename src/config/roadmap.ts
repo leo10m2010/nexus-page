@@ -1,4 +1,5 @@
 export interface RoadmapPlaceholder {
+  id: string;
   name: string;
   startDate: string;
   endDate: string;
@@ -9,6 +10,7 @@ export interface RoadmapPlaceholder {
 
 export const roadmapPlaceholders: RoadmapPlaceholder[] = [
   {
+    id: "season-one",
     name: "Nexus Series I",
     startDate: "2026-09-06",
     endDate: "2026-09-15",
@@ -17,6 +19,7 @@ export const roadmapPlaceholders: RoadmapPlaceholder[] = [
     prizePool: { currency: "USD", total: 10000 },
   },
   {
+    id: "season-two",
     name: "Nexus Series II",
     startDate: "2026-10-15",
     endDate: "2026-10-27",
@@ -24,6 +27,7 @@ export const roadmapPlaceholders: RoadmapPlaceholder[] = [
     prizePool: { currency: "USD", total: 20000 },
   },
   {
+    id: "season-three",
     name: "Nexus Series III",
     startDate: "2026-12-10",
     endDate: "2026-12-22",

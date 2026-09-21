@@ -1,0 +1,44 @@
+---
+import { Icon } from "astro-icon/components";
+import TeamMark from "@ui/TeamMark.astro";
+import type { ResolvedMatch } from "@lib/competition";
+import { formatDate } from "@lib/format";
+import { resolveLocale, useTranslations } from "@lib/i18n";
+interface Props { match: ResolvedMatch; final?: boolean; }
+const { match, final = false } = Astro.props;
+const locale = resolveLocale(Astro.currentLocale);
+const c = useTranslations(locale).competition;
+const winsNeeded = Math.floor((match.bestOf ?? 3) / 2) + 1;
+const resolvedWinner = match.walkover ?? (match.score && Math.max(match.score.home, match.score.away) === winsNeeded && Math.min(match.score.home, match.score.away) < winsNeeded ? (match.score.home > match.score.away ? "home" : "away") : null);
+---
+<article class:list={["playoff-match", { "playoff-match--final": final }]} data-bracket-match={match.id} aria-label={`${match.home?.name ?? c.tbd} · ${match.away?.name ?? c.tbd}`}>
+  <header class="playoff-match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{match.bestOf && c.bestOf(match.bestOf)}</span>{match.home && match.away && <a href={`#match-${match.id}`} aria-label={`${c.section.matches}: ${match.home.name} / ${match.away.name}`}><Icon name="ph:arrow-up-right" /></a>}</header>
+  <div class="playoff-seats">
+    {(["home", "away"] as const).map(seat => <div class:list={["playoff-seat", { "is-winner": resolvedWinner === seat, "is-loser": resolvedWinner !== null && resolvedWinner !== seat }]} data-seat={seat}>
+      <TeamMark team={match[seat]} size={29} />
+      <span class="playoff-team"><strong>{match[seat]?.name ?? c.tbd}</strong><small>{match[seat] ? `#${match[seat]!.tag}` : c.matchState.unassigned}</small></span>
+      <span class="playoff-score">{match.walkover ? (match.walkover === seat ? "W" : "FF") : match.score ? match.score[seat] : "–"}</span>
+      {resolvedWinner === seat && <span class="sr-only">{c.winner}</span>}
+    </div>)}
+  </div>
+</article>
+<style>
+  .playoff-match { width: 100%; position: relative; }
+  .playoff-match-meta { height: 25px; display: flex; align-items: center; gap: 10px; color: var(--c-text-muted); font-size: 10px; }
+  .playoff-match-meta > span { margin-left: auto; font-size: 9px; letter-spacing: .08em; }
+  .playoff-match-meta a { display: grid; place-items: center; width: 24px; height: 24px; color: var(--c-accent-lift); }
+  .playoff-match-meta svg { width: 14px; height: 14px; }
+  .playoff-seats { border: 1px solid var(--c-line-strong); background: var(--c-bg); }
+  .playoff-match--final .playoff-seats { border-color: var(--c-accent-lift); }
+  .playoff-seat { display: flex; align-items: center; gap: 10px; height: 48px; padding: 7px 12px; position: relative; border-left: 2px solid transparent; }
+  .playoff-seat + .playoff-seat { border-top: 1px solid var(--c-line); }
+  .playoff-team { min-width: 0; }
+  .playoff-team strong { display: block; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: var(--font-display); font-size: 12px; font-weight: 650; line-height: 1.35; }
+  .playoff-team small { display: block; font-size: 9px; color: var(--c-text-muted); margin-top: 2px; letter-spacing: .07em; }
+  .playoff-score { margin-left: auto; font-family: var(--font-poster); font-size: 23px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .is-winner { background: color-mix(in srgb, var(--c-accent) 20%, var(--c-bg)); border-left-color: var(--c-accent-lift); }
+  .is-winner .playoff-score { color: var(--c-accent-lift); }
+  .is-loser { color: var(--c-text-muted); }
+  .is-loser :global(img) { opacity: .62; }
+  .playoff-seats:hover { border-color: var(--c-accent-lift); }
+</style>

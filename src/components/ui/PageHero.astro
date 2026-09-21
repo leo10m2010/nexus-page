@@ -1,0 +1,27 @@
+---
+import { Image } from "astro:assets";
+import background from "@assets/hero-background.png";
+import sven from "@assets/hero-sven.png";
+interface Props { title: string; description?: string; art?: boolean; }
+const { title, description, art = true } = Astro.props;
+---
+<section class:list={["page-hero", { "page-hero--art": art }]}>
+  {art && <div class="page-hero-art" aria-hidden="true"><Image class="page-hero-bg" src={background} alt="" widths={[768,1280,1672]} sizes="100vw" format="webp" loading="eager" /><Image class="page-hero-figure" src={sven} alt="" widths={[480,768]} sizes="(max-width: 767px) 75vw, 40vw" format="webp" loading="eager" /></div>}
+  <div class="page-hero-inner"><div class="page-hero-copy"><slot name="before" /><h1 class="display">{title}</h1>{description && <p class="lede">{description}</p>}</div><div class="page-hero-meta"><slot /></div></div>
+</section>
+<style>
+  .page-hero { padding: 155px 0 45px; border-bottom: 1px solid var(--c-line); background: var(--c-bg); color: var(--c-text); }
+  .page-hero-inner { width: min(1180px, calc(100% - 96px)); margin: auto; }
+  .page-hero-copy { max-width: 760px; }
+  .page-hero-copy h1 { margin-top: 18px; }
+  .page-hero-copy .lede { color: var(--c-text-muted); max-width: 50ch; margin-top: 22px; font-size: 16px; }
+  .page-hero-meta { margin-top: 35px; }
+  .page-hero-meta:empty { display: none; }
+  .page-hero--art { position: relative; isolation: isolate; overflow: hidden; min-height: 440px; background: #0b1015; color: #f2f4f6; --color-muted: #b2c1d0; --color-ink: #f2f4f6; --color-accent: var(--edition-accent, #2595d3); --color-accent-lift: var(--edition-ink, #64beef); --c-text: #f2f4f6; --c-text-muted: #b2c1d0; --c-accent-lift: var(--edition-ink, #64beef); --c-line: #b4c9dc33; }
+  .page-hero-art { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .page-hero-bg { width: 100%; height: 100%; object-fit: cover; }
+  .page-hero-figure { position: absolute; width: min(42%, 620px); height: 135%; right: 7%; top: 45px; object-fit: contain; object-position: top; filter: brightness(.6); }
+  .page-hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, #0b1015c9, transparent 82%), linear-gradient(0deg, #0b1015, transparent 70%), color-mix(in srgb, var(--edition-accent, transparent) 12%, transparent); }
+  @media (max-width: 767px) { .page-hero { padding-top: 110px; } .page-hero-inner { width: calc(100% - 40px); } }
+  @media (max-width: 767px) { .page-hero-figure { width: 95%; right: -35%; opacity: .6; } }
+</style>

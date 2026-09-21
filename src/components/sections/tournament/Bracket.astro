@@ -1,586 +1,159 @@
 ---
+import { Image } from "astro:assets";
 import { Icon } from "astro-icon/components";
 import TeamMark from "@ui/TeamMark.astro";
-import BroadcastTime from "@ui/BroadcastTime.astro";
-import Section from "@ui/Section.astro";
-import type { BracketRound, BracketSide, ResolvedMatch } from "@lib/competition";
-import { formatMoney, formatDate } from "@lib/format";
+import BracketMatch from "./BracketMatch.astro";
+import type { BracketSide, ResolvedMatch } from "@lib/competition";
+import { formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
-
-interface Props {
-  id: string;
-  sides: BracketSide[];
-}
+import backdrop from "@assets/hero-background.png";
+interface Props { id: string; sides: BracketSide[]; }
 const { id, sides } = Astro.props;
-
 const locale = resolveLocale(Astro.currentLocale);
-const t = useTranslations(locale);
-const c = t.competition;
-
-// Placement matches are independent of the championship path.
-type DisplaySide = Omit<BracketSide, "side"> & { side: BracketSide["side"] | "thirdPlace" };
-const placementRounds = sides.flatMap((side) => side.rounds)
-  .map((round) => ({ ...round, matches: round.matches.filter((match) => match.stage === "thirdPlace"), stage: "thirdPlace" as const }))
-  .filter((round) => round.matches.length > 0);
-const displaySides: DisplaySide[] = sides.map((side) => ({
-  ...side,
-  rounds: side.rounds.map((round) => ({ ...round, matches: round.matches.filter((match) => match.stage !== "thirdPlace") }))
-    .filter((round) => round.matches.length > 0),
-})).filter((side) => side.rounds.length > 0);
-if (placementRounds.length) displaySides.push({ side: "thirdPlace", rounds: placementRounds });
-const sideHeading = (side: DisplaySide) => side.side === "thirdPlace" ? c.stage.thirdPlace : c.bracketSide[side.side];
-
-const pairs = (matches: ResolvedMatch[]): ResolvedMatch[][] =>
-  matches.reduce<ResolvedMatch[][]>((out, match, i) => {
-    if (i % 2 === 0) out.push([match]);
-    else out[out.length - 1]!.push(match);
-    return out;
-  }, []);
-
-const feeds = (round: BracketRound, next: BracketRound | undefined): boolean =>
-  next != null &&
-  (next.matches.length * 2 === round.matches.length ||
-    (next.matches.length === 1 && round.matches.length === 1));
-
-const heading = (round: BracketRound): string =>
-  round.stage ? c.stage[round.stage] : c.round(round.round);
-
-const repeatsSide = (side: DisplaySide, round: BracketRound): boolean =>
-  displaySides.length > 1 && side.rounds.length === 1 && heading(round) === sideHeading(side);
-
-const winner = (match: ResolvedMatch, side: "home" | "away"): boolean => {
-  if (match.walkover) return match.walkover === side;
-  if (!match.score) return false;
-  const { home, away } = match.score;
-  if (match.bestOf) {
-    const winsNeeded = Math.floor(match.bestOf / 2) + 1;
-    if (Math.max(home, away) !== winsNeeded || Math.min(home, away) >= winsNeeded) return false;
-  }
-  return side === "home" ? home > away : away > home;
+const c = useTranslations(locale).competition;
+const copy = {
+  es: { title: "Playoffs", champion: "Campeón", pending: "El título espera", hint: "Explora los cruces", previous: "Ver cruces anteriores", next: "Ver siguientes cruces", winners: "Avance", losers: "Segunda oportunidad" },
+  en: { title: "Playoffs", champion: "Champion", pending: "The title awaits", hint: "Explore the bracket", previous: "Show earlier rounds", next: "Show later rounds", winners: "Advancement", losers: "Second chance" },
+  ru: { title: "Плей-офф", champion: "Чемпион", pending: "Титул ждёт", hint: "Смотрите сетку", previous: "Предыдущие раунды", next: "Следующие раунды", winners: "Проход дальше", losers: "Второй шанс" },
+}[locale];
+const allMatches = sides.flatMap(side => side.rounds.flatMap(round => round.matches));
+const placements = allMatches.filter(match => match.stage === "thirdPlace");
+const roundsOf = (name: BracketSide["side"]) => (sides.find(side => side.side === name)?.rounds ?? []).map(round => ({...round, matches: round.matches.filter(match => match.stage !== "thirdPlace")})).filter(round => round.matches.length);
+const upper = roundsOf("upper");
+const lower = roundsOf("lower");
+const finals = roundsOf("final");
+const laneRounds = Math.max(upper.length, lower.length, 1);
+const finalMatch = finals.at(-1)?.matches.at(-1) ?? null;
+const winningTeam = (match: ResolvedMatch | null) => {
+  if (!match) return null;
+  if (match.walkover) return match[match.walkover];
+  const needed = Math.floor((match.bestOf ?? 3) / 2) + 1;
+  if (!match.score || Math.max(match.score.home, match.score.away) !== needed || Math.min(match.score.home, match.score.away) >= needed) return null;
+  return match.score.home > match.score.away ? match.home : match.away;
 };
-
-const winningTeam = (match: ResolvedMatch) => {
-  if (winner(match, "home")) return match.home;
-  if (winner(match, "away")) return match.away;
-  return null;
-};
-
-const finalSide = displaySides.find((side) => side.side === "final");
-const finalRound = finalSide?.rounds[finalSide.rounds.length - 1];
-const finalMatch = finalRound?.matches[finalRound.matches.length - 1] ?? null;
-const champion = finalMatch ? winningTeam(finalMatch) : null;
+const champion = winningTeam(finalMatch);
 const prizePool = finalMatch?.tournament.prizePool;
-const winnerPayout = prizePool?.distribution.find((row) => row.place === 1);
-const championPrize = winnerPayout && prizePool
-  ? formatMoney(winnerPayout.amount, prizePool.currency, locale)
-  : null;
+const firstPrize = prizePool?.distribution?.find(row => row.place === 1);
+// All links follow the published homeSource/awaySource, including lower-bracket drops.
+const CARD = 238, GAP = 56, MATCH = 123, PAD = 24, TOP = 80;
+const laneHeight = (rounds: typeof upper) => Math.max(...rounds.map(round => round.matches.length), 1) * (MATCH + 50) - 50;
+const upperHeight = laneHeight(upper);
+const lowerTop = TOP + upperHeight + 110;
+const lowerHeight = laneHeight(lower);
+const finalTop = lower.length ? (TOP + upperHeight / 2 + lowerTop + lowerHeight / 2) / 2 - MATCH / 2 : TOP + upperHeight / 2 - MATCH / 2;
+type Node = { match: ResolvedMatch; x: number; y: number; side: BracketSide["side"]; };
+const nodes: Node[] = [];
+const labels: { text: string; x: number; y: number; }[] = [];
+for (const [name, rounds, start, height] of [["upper", upper, TOP, upperHeight], ["lower", lower, lowerTop, lowerHeight]] as const) {
+  rounds.forEach((round, index) => {
+    const column = name === "lower" ? laneRounds - rounds.length + index : index;
+    const x = PAD + column * (CARD + GAP);
+    labels.push({text: `${index === 0 ? `${c.bracketSide[name]} · ` : ""}${round.stage ? c.stage[round.stage] : c.round(round.round)}`, x, y: start - 30});
+    round.matches.forEach((match, i) => nodes.push({match, side: name, x, y: start + (i + .5) * height / round.matches.length - MATCH / 2}));
+  });
+}
+finals.forEach((round, index) => {
+  const x = PAD + (laneRounds + index) * (CARD + GAP);
+  labels.push({text: round.stage ? c.stage[round.stage] : c.bracketSide.final, x, y: finalTop - 30});
+  round.matches.forEach((match, i) => nodes.push({match, side: "final", x, y: finalTop + i * (MATCH + 50)}));
+});
+const championX = PAD + (laneRounds + finals.length) * (CARD + GAP);
+const boardWidth = championX + (finalMatch ? 222 : 0) + PAD;
+const boardHeight = Math.max(lower.length ? lowerTop + lowerHeight : TOP + upperHeight, finalTop + finals.reduce((max, round) => Math.max(max, round.matches.length), 1) * (MATCH + 50)) + 50;
+const links = nodes.flatMap(target => (["home", "away"] as const).flatMap((seat, seatIndex) => {
+  const source = target.match[`${seat}Source`];
+  const origin = source ? nodes.find(node => node.match.id === source.match) : null;
+  if (!origin || !source) return [];
+  const sy = origin.y + 74;
+  const ty = target.y + 26 + seatIndex * 48 + 24;
+  const forward = target.x > origin.x;
+  const sx = forward ? origin.x + CARD : origin.x;
+  const bend = forward ? (sx + target.x) / 2 : origin.x - (seatIndex ? 18 : 12);
+  return [{source: source.match, target: target.match.id, seat, outcome: source.outcome, d: `M ${sx} ${sy} H ${bend} V ${ty} H ${target.x}`}];
+}));
+const finalNode = nodes.find(node => node.match.id === finalMatch?.id);
 ---
 
-<Section id={id} bordered>
-  <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.bracket}</h2>
-  <p class="mt-4 text-[0.8125rem] text-muted">{c.timeZoneNote}</p>
-
-  <div class="bracket-shell reveal mt-10">
-    <div
-      class="bracket-viewport"
-      role="region"
-      aria-label={c.section.bracket}
-      tabindex="0"
-    >
-      <div class="bracket-board">
-        {
-          displaySides.map((side) => (
-            <section
-              class={`bracket-track track-${side.side}`}
-              data-side={side.side}
-              aria-labelledby={`${id}-${side.side}`}
-            >
-              <h3 id={`${id}-${side.side}`} class="bracket-side-label display-sm">
-                <span aria-hidden="true"></span>
-                {sideHeading(side)}
-              </h3>
-
-              <div class="bracket">
-                {side.rounds.map((round, r) => (
-                  <div class={`bracket-round ${feeds(round, side.rounds[r + 1]) ? "is-feeding" : ""}`}>
-                    {!repeatsSide(side, round) && <h4 class="bracket-head">{heading(round)}</h4>}
-
-                    <div class="bracket-body">
-                      {pairs(round.matches).map((pair) => (
-                        <div class={`bracket-pair ${pair.length === 2 ? "is-pair" : ""}`}>
-                          {pair.map((match) => (
-                            <article class="bracket-match">
-                              <p class="bracket-meta">
-                                <time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time>
-                                {match.bestOf && <span>{c.bestOf(match.bestOf)}</span>}
-                              </p>
-                              <div class="bracket-time"><BroadcastTime date={match.startsAt} locale={locale} compact /></div>
-
-                              {(["home", "away"] as const).map((seat) => (
-                                <div class={`bracket-seat ${winner(match, seat) ? "is-winner" : ""}`}>
-                                  <TeamMark team={match[seat]} size={20} />
-
-                                  <span class="truncate">{match[seat]?.name ?? c.tbd}</span>
-                                  <span class="bracket-score tabular-nums">
-                                    {match.walkover ? (match.walkover === seat ? "W" : "FF") : match.score ? match.score[seat] : "-"}
-                                  </span>
-                                  {winner(match, seat) && <span class="sr-only">, {c.winner}</span>}
-                                </div>
-                              ))}
-                            </article>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ))
-        }
-
-        {finalMatch && (
-          <>
-            <span class="merge-connector" aria-hidden="true">
-              <span class="merge-leg is-upper"></span>
-              <span class="merge-leg is-lower"></span>
-              <span class="merge-leg is-output"></span>
-            </span>
-
-            <span class="champion-connector" aria-hidden="true"></span>
-            <aside
-              class={`champion-card${champion ? " is-crowned" : ""}`}
-              data-spotlight
-              aria-label={`${c.winner}: ${champion?.name ?? c.tbd}`}
-            >
-              <p class="champion-label">{c.winner}</p>
-
-              <div class="champion-mark" aria-hidden={!champion ? "true" : undefined}>
-                {champion ? (
-                  <TeamMark team={champion} size={72} />
-                ) : (
-                  <Icon name="ph:crown-simple-fill" />
-                )}
-              </div>
-
-              <h4 class="champion-name display-sm">{champion?.name ?? c.tbd}</h4>
-
-              {championPrize && (
-                <p class="champion-prize tabular-nums">
-                  <Icon name="ph:trophy-fill" aria-hidden="true" />
-                  {championPrize}
-                </p>
-              )}
-            </aside>
-          </>
-        )}
+<section id={id} class="playoffs-section" aria-labelledby={`${id}-title`}>
+  <div class="playoffs-wrap">
+    <header class="playoffs-heading"><span>{allMatches[0]?.tournament.name}</span><h2 id={`${id}-title`}>{copy.title}</h2><Icon name="ph:crosshair-simple" aria-hidden="true" /></header>
+    <div class="playoffs-toolbar"><div class="path-key"><span>{copy.winners}</span>{lower.length > 0 && <span class="loss-key">{copy.losers}</span>}</div><div class="bracket-controls"><span>{copy.hint}</span><button type="button" data-bracket-scroll="-1" aria-label={copy.previous}><Icon name="ph:arrow-left" /></button><button type="button" data-bracket-scroll="1" aria-label={copy.next}><Icon name="ph:arrow-right" /></button></div></div>
+    <div class="bracket-viewport" role="region" aria-label={`${copy.title}: ${c.section.bracket}`} tabindex="0">
+      <div class="bracket-board" style={`width:${boardWidth}px;height:${boardHeight}px;--match-width:${CARD}px`}>
+        <Image class="bracket-backdrop" src={backdrop} alt="" widths={[900,1400]} sizes="1400px" format="webp" loading="lazy" />
+        <svg class="bracket-paths" width={boardWidth} height={boardHeight} viewBox={`0 0 ${boardWidth} ${boardHeight}`} aria-hidden="true">
+          {links.map(link => <path d={link.d} class:list={["advancement-path", { "drop-path": link.outcome === "loser" }]} data-source={link.source} data-target={link.target} data-target-seat={link.seat} />)}
+          {finalNode && <path class="champion-path" d={`M ${finalNode.x + CARD} ${finalNode.y + 74} H ${championX}`} />}
+        </svg>
+        {labels.map(label => <h3 class="round-label" style={`left:${label.x}px;top:${label.y}px`}>{label.text}</h3>)}
+        {nodes.map(node => <div class="bracket-node" data-side={node.side} style={`left:${node.x}px;top:${node.y}px`}><BracketMatch match={node.match} final={node.side === "final"} /></div>)}
+        {finalNode && <aside class="champion-display" style={`left:${championX}px;top:${finalNode.y - 67}px`} data-champion={champion?.id ?? "pending"} aria-label={`${copy.champion}: ${champion?.name ?? c.tbd}`}>
+          <p class="champion-label">{champion ? copy.champion : copy.pending}</p>
+          <div class="champion-medallion">{champion ? <TeamMark team={champion} size={86} /> : <Icon name="ph:trophy" aria-hidden="true" />}</div>
+          <h3>{champion?.name ?? c.tbd}</h3>{champion && <p class="champion-tag">#{champion.tag}</p>}
+          {firstPrize && prizePool && <p class="champion-prize">{formatMoney(firstPrize.amount, prizePool.currency, locale)}</p>}
+        </aside>}
       </div>
     </div>
+    <div class="playoffs-bottom"><p>{c.timeZoneNote}</p>{placements.length > 0 && <div class="placement-matches"><h3>{c.stage.thirdPlace}</h3>{placements.map(match => <BracketMatch match={match} />)}</div>}</div>
   </div>
-</Section>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.playoffs-section').forEach(section => {
+    const viewport = section.querySelector<HTMLElement>('.bracket-viewport');
+    const buttons = [...section.querySelectorAll<HTMLButtonElement>('[data-bracket-scroll]')];
+    if (!viewport) return;
+    const update = () => {
+      section.dataset.overflow = String(viewport.scrollWidth > viewport.clientWidth + 1);
+      for (const button of buttons) button.disabled = Number(button.dataset.bracketScroll) < 0 ? viewport.scrollLeft <= 1 : viewport.scrollLeft + viewport.clientWidth >= viewport.scrollWidth - 1;
+    };
+    buttons.forEach(button => button.addEventListener('click', () => viewport.scrollBy({left: Number(button.dataset.bracketScroll) * Math.min(viewport.clientWidth * .8, 588), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'})));
+    viewport.addEventListener('scroll', update, {passive:true});
+    new ResizeObserver(update).observe(viewport);
+    update();
+  });
+</script>
 
 <style>
-  .bracket-shell { position: relative; }
-
-  .bracket-viewport {
-    width: 100%;
-    overflow-x: auto;
-    border: 1px solid var(--c-line-strong);
-    border-radius: var(--radius-card);
-    background-color: var(--c-bg-elev);
-    scrollbar-color: var(--c-line-strong) transparent;
-    scrollbar-width: thin;
-  }
-
-  .bracket-viewport:focus-visible {
-    outline: 2px solid var(--c-accent-lift);
-    outline-offset: 4px;
-  }
-
-  .bracket-board {
-    --upper-path: 30.5%;
-    --lower-path: 80.5%;
-    position: relative;
-    isolation: isolate;
-    display: grid;
-    width: max-content;
-    min-width: 100%;
-    grid-template-columns: 33.5rem 3rem 15.5rem 3rem 18rem;
-    grid-template-rows: auto auto;
-    justify-content: center;
-    overflow: hidden;
-    padding-inline: 1.5rem;
-    background-image:
-      linear-gradient(var(--c-line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--c-line) 1px, transparent 1px);
-    background-position: -1px -1px;
-    background-size: 2.5rem 2.5rem;
-  }
-
-  .bracket-board::before {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background:
-      radial-gradient(circle at 18% 22%, rgb(var(--c-brand-lift-rgb) / 0.11), transparent 28rem),
-      radial-gradient(circle at 82% 50%, color-mix(in srgb, var(--c-accent) 11%, transparent), transparent 24rem),
-      color-mix(in srgb, var(--c-bg-elev) 94%, transparent);
-    content: "";
-  }
-
-  .bracket-track {
-    position: relative;
-    z-index: 1;
-    min-width: 0;
-    padding-block: 3.5rem 1.75rem;
-  }
-
-  .track-upper { grid-column: 1; grid-row: 1; }
-
-  .track-lower {
-    grid-column: 1;
-    grid-row: 2;
-    border-top: 1px solid var(--c-line);
-  }
-
-  .track-final {
-    grid-column: 3;
-    grid-row: 1 / span 2;
-    align-self: center;
-  }
-
-  .track-thirdPlace {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    border-top: 1px solid var(--c-line);
-  }
-
-  .bracket-side-label {
-    position: absolute;
-    top: 1.25rem;
-    left: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    color: var(--c-accent-lift);
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .bracket-side-label > span {
-    width: 1.5rem;
-    height: 1px;
-    background: currentColor;
-  }
-
-  .bracket {
-    display: flex;
-    align-items: stretch;
-    gap: 2.5rem;
-    min-width: max-content;
-  }
-
-  .bracket-round { display: flex; width: 15.5rem; flex-direction: column; }
-
-  .bracket-head {
-    margin-bottom: 1rem;
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--c-text-muted);
-  }
-
-  .bracket-body { display: flex; flex: 1; flex-direction: column; }
-
-  .bracket-pair {
-    position: relative;
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: space-around;
-  }
-
-  .bracket-match {
-    position: relative;
-    margin-block: 0.4375rem;
-    border: 1px solid var(--c-line);
-    border-radius: var(--radius-control);
-    background: var(--c-bg-elev);
-    transition:
-      border-color 220ms var(--ease-out-quint),
-      background-color 220ms var(--ease-out-quint),
-      box-shadow 260ms var(--ease-out-quint);
-  }
-
-  .bracket-match:hover {
-    border-color: var(--c-line-strong);
-    background: var(--c-bg-elev-2);
-    box-shadow: 0 18px 36px -30px rgb(0 0 0 / 0.72);
-  }
-
-  .bracket-meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    border-bottom: 1px solid var(--c-line);
-    padding: 0.375rem 0.625rem;
-    font-size: 0.625rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--c-text-muted);
-  }
-
-  .bracket-meta time { text-transform: none; letter-spacing: normal; font-size: 0.6875rem; }
-  .bracket-time { padding: 0.5rem 0.625rem; border-bottom: 1px solid var(--c-line); }
-
-  .bracket-seat {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-left: 2px solid transparent;
-    padding: 0.4375rem 0.625rem;
-    font-size: 0.8125rem;
-    color: var(--c-text-muted);
-  }
-  .bracket-seat + .bracket-seat { border-top: 1px solid var(--c-line); }
-  .bracket-seat.is-winner { border-left-color: var(--c-accent); color: var(--c-text); }
-
-  .bracket-score { margin-left: auto; font-variant-numeric: tabular-nums; }
-  .is-winner .bracket-score { color: var(--c-accent-lift); }
-
-  .is-feeding .bracket-match::after,
-  .is-feeding .bracket-pair::after,
-  .is-feeding .bracket-pair.is-pair::before {
-    content: "";
-    position: absolute;
-    background: var(--c-line-strong);
-  }
-  .is-feeding .bracket-match::after {
-    top: 50%;
-    left: 100%;
-    height: 1px;
-    width: 1.25rem;
-  }
-  .is-feeding .bracket-pair.is-pair::before {
-    top: 25%;
-    left: calc(100% + 1.25rem);
-    height: 50%;
-    width: 1px;
-  }
-  .is-feeding .bracket-pair::after {
-    top: 50%;
-    left: calc(100% + 1.25rem);
-    height: 1px;
-    width: 1.25rem;
-  }
-
-  .merge-connector {
-    position: relative;
-    z-index: 1;
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-
-  .merge-connector::before {
-    position: absolute;
-    top: var(--upper-path);
-    bottom: calc(100% - var(--lower-path));
-    left: 50%;
-    width: 1px;
-    background: linear-gradient(var(--c-line-strong), var(--c-accent-lift), var(--c-line-strong));
-    content: "";
-  }
-
-  .merge-leg {
-    position: absolute;
-    height: 1px;
-    background: var(--c-line-strong);
-  }
-
-  .merge-leg.is-upper { top: var(--upper-path); right: 50%; left: 0; }
-  .merge-leg.is-lower { top: var(--lower-path); right: 50%; left: 0; }
-
-  .merge-leg.is-output {
-    top: 50%;
-    right: 0;
-    left: 50%;
-    background: linear-gradient(90deg, var(--c-line-strong), var(--c-accent-lift));
-  }
-
-  .merge-leg.is-output::after {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 999px;
-    background: var(--c-accent-lift);
-    content: "";
-    transform: translate(50%, -50%);
-  }
-
-  .champion-connector {
-    position: relative;
-    grid-column: 4;
-    grid-row: 1 / span 2;
-    align-self: center;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(90deg, var(--c-line-strong), var(--c-accent-lift));
-  }
-
-  .champion-connector::after {
-    position: absolute;
-    top: 50%;
-    right: 0;
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 999px;
-    background: var(--c-accent-lift);
-    content: "";
-    transform: translate(50%, -50%);
-  }
-
-  .champion-card {
-    --spot-x: 50%;
-    --spot-y: 38%;
-    position: relative;
-    display: grid;
-    grid-column: 5;
-    grid-row: 1 / span 2;
-    align-self: center;
-    width: 18rem;
-    min-height: 18rem;
-    flex: none;
-    place-items: center;
-    align-content: center;
-    gap: 1rem;
-    overflow: hidden;
-    padding: 1.5rem;
-    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 72%, var(--c-line));
-    border-radius: var(--radius-card);
-    background: var(--c-bg-elev);
-    color: var(--c-accent-lift);
-    box-shadow: 0 30px 72px -46px color-mix(in srgb, var(--c-accent-lift) 50%, transparent);
-    text-align: center;
-    transition:
-      border-color 260ms var(--ease-out-quint),
-      background-color 260ms var(--ease-out-quint),
-      box-shadow 320ms var(--ease-out-quint);
-  }
-
-  .champion-card::before {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-      20rem circle at var(--spot-x) var(--spot-y),
-      color-mix(in srgb, var(--c-accent-lift) 22%, transparent),
-      transparent 64%
-    );
-    content: "";
-    opacity: 0.34;
-    pointer-events: none;
-    transition: opacity 280ms var(--ease-out-quint);
-  }
-
-  .champion-card::after {
-    position: absolute;
-    inset: 0.2rem 12% auto;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--c-accent-lift), transparent);
-    content: "";
-    opacity: 0.85;
-  }
-
-  .champion-card:hover {
-    border-color: var(--c-accent-lift);
-    background-color: var(--c-bg-elev-2);
-    box-shadow: 0 34px 80px -42px color-mix(in srgb, var(--c-accent-lift) 62%, transparent);
-  }
-
-  .champion-card:hover::before { opacity: 1; }
-
-  .champion-card.is-crowned::before { opacity: 0.62; }
-  .champion-card.is-crowned:hover::before { opacity: 1; }
-
-  .champion-label,
-  .champion-prize {
-    position: relative;
-    z-index: 1;
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 650;
-    letter-spacing: 0.17em;
-    text-transform: uppercase;
-  }
-
-  .champion-mark {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    width: 5rem;
-    height: 5rem;
-    place-items: center;
-    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 64%, transparent);
-    border-radius: var(--radius-control);
-    background: color-mix(in srgb, var(--c-accent-lift) 8%, transparent);
-  }
-
-  .champion-mark > :global(svg) { width: 2.25rem; height: 2.25rem; }
-
-  .champion-name {
-    position: relative;
-    z-index: 1;
-    max-width: 14ch;
-    color: var(--c-text);
-    font-size: 1.5rem;
-  }
-
-  .champion-prize {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.625rem;
-    border: 1px solid color-mix(in srgb, var(--c-accent-lift) 52%, transparent);
-    border-radius: var(--radius-control);
-    letter-spacing: 0.08em;
-  }
-
-  .champion-prize :global(svg) { width: 0.875rem; height: 0.875rem; }
-
-  @media (max-width: 639px) {
-    .bracket-viewport { scroll-snap-type: x proximity; }
-
-    .bracket-board {
-      grid-template-columns: 30rem 2rem 14rem 2rem 16rem;
-      justify-content: start;
-      padding-inline: 1rem;
-    }
-
-    .bracket { gap: 2rem; }
-    .bracket-round { width: 14rem; }
-
-    .track-upper,
-    .track-lower,
-    .track-final,
-    .champion-card { scroll-snap-align: center; }
-
-    .is-feeding .bracket-match::after { width: 1rem; }
-
-    .is-feeding .bracket-pair.is-pair::before,
-    .is-feeding .bracket-pair::after { left: calc(100% + 1rem); }
-
-    .is-feeding .bracket-pair::after { width: 1rem; }
-
-    .champion-card { width: 16rem; min-height: 16rem; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .bracket-match,
-    .champion-card,
-    .champion-card::before { transition: none; }
-  }
+  .playoffs-section { padding: 70px 0 55px; border-block: 1px solid var(--c-line); background: var(--c-bg); scroll-margin-top: 52px; }
+  .playoffs-wrap { width: min(1320px, calc(100% - 64px)); margin: auto; }
+  .playoffs-heading { position: relative; text-align: center; padding: 24px 60px; border-block: 1px solid var(--c-line-strong); background: linear-gradient(115deg, transparent 25%, color-mix(in srgb, var(--c-brand) 12%, transparent), transparent 75%); }
+  .playoffs-heading > span { display: block; color: var(--c-text-muted); text-transform: uppercase; font-size: 10px; letter-spacing: .16em; }
+  .playoffs-heading h2 { font: 400 clamp(40px, 4vw, 56px)/1 var(--font-poster); text-transform: uppercase; color: var(--c-accent-lift); margin-top: 6px; }
+  .playoffs-heading > svg { position: absolute; width: 29px; height: 29px; right: 16px; top: calc(50% - 14px); color: var(--c-text-muted); }
+  .playoffs-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 22px 0 10px; }
+  .path-key, .bracket-controls { display: flex; align-items: center; gap: 18px; font-size: 10px; color: var(--c-text-muted); }
+  .path-key span { display: inline-flex; align-items: center; gap: 8px; }
+  .path-key span::before { content: ""; width: 20px; height: 0; border-top: 1px solid var(--c-accent-lift); }
+  .path-key .loss-key::before { border-top-style: dashed; border-top-color: var(--c-text-muted); }
+  .bracket-controls { gap: 6px; }
+  .playoffs-section[data-overflow="false"] .bracket-controls { visibility: hidden; }
+  .bracket-controls > span { margin-right: 10px; }
+  .bracket-controls button { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--c-line-strong); color: var(--c-accent-lift); }
+  .bracket-controls button:disabled { opacity: .3; cursor: default; }
+  .bracket-controls svg { width: 16px; height: 16px; }
+  .bracket-viewport { width: 100%; overflow-x: auto; scrollbar-width: thin; scrollbar-color: var(--c-line-strong) transparent; overscroll-behavior-x: contain; }
+  .bracket-board { position: relative; isolation: isolate; margin-inline: auto; }
+  .bracket-backdrop { position: absolute; z-index: -2; width: 100%; height: 100%; object-fit: cover; opacity: .1; mask-image: linear-gradient(0deg, transparent, #000 20%, #000 80%, transparent); }
+  .bracket-paths { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  .bracket-paths path { fill: none; stroke: var(--c-accent-lift); stroke-width: 1; opacity: .55; }
+  .bracket-paths .drop-path { stroke: var(--c-text-muted); opacity: .4; stroke-dasharray: 4 5; }
+  .bracket-paths .champion-path { opacity: .85; }
+  .round-label { position: absolute; width: var(--match-width); color: var(--c-text-muted); font: 400 17px/1 var(--font-poster); text-transform: uppercase; letter-spacing: .025em; }
+  .bracket-node { position: absolute; width: var(--match-width); }
+  .champion-display { position: absolute; width: 222px; text-align: center; padding: 8px 10px; }
+  .champion-label { color: var(--c-accent-lift); font: 400 29px/1 var(--font-poster); text-transform: uppercase; }
+  .champion-medallion { position: relative; display: grid; place-items: center; width: 158px; height: 158px; margin: 25px auto 20px; border: 1px solid color-mix(in srgb, var(--c-accent-lift) 55%, transparent); border-radius: 50%; }
+  .champion-medallion::before { content: ""; position: absolute; inset: -10px; border: 1px solid var(--c-line-strong); border-top-color: var(--c-accent-lift); border-bottom-color: var(--c-accent-lift); border-radius: 50%; transform: rotate(-28deg); }
+  .champion-medallion::after { content: ""; position: absolute; inset: 9px; border: 1px dashed var(--c-line-strong); border-radius: 50%; }
+  .champion-medallion > svg { width: 54px; height: 54px; color: var(--c-accent-lift); opacity: .7; }
+  .champion-display h3 { font: 400 24px/1.1 var(--font-poster); text-transform: uppercase; }
+  .champion-tag { color: var(--c-text-muted); font-size: 10px; margin-top: 5px; }
+  .champion-prize { margin-top: 12px; font-size: 12px; color: var(--c-accent-lift); }
+  .playoffs-bottom { display: flex; justify-content: space-between; align-items: start; gap: 35px; border-top: 1px solid var(--c-line); padding-top: 22px; }
+  .playoffs-bottom > p { color: var(--c-text-muted); font-size: 11px; line-height: 1.6; max-width: 400px; }
+  .placement-matches { width: 238px; flex-shrink: 0; }
+  .placement-matches > h3 { font: 400 19px/1 var(--font-poster); text-transform: uppercase; color: var(--c-text-muted); margin-bottom: 9px; }
+  @media (max-width: 767px) { .playoffs-wrap { width: calc(100% - 32px); } .playoffs-section { padding-top: 45px; } .playoffs-toolbar { flex-wrap: wrap; gap: 10px; } .path-key { gap: 12px; } .bracket-controls { margin-left: auto; } .bracket-controls > span { display: none; } .playoffs-bottom { flex-direction: column; gap: 25px; } .placement-matches { width: min(100%, 300px); } }
 </style>

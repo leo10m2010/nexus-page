@@ -5,6 +5,8 @@ import type { Team, Tournament } from "@lib/competition";
 import type { Locale } from "@types";
 
 export interface RoadmapStage {
+  id: string;
+  startDate: Date;
   name: string;
   href: string | null;
   dates: string | null;
@@ -42,10 +44,12 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
     (a, b) => a.startDate.getTime() - b.startDate.getTime() || a.id.localeCompare(b.id),
   );
   const tournamentStages = await Promise.all(
-    tournaments.map(async (tour, index): Promise<RoadmapStage> => {
+    tournaments.map(async (tour): Promise<RoadmapStage> => {
       const participants = await getParticipants(tour);
-      const placeholder = roadmapPlaceholders[index];
+      const placeholder = roadmapPlaceholders.find(stage => stage.id === tour.id);
       return {
+        id: tour.id,
+        startDate: tour.startDate,
         name: tour.name,
         href: tournamentPath(tour.id, locale),
         dates: formatDateRange(tour.startDate, tour.endDate, locale),
@@ -60,11 +64,14 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
       };
     }),
   );
-  const placeholders = roadmapPlaceholders.slice(tournamentStages.length).map((stage): RoadmapStage => ({
+  const published = new Set(tournaments.map(tour => tour.id));
+  const placeholders = roadmapPlaceholders.filter(stage => !published.has(stage.id)).map((stage): RoadmapStage => ({
+    id: stage.id,
+    startDate: new Date(stage.startDate),
     name: stage.name,
     href: null,
     dates: formatDateRange(new Date(stage.startDate), new Date(stage.endDate), locale),
-    status: null,
+    status: "upcoming",
     prizeTotal: stage.prizePool.total,
     currency: stage.prizePool.currency,
     teams: null,
@@ -74,5 +81,11 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
     liquipediaUrl: null,
   }));
 
-  return [...tournamentStages, ...placeholders];
+  return [...tournamentStages, ...placeholders].sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+}
+
+export function getFeaturedRoadmapStage(stages: readonly RoadmapStage[]): RoadmapStage | undefined {
+  return stages.find(stage => stage.status === "live")
+    ?? stages.find(stage => stage.status === "upcoming")
+    ?? stages.at(-1);
 }

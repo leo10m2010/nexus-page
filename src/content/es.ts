@@ -57,7 +57,7 @@ export const es: Dictionary = {
       },
       {
         title: "Conexión",
-        body: "Nexus Series I ya reúne equipos de distintas regiones compitiendo bajo un mismo bracket en vez de quedarse en circuitos regionales aislados — ese es el modelo sobre el que se construye cada temporada.",
+        body: "Nexus Series I reunió equipos de distintas regiones bajo un mismo bracket. La segunda edición continúa ese modelo de competición.",
       },
       {
         title: "Crecimiento",

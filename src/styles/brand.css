@@ -1,0 +1,40 @@
+/* Shared public identity: condensed display type and blue accents. */
+.public-site {
+  --font-poster: "Bebas Neue", "Archivo Variable", sans-serif;
+  --c-bg: #0b1015; --c-bg-elev: #141b23; --c-bg-elev-2: #1b2631;
+  --c-text: #f2f4f6; --c-text-muted: #a8b1bc;
+  --c-accent: #2595d3; --c-accent-lift: #64beef; --c-on-accent: #08121b;
+  --c-brand-lift: #3695d8; --c-scrim: #0b1015f5;
+  --radius-card: 4px; --radius-control: 3px;
+  background: var(--c-bg); color: var(--c-text);
+}
+:root[data-theme="light"] .public-site {
+  --c-bg: #eef1f3; --c-bg-elev: #e2e7ec; --c-bg-elev-2: #dae1e7;
+  --c-text: #14202c; --c-text-muted: #4c5b69;
+  --c-accent: #096698; --c-accent-lift: #096698; --c-on-accent: #f2f4f6;
+  --c-brand-lift: #096698; --c-scrim: #eef1f3f5;
+}
+.internal-page h1.display, .internal-page h2.display, .internal-page .mediakit h2 { font-family: var(--font-poster); font-stretch: normal; font-weight: 400; text-transform: uppercase; letter-spacing: -.01em; line-height: 1.03; }
+.internal-page h1.display { font-size: clamp(52px, 6.5vw, 94px); }
+.internal-page h2.display, .internal-page .mediakit h2 { font-size: clamp(34px, 3.7vw, 52px); color: var(--c-accent-lift); }
+.internal-page .card-tile { background-image: none; }
+.public-site .btn { border-radius: 2px; box-shadow: none; }
+.public-site .btn::before { border-radius: 2px; }
+.public-site a:focus-visible, .public-site button:focus-visible, .public-site summary:focus-visible { outline: 2px solid var(--c-accent-lift); outline-offset: 4px; }
+.internal-page .section-nav a { font-family: var(--font-poster); font-weight: 400; font-size: 17px; letter-spacing: .03em; }
+.internal-page .mediakit { --kit-blue: var(--c-accent-lift); padding-top: 68px; }
+.internal-page .mediakit .kit-subnav { display: flex; justify-content: center; flex-wrap: wrap; margin: 0 auto; padding-block: 24px; border-bottom: 1px solid var(--c-line); }
+.internal-page .mediakit .kit-subnav a { font-family: var(--font-poster); font-size: 19px; text-transform: uppercase; color: var(--c-text-muted); }
+.internal-page .mediakit .cover { position: relative; isolation: isolate; padding-top: 55px; padding-bottom: 28px; overflow: hidden; }
+.internal-page .mediakit .cover .kit-cover-art { position: absolute; z-index: -1; right: 0; top: 0; width: 75%; height: 100%; object-fit: cover; opacity: .17; mask-image: linear-gradient(90deg, transparent, #000); }
+.internal-page .mediakit .cover h1 { max-width: 14ch; font-size: clamp(60px, 7.1vw, 104px); }
+.internal-page .mediakit .cover h1 span { margin-top: 6px; }
+.internal-page .mediakit .section-intro { display: block; }
+.internal-page .mediakit .section-intro .lede { margin-top: 18px; }
+.internal-page .mediakit .season-roadmap li { --stage-color: var(--c-accent-lift) !important; border-radius: 0; }
+.internal-page .mediakit .season-roadmap h3 { font: 400 clamp(30px, 3vw, 42px)/1.1 var(--font-poster); text-transform: uppercase; }
+.internal-page .mediakit .sponsor-marker { background: #64beef; border-color: #c0e5ff; color: #08121b; }
+.internal-page .mediakit .team-emblem { background: #141f2d; }
+:root[lang="ru"] .internal-page h1.display, :root[lang="ru"] .internal-page h2.display, :root[lang="ru"] .internal-page .mediakit h2 { font-family: var(--font-display); font-weight: 750; font-stretch: condensed; }
+:root[lang="ru"] .internal-page h1.display { font-size: clamp(38px, 4.7vw, 70px); }
+@media (max-width: 767px) { .internal-page .mediakit .kit-subnav { gap: 20px; padding-block: 22px 10px; } .internal-page .mediakit .cover h1 { font-size: 60px; } .internal-page .mediakit .cover .kit-cover-art { width: 100%; height: 65%; } .internal-page .mediakit .cover { padding-top: 30px; } }

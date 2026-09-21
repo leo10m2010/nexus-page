@@ -1,25 +1,28 @@
 ---
 import Base from "@layouts/Base.astro";
-import BrandLogo from "@ui/BrandLogo.astro";
+import Nav from "@layout/Nav.astro";
+import Footer from "@layout/Footer.astro";
+import { Image } from "astro:assets";
+import coverArt from "@assets/hero-background.png";
 import Button from "@ui/Button.astro";
 import TeamMark from "@ui/TeamMark.astro";
 import Scoreline from "@ui/Scoreline.astro";
-import ThemeToggle from "@layout/ThemeToggle.astro";
-import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
 import BroadcastPreview from "@components/mediakit/BroadcastPreview.astro";
 import MediaEvidence from "@components/mediakit/MediaEvidence.astro";
 import { Icon } from "astro-icon/components";
 import { channels, site, social } from "@config/site";
 import { mediakitCopy } from "@content/mediakit";
-import { getTournament, getPrizeTotal, getParticipants, getMatches, tournamentPath, hasMatchResult } from "@lib/competition";
+import { getFeaturedTournament, getPrizeTotal, getParticipants, getMatches, tournamentPath, hasMatchResult } from "@lib/competition";
 import { getRoadmapStages, getRoadmapNumeral } from "@lib/roadmap";
 import { formatDate, formatMoney, formatDateRange } from "@lib/format";
-import { resolveLocale, useTranslations, localizePath } from "@lib/i18n";
+import { resolveLocale, useTranslations } from "@lib/i18n";
+import { editionStyle } from "@lib/tournament-presentation";
 
 const locale = resolveLocale(Astro.currentLocale);
 const c = mediakitCopy[locale];
 const t = useTranslations(locale);
-const tournament = await getTournament("season-one");
+const tournament = await getFeaturedTournament();
+if (!tournament) throw new Error("The mediakit needs a published tournament.");
 const [participants, matches, stages] = await Promise.all([
   getParticipants(tournament), getMatches(tournament.id), getRoadmapStages(locale),
 ]);
@@ -30,7 +33,10 @@ const contact = `mailto:${site.email}?subject=${encodeURIComponent(c.emailSubjec
 const tourPath = tournamentPath(tournament.id, locale);
 const regionName = tournament.region === "South America"
   ? { es: "Sudamérica", en: "South America", ru: "Южная Америка" }[locale]
-  : tournament.region;
+  : tournament.region || t.competition.tbd;
+const tournamentSummary = participants.length
+  ? `${t.competition.teamCount(participants.length)} · ${t.competition.status[tournament.status]}. ${dates}.`
+  : `${t.competition.status[tournament.status]}. ${t.roadmap.detailsTbd}`;
 const final = matches.find((match) => match.stage === "grandFinal");
 const openings = matches.filter((match) => match.stage === "groupStage" && match.home && match.away);
 const placementIcons = ["ph:layout-duotone", "ph:megaphone-duotone", "ph:broadcast-duotone", "ph:microphone-stage-duotone"];
@@ -39,30 +45,29 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
 
 <Base title={c.metaTitle} description={c.metaDescription} noindex>
   <div class="mediakit">
-    <header class="kit-header wrap">
-      <a class="home-link" href={localizePath("/", locale)} aria-label={`Nexus Series · ${c.home}`}><BrandLogo height={32} /></a>
-      <nav class="header-links" aria-label={c.documentLabel}>{nav.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}</nav>
-      <div class="header-actions"><LocaleSwitcher /><ThemeToggle /><a class="header-contact" href="#contact">{c.talk}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
-    </header>
+    <Nav />
+    <nav class="header-links wrap kit-subnav" aria-label={c.documentLabel}>{nav.map(([id, label]) => <a href={`#${id}`}>{label}</a>)}</nav>
 
     <main id="main">
       <section class="cover wrap" aria-labelledby="kit-title">
+        <Image class="kit-cover-art" src={coverArt} alt="" widths={[768,1280]} sizes="75vw" format="webp" loading="eager" />
         <div class="cover-title"><h1 id="kit-title" class="display">{c.heroLines[0]}<span>{c.heroLines.slice(1).join(" ")}</span></h1></div>
         <div class="cover-pitch"><p class="document-label">{c.documentLabel}</p><p class="lede">{c.heroCopy}</p><Button label={c.requestProposal} href={contact} icon="ph:handshake-bold" /></div>
-        <div class="edition-strip"><span class="edition-name"><Icon name="simple-icons:dota2" aria-hidden="true" />{tournament.name}</span><span><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{dates}</span><span><Icon name="ph:globe-hemisphere-west-duotone" aria-hidden="true" />{regionName} · {c.online}</span><a href={tourPath}>{c.tournamentLink}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
+        <div class="edition-strip"><span class="edition-name"><Icon name="simple-icons:dota2" aria-hidden="true" />{tournament.name}</span><span><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{dates}</span><span><Icon name="ph:flag-checkered-duotone" aria-hidden="true" />{t.competition.status[tournament.status]}</span>{(tournament.region || tournament.venue) && <span><Icon name="ph:globe-hemisphere-west-duotone" aria-hidden="true" />{regionName}{tournament.venue ? ` · ${t.competition.venue[tournament.venue]}` : ""}</span>}<a href={tourPath}>{c.tournamentLink}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
       </section>
 
       <section id="tournament" class="wrap kit-section tournament-section" aria-labelledby="tournament-title">
         <div class="tournament-layout">
-          <div class="tournament-story"><h2 id="tournament-title">{c.tournamentTitle.join(" ")}</h2><p class="lede">{c.tournamentCopy}</p>
-            <div class="teams-heading"><h3><Icon name="ph:users-three-duotone" aria-hidden="true" />{c.teamsTitle}</h3><span>{c.invited}</span></div>
+          <div class="tournament-story"><h2 id="tournament-title">{tournament.name}</h2><p class="lede">{tournamentSummary}</p>
+            <div class="teams-heading"><h3><Icon name="ph:users-three-duotone" aria-hidden="true" />{c.teamsTitle}</h3>{participants.length > 0 && <span>{c.invited}</span>}</div>
             <ul class="team-list">{participants.map(({ team }) => <li><span class="team-emblem"><TeamMark team={team} size={48} /></span><span>{team.name}</span></li>)}</ul>
+            {!participants.length && <p class="note">{t.competition.matchState.unassigned}</p>}
           </div>
-          <aside class="tournament-brief" aria-label={tournament.name}>
+          <aside class="tournament-brief" aria-label={tournament.name} style={editionStyle(tournament.roadmapColor)}>
             <div class="brief-header"><Icon name="ph:trophy-duotone" aria-hidden="true" /><span>{tournament.name}</span><span>Dota 2</span></div>
             <dl class="facts">
               <div class="prize-fact"><dt>{c.prizePool}</dt><dd>{total !== null ? formatMoney(total, currency, locale) : t.competition.tbd}<small>{currency}</small></dd></div>
-              <div><dt>{c.participants}</dt><dd>{participants.length}<small>{c.teamsLabel}</small></dd></div>
+              <div><dt>{c.participants}</dt><dd class:list={{"fact-pending": !participants.length}}>{participants.length || t.competition.tbd}<small>{c.teamsLabel}</small></dd></div>
             </dl>
             <div class="format-strip">{(tournament.phases ?? []).map((phase) => <div><Icon name={phase.key === "groupStage" ? "ph:users-four-duotone" : "ph:tree-structure-duotone"} aria-hidden="true" /><span><strong>{t.competition.phase[phase.key]}</strong><small>{t.competition.format[phase.format]}</small></span><b>Bo{phase.bestOf}</b></div>)}{final && <div><Icon name="ph:flag-checkered-duotone" aria-hidden="true" /><span><strong>{t.competition.stage.grandFinal}</strong></span><b>Bo{final.bestOf}</b></div>}</div>
             {tournament.liquipediaUrl && <a class="liquipedia-link" href={tournament.liquipediaUrl} target="_blank" rel="noopener noreferrer"><img src="/logos/liquipedia.png" alt="" width="36" height="26" loading="lazy" /><span>{c.liquipediaLink}</span><Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a>}
@@ -70,6 +75,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
         </div>
         <details id="schedule" class="disclosure schedule-section"><summary><span><Icon name="ph:calendar-dots-duotone" aria-hidden="true" />{c.scheduleToggle}</span><Icon name="ph:plus-bold" aria-hidden="true" /></summary><div class="disclosure-body">
           <div class="schedule-heading"><h3>{c.openingMatches}</h3><span>PET / CEST</span></div>
+          {!openings.length && <p class="note">{t.competition.empty}</p>}
           <div class="match-list">{openings.map((match) => <article class="match-row" data-match-state={hasMatchResult(match) ? "finished" : "pending"} aria-label={`${match.home!.name} ${c.versus} ${match.away!.name}`}><div class="match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{c.group} {match.group} · {match.groupRound ? t.competition.groupRound[match.groupRound] : `Bo${match.bestOf}`} · {hasMatchResult(match) ? t.competition.matchState.finished : t.competition.matchState.pending}</span></div><Scoreline match={match} showTime compact={hasMatchResult(match)} /></article>)}</div>
           <div class="schedule-footer"><p class="note">{c.scheduleNote}</p><a class="text-link" href={`${tourPath}#matches`}>{c.fullSchedule}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
         </div></details>
@@ -88,7 +94,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
 
       <section id="season" class="wrap kit-section season-section" aria-labelledby="season-title">
         <div class="section-intro"><h2 id="season-title">{c.seasonTitle.join(" ")}</h2><p class="lede">{c.seasonCopy}</p></div>
-        <ol class="season-roadmap">{stages.map((stage, index) => <li style={`--stage-color:${stage.accent}`}><div class="season-identity"><span class="edition-mark" aria-hidden="true">{getRoadmapNumeral(index)}</span><span class="season-status">{index === 0 ? c.currentEdition : c.nextEdition}</span></div><h3>{stage.name}</h3><p class="season-date"><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{stage.dates}</p><div class="season-prize"><Icon name="ph:trophy-duotone" aria-hidden="true" /><div><span>{c.announcedPrize}</span><strong>{formatMoney(stage.prizeTotal, stage.currency, locale)}</strong></div></div></li>)}</ol>
+        <ol class="season-roadmap">{stages.map((stage, index) => <li data-edition={stage.id} style={`--stage-color:${stage.accent};${editionStyle(stage.href ? stage.accent : undefined) ?? ""}`}><div class="season-identity"><span class="edition-mark" aria-hidden="true">{getRoadmapNumeral(index)}</span><span class="season-status">{stage.status ? t.competition.status[stage.status] : c.nextEdition}</span></div><h3>{stage.name}</h3><p class="season-date"><Icon name="ph:calendar-blank-duotone" aria-hidden="true" />{stage.dates}</p><div class="season-prize"><Icon name="ph:trophy-duotone" aria-hidden="true" /><div><span>{c.announcedPrize}</span><strong>{formatMoney(stage.prizeTotal, stage.currency, locale)}</strong></div></div></li>)}</ol>
         <div class="season-offer"><p><Icon name="ph:handshake-duotone" aria-hidden="true" />{c.seasonValue}</p><a class="text-link" href={contact}>{c.seasonCta}<Icon name="ph:arrow-up-right-bold" aria-hidden="true" /></a></div>
       </section>
 
@@ -99,7 +105,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
         <details class="disclosure proposal-details"><summary><span><Icon name="ph:handshake-duotone" aria-hidden="true" />{c.proposalToggle}</span><Icon name="ph:plus-bold" aria-hidden="true" /></summary><div class="disclosure-body"><ol class="proposal-steps">{c.proposalSteps.map((step) => <li><h3>{step.title}</h3><p>{step.description}</p></li>)}</ol><p class="note terms-note">{c.termsNote}</p></div></details>
       </section>
     </main>
-    <footer class="wrap kit-footer"><BrandLogo height={22} /><p>{c.footer}</p><a href={localizePath("/", locale)}>nexusseries.org</a></footer>
+    <Footer />
   </div>
 </Base>
 
@@ -149,6 +155,7 @@ const nav = [["tournament", c.nav.tournament], ["visibility", c.nav.visibility],
   dt { color: var(--c-text-muted); font-size: 0.8125rem; margin-bottom: 10px; }
   dd { font: 750 clamp(1.5rem, 2.2vw, 2.1rem)/1.1 var(--font-display); font-variant-numeric: tabular-nums; }
   dd small { display: block; font: 400 0.75rem/1.4 var(--font-body); margin-top: 6px; color: var(--c-text-muted); }
+  .fact-pending { font: 500 0.875rem/1.5 var(--font-body); overflow-wrap: anywhere; }
   .prize-fact dd { color: var(--c-accent-lift); }
   .format-strip { padding-inline: 24px; }
   .format-strip > div { display: flex; align-items: center; gap: 12px; padding-block: 14px; border-top: 1px solid var(--c-line); }

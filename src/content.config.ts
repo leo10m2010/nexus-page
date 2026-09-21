@@ -62,7 +62,7 @@ const tournaments = defineCollection({
       status: z.enum(["upcoming", "live", "finished"]),
       startDate: z.coerce.date(),
       endDate: z.coerce.date(),
-      region: z.string(),
+      region: z.string().default(""),
       venue: z.enum(["online", "offline", "hybrid"]).optional(),
       location: z.string().optional(),
       roadmapIcon: z.string().optional(),
@@ -71,6 +71,7 @@ const tournaments = defineCollection({
       prizePool: z
         .object({
           currency: z.string().regex(/^[A-Z]{3}$/),
+          total: z.number().nonnegative().optional(),
           distribution: z
             .array(
               z.object({
@@ -79,7 +80,17 @@ const tournaments = defineCollection({
                 amount: z.number().nonnegative(),
               }),
             )
-            .min(1),
+            .min(1)
+            .optional(),
+        })
+        .superRefine((pool, ctx) => {
+          if (pool.total === undefined && !pool.distribution?.length) {
+            ctx.addIssue({ code: "custom", message: "Indica el total anunciado o la distribución de premios" });
+          }
+          if (pool.total !== undefined && pool.distribution?.length) {
+            const distributed = pool.distribution.reduce((sum, row) => sum + row.amount * ((row.to ?? row.place) - row.place + 1), 0);
+            if (Math.abs(distributed - pool.total) > 0.01) ctx.addIssue({ code: "custom", path: ["total"], message: "El total debe coincidir con la distribución" });
+          }
         })
         .optional(),
       phases: z

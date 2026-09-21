@@ -363,10 +363,13 @@ collections:
       - label: "Región"
         name: "region"
         widget: "string"
+        required: false
+        hint: "Opcional hasta confirmar la región de la próxima edición."
       - label: "Modalidad"
         name: "venue"
         widget: "select"
         default: "online"
+        required: false
         options:
           - { label: "Online", value: "online" }
           - { label: "Presencial", value: "offline" }
@@ -398,6 +401,7 @@ collections:
       - label: "Participantes"
         name: "participants"
         widget: "list"
+        hint: "Crea primero los equipos en Equipos y selecciónalos aquí. Al publicar, los participantes de la edición en vivo o próxima aparecerán en Meet the teams. Hasta anunciar ese plantel, se muestra el de la última edición finalizada."
         required: false
         collapsed: true
         minimize_collapsed: true
@@ -424,12 +428,19 @@ collections:
         widget: "object"
         required: false
         collapsed: true
-        summary: "{{fields.currency}} · Distribución"
+        summary: "{{fields.currency}} · Premios"
         fields:
           - { label: "Moneda (3 letras, ej: USD)", name: "currency", widget: "string", pattern: ["^[A-Z]{3}$", "Usa tres letras mayúsculas, por ejemplo USD"] }
+          - label: "Total anunciado"
+            name: "total"
+            widget: "number"
+            min: 0
+            required: false
+            hint: "Úsalo cuando todavía no esté definido el reparto por puestos. Si completas ambos, deben sumar lo mismo."
           - label: "Distribución de premios"
             name: "distribution"
             widget: "list"
+            required: false
             collapsed: true
             minimize_collapsed: true
             summary: "Puesto {{fields.place}} — {{fields.amount}}"

@@ -65,7 +65,7 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
 
             <ul class="fixture-grid mt-4">
               {group.matches.map((match) => (
-                <li data-stage={match.stage} data-match-state={hasMatchResult(match) ? "finished" : !match.home || !match.away ? "unassigned" : "pending"} class:list={["card-tile rounded-card px-5 py-5", { "pending-card": !hasMatchResult(match) }]}>
+                <li id={`match-${match.id}`} data-stage={match.stage} data-match-state={hasMatchResult(match) ? "finished" : !match.home || !match.away ? "unassigned" : "pending"} class:list={["card-tile rounded-card px-5 py-5", { "pending-card": !hasMatchResult(match) }]}>
                   <div class="match-card-header">
                   <p class="flex flex-wrap items-baseline gap-x-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase">
                     <span>{match.groupRound ? c.groupRound[match.groupRound] : c.stage[match.stage]}</span>
@@ -119,7 +119,9 @@ const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima")
   }
   @media (prefers-reduced-motion: reduce) { .platform-languages a { transition: none; } }
   .fixture-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
-  .fixture-grid > li { min-width: 0; }
+  .fixture-grid > li { min-width: 0; position: relative; border-radius: 0; background: var(--c-bg); border-color: var(--c-line); scroll-margin-top: 145px; }
+  .fixture-grid > li::before { content: ""; position: absolute; width: 13px; height: 13px; left: -1px; top: -1px; border-top: 1px solid var(--c-accent-lift); border-left: 1px solid var(--c-accent-lift); pointer-events: none; }
+  .fixture-grid > li:hover { border-color: var(--c-line-strong); }
   .match-card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; margin-bottom: 20px; }
   @media (min-width: 768px) {
     .fixture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

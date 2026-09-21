@@ -1,32 +1,57 @@
 ---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
 import Base from "@layouts/Base.astro";
-import Nav from "@layout/Nav.astro";
+import PosterHero from "@sections/PosterHero.astro";
 import Footer from "@layout/Footer.astro";
-import Hero from "@sections/Hero.astro";
-import Channels from "@sections/Channels.astro";
-import Roadmap from "@sections/Roadmap.astro";
-import TeamsShowcase from "@sections/TeamsShowcase.astro";
 import Partners from "@sections/Partners.astro";
-import About from "@sections/About.astro";
-import Vision from "@sections/Vision.astro";
-import Contact from "@sections/Contact.astro";
-import { site } from "@config/site";
-import { useTranslations } from "@lib/i18n";
-
-const t = useTranslations(Astro.currentLocale);
+import TeamMark from "@ui/TeamMark.astro";
+import CircuitBento from "@sections/CircuitBento.astro";
+import { site, social, channels } from "@config/site";
+import { showCompetition } from "@config/features";
+import { getTournaments, getParticipants, tournamentPath } from "@lib/competition";
+import { selectShowcaseTournament } from "@lib/tournament-presentation";
+import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
+import practice from "@assets/team-practice.png";
+import "@styles/home.css";
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const root = localePath(locale);
+const competition = `${root}competition/`;
+const mediakit = `${root}mediakit/`;
+const tournaments = showCompetition ? await getTournaments() : [];
+const rosterTournament = selectShowcaseTournament(tournaments);
+const teams = rosterTournament ? (await getParticipants(rosterTournament)).map(participant => participant.team) : [];
+const teamsHref = rosterTournament ? `${tournamentPath(rosterTournament.id, locale)}#participants` : `${competition}#teams`;
+const copy = {
+  es: { teams: "Conoce a los equipos", promo: ["Tu comunidad.", "Tu próxima partida.", "Tu Nexus."], promoBody: "Dentro y fuera del servidor. Comparte cada jugada y vive la competición con nuestra comunidad.", about: "Conectamos regiones. Elevamos la competición.", vision: "Una misma pasión, sin fronteras.", contact: "Hablemos de lo que viene.", contactBody: "Equipos, marcas y medios: la próxima conexión empieza aquí." },
+  en: { teams: "Meet the teams", promo: ["Your community.", "Your next game.", "Your Nexus."], promoBody: "In and out of the server. Share every play and experience the competition with our community.", about: "Connecting regions. Elevating competition.", vision: "A shared passion. No borders.", contact: "Let’s talk about what’s next.", contactBody: "Teams, brands and media: your next connection starts here." },
+  ru: { teams: "Знакомьтесь с командами", promo: ["Ваше сообщество.", "Ваша следующая игра.", "Ваш Nexus."], promoBody: "На сервере и за его пределами. Обсуждайте каждый момент и следите за соревнованиями вместе с нашим сообществом.", about: "Объединяем регионы. Развиваем соревнования.", vision: "Общая страсть. Без границ.", contact: "Обсудим, что дальше.", contactBody: "Команды, бренды и медиа: новая связь начинается здесь." },
+}[locale];
 ---
-
 <Base title={`${site.name} | ${t.tagline}`} description={t.hero.lede}>
-  <Nav />
-  <main id="main">
-    <Hero />
-    <Channels />
-    <Roadmap />
-    <TeamsShowcase />
-    <Partners />
-    <About />
-    <Vision />
-    <Contact />
-  </main>
-  <Footer />
+  <div class="nexus-home">
+    <main id="main">
+      <PosterHero />
+      <Partners />
+      {showCompetition && <CircuitBento />}
+      {teams.length > 0 && <section id="teams-showcase" class="home-container team-section">
+        <div class="team-watermark" aria-hidden="true">N</div><h2>{copy.teams}</h2><p class="team-tag">{rosterTournament?.name}</p>
+        <ul class="compact-teams">{teams.map(team => <li><a href={teamsHref} class="compact-team"><TeamMark team={team} size={44} /><span><strong>{team.name}</strong><small>{team.tag} · Dota 2</small></span><Icon name="ph:caret-right" /></a></li>)}</ul>
+        <a class="editorial-link team-more" href={teamsHref}>{t.teamsShowcase.cta}<Icon name="ph:caret-double-right" /></a>
+      </section>}
+      <section id="channels" class="home-container channel-section" aria-label={t.a11y.broadcastChannels}>
+        <p>{t.channels.intro}</p><div class="channel-links">{channels.map(channel => <a href={channel.href} target="_blank" rel="noopener noreferrer"><Icon name={channel.icon} /><span>{t.channels.languages[channel.code.toLowerCase() as "es" | "en" | "ru"]}</span><Icon name="ph:arrow-up-right" /></a>)}</div>
+      </section>
+      <section id="community" class="community-banner">
+        <Image src={practice} alt="" widths={[768,1280,1920]} sizes="100vw" format="webp" loading="lazy" />
+        <div class="home-container community-content"><h2>{copy.promo.map(line => <span>{line}</span>)}</h2><p>{copy.promoBody}</p><a class="editorial-link" href={social.discord} target="_blank" rel="noopener noreferrer">{t.cta.community}<Icon name="ph:caret-double-right" /></a></div>
+      </section>
+      <section id="about" class="home-container about-editorial">
+        <div><h2>{copy.about}</h2><p>{t.about.body[0]}</p></div><div id="vision"><h3>{copy.vision}</h3><p>{t.vision.lede}</p><a class="editorial-link" href={mediakit}>{t.cta.partnership}<Icon name="ph:caret-double-right" /></a></div>
+      </section>
+      <section id="contact" class="home-container home-contact"><div><h2>{copy.contact}</h2><p>{copy.contactBody}</p></div><a href={`mailto:${site.email}`}>{site.email}<Icon name="ph:arrow-up-right" /></a></section>
+    </main>
+    <Footer />
+  </div>
 </Base>

@@ -12,9 +12,16 @@ const base = process.env.MEDIAKIT_BASE_URL || 'http://127.0.0.1:4322';
 const routes = { en: '/mediakit', es: '/es/mediakit', ru: '/ru/mediakit' };
 const localeFlags = { en: 'us', es: 'es', ru: 'ru' };
 const localeHeadings = { en: 'Your brand.', es: 'Tu marca.', ru: 'Ваш бренд.' };
+const channelSettings = JSON.parse(await readFile(new URL('../src/data/settings/channels.json', import.meta.url), 'utf8'));
+const twitchCount = channelSettings.channels.filter(channel => new URL(channel.href).hostname.replace(/^www\./, '') === 'twitch.tv').length;
 const matchDirectory = new URL('../src/data/matches/', import.meta.url);
 const groupMatches = (await Promise.all((await readdir(matchDirectory)).filter((name) => name.endsWith('.yaml')).map(async (name) => parse(await readFile(new URL(name, matchDirectory), 'utf8'))))).filter((match) => match.tournament === 'season-one' && match.stage === 'groupStage');
-const assignedMatches = groupMatches.filter((match) => match.home && match.away).length;
+const tournamentDirectory = new URL('../src/data/tournaments/', import.meta.url);
+const tournamentData = (await Promise.all((await readdir(tournamentDirectory)).filter(name => name.endsWith('.yaml')).map(async name => parse(await readFile(new URL(name, tournamentDirectory), 'utf8'))))).sort((a,b) => new Date(a.startDate)-new Date(b.startDate));
+const featuredTournament = tournamentData.find(tour => tour.status === 'live') ?? tournamentData.find(tour => tour.status === 'upcoming') ?? tournamentData.at(-1);
+const allGroupMatches = await Promise.all((await readdir(matchDirectory)).filter(name => name.endsWith('.yaml')).map(async name => parse(await readFile(new URL(name, matchDirectory), 'utf8'))));
+const assignedMatches = allGroupMatches.filter(match => match.tournament === featuredTournament.id && match.stage === 'groupStage' && match.home && match.away).length;
+const archivedTournament = tournamentData.find(tour => tour.id === 'season-one');
 const report = { base, started: new Date().toISOString(), checks: [], screenshots: [], axe: [], runtime: [] };
 let server, browser, serverError, serverLog = '';
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,14 +91,16 @@ try {
         assert.equal((await page.locator('[data-locale-toggle]').innerText()).trim(), locale.toUpperCase());
         assert.equal(await page.locator('[data-locale-toggle] svg').getAttribute('data-icon'), `flag:${localeFlags[locale]}-4x3`);
         assert.ok((await page.locator('#kit-title').textContent()).startsWith(localeHeadings[locale]));
-        assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
-        assert.equal(await page.locator('.team-list img').count(), 8);
+        assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
+        assert.equal(await page.locator('[data-theme-toggle]').count(), 0);
+        assert.equal(await page.locator('.team-list img').count(), featuredTournament.participants?.length ?? 0);
+        assert.match(await page.locator('.edition-name').innerText(), new RegExp(featuredTournament.name));
         assert.equal(await page.locator('.season-roadmap li').count(), 3);
         const kick = page.locator('.channel-links a[href="https://kick.com/nexusmedia-oficial"]');
         assert.equal(await kick.count(), 1);
         assert.match(await kick.getAttribute('aria-label'), /^Kick · /);
         assert.equal(await kick.locator('svg').first().getAttribute('data-icon'), 'simple-icons:kick');
-        assert.equal(await page.locator('.channel-links a[href*="twitch.tv/"]').count(), 3);
+        assert.equal(await page.locator('.channel-links a[href*="twitch.tv/"]').count(), twitchCount);
         assert.equal(await page.locator('[data-print]').count(), 0);
         assert.equal(await page.locator('.header-links a:visible').count(), 3);
         const contact = new URL(await page.locator('.cover-pitch .btn').getAttribute('href'));
@@ -187,7 +196,7 @@ try {
         await images(page); await overflow(page);
       });
       await test('locale menu / Escape', async () => {
-        const toggle = page.locator('.kit-header [data-locale-toggle]');
+        const toggle = page.locator('.brand-header [data-locale-toggle]');
         await toggle.click();
         assert.equal(await toggle.getAttribute('aria-expanded'), 'true');
         assert.ok(await page.locator('#locale-menu').isVisible());
@@ -197,7 +206,7 @@ try {
         assert.equal(await toggle.getAttribute('aria-expanded'), 'false');
         assert.equal(await page.locator('#locale-menu').isVisible(), false);
       });
-      await test('keyboard controls and theme', async () => {
+      await test('keyboard controls and fixed dark style', async () => {
         const scene = page.locator('[data-scene-button]').nth(1);
         await scene.focus(); await page.keyboard.press('Enter');
         assert.equal(await scene.getAttribute('aria-pressed'), 'true');
@@ -212,8 +221,8 @@ try {
         await overflow(page);
         await summary.focus(); await page.keyboard.press('Enter');
         assert.equal(await page.locator('details.proposal-details').getAttribute('open'), null);
-        await page.locator('[data-theme-toggle]').click();
-        assert.equal(await page.locator('html').getAttribute('data-theme'), theme === 'dark' ? 'light' : 'dark');
+        await page.emulateMedia({colorScheme: 'light'});
+        assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
         await overflow(page);
       });
     } finally { await context.close(); report.runtime.push({ id, errors }); await test('console/pageerror', () => assert.deepEqual(errors, [])); }
@@ -244,18 +253,15 @@ try {
     try {
       assert.equal((await page.goto(new URL(home, base).href, { timeout: 15000 })).status(), 200);
       const destination = `${home}mediakit/`;
-      const partners = page.locator('a.btn-partner');
-      assert.equal(await partners.count(), 4);
-      for (const link of await partners.all()) assert.equal(await link.getAttribute('href'), destination);
-      const desktop = page.locator('.site-header .btn-partner:visible');
+      const desktop = page.locator('#partners .partners-pitch a');
       assert.equal(await desktop.count(), 1);
-      assert.equal(await desktop.evaluate((el) => getComputedStyle(el, '::after').animationName), 'partner-shine');
+      assert.equal(await desktop.getAttribute('href'), destination);
       await page.emulateMedia({ reducedMotion: 'reduce' });
       assert.equal(await desktop.evaluate((el) => getComputedStyle(el, '::after').animationName), 'none');
       await desktop.click(); await page.waitForURL(new URL(destination, base).href);
       await page.setViewportSize({ width: 390, height: 844 }); await page.goto(new URL(home, base).href);
       await page.locator('[data-menu-toggle]').click();
-      const mobile = page.locator('#mobile-menu .btn-partner');
+      const mobile = page.locator(`#mobile-menu a[href="${destination}"]`);
       await mobile.click(); await page.waitForURL(new URL(destination, base).href);
     } finally { await page.close(); }
   });
@@ -266,19 +272,19 @@ try {
       for (const width of [390, 768, 1440]) {
         await page.setViewportSize({ width, height: 900 });
         await page.goto(new URL(`${prefix}/`, base).href);
-        const list = page.locator('[data-broadcast-channels]');
-        assert.equal(await list.locator('a').count(), 4);
+        const list = page.locator('#channels .channel-links');
+        assert.equal(await list.locator('a').count(), channelSettings.channels.length);
         const labels = await list.locator('a').evaluateAll((links) => links.map((link) => link.textContent.replace(/\s+/g, ' ').trim()));
-        assert.equal(new Set(labels).size, 4, 'Platforms are not visually distinguished');
+        assert.equal(new Set(labels).size, channelSettings.channels.length, 'Channels are not visually distinguished');
         assert.equal(await list.locator('a[href="https://kick.com/nexusmedia-oficial"] svg[data-icon="simple-icons:kick"]').count(), 1);
-        assert.equal(await page.locator('.watch-link[href="https://kick.com/nexusmedia-oficial"] svg[data-icon="simple-icons:kick"]').count(), 1);
+        assert.equal(await page.locator('.brand-footer a[href="https://kick.com/nexusmedia-oficial"] svg[data-icon="simple-icons:kick"]').count(), 1);
         await list.scrollIntoViewIfNeeded();
         assert.ok(await list.evaluate((el) => el.scrollWidth <= el.clientWidth + 1));
         if (locale === 'es') await list.screenshot({ path: fileURLToPath(new URL(`channels-${width}.png`, artifacts)) });
         await page.goto(new URL(`${prefix}/competition/season-one/`, base).href);
         const broadcasts = page.locator('#matches .broadcast-links');
         assert.equal(await broadcasts.locator('.platform-group').count(), 2);
-        assert.equal(await broadcasts.locator('a').count(), 4);
+        assert.equal(await broadcasts.locator('a').count(), channelSettings.channels.length);
         for (const link of await broadcasts.locator('a').all()) {
           const box = await link.boundingBox();
           assert.ok(box && box.height >= 44 && box.width >= 44, 'Broadcast links need comfortable touch targets');
@@ -319,7 +325,7 @@ try {
         const maggo = page.locator('#talent a[href="https://kick.com/maggodota"]');
         assert.match(await maggo.innerText(), /Maggo Dota/i);
         assert.equal(await maggo.locator('svg[data-icon="simple-icons:kick"]').count(), 1);
-        assert.equal(await page.locator('#talent a[href="https://kick.com/PAPITA"]').count(), 1);
+        assert.equal(await page.locator('#talent a[href="https://kick.com/PAPITA"]').count(), (archivedTournament.broadcastTalent ?? []).filter(person => person.href === 'https://kick.com/PAPITA').length);
         assert.equal(await page.locator('#talent a[href="https://www.twitch.tv/doedie666"]').count(), 1);
         const russianCaster = page.locator('#talent a[href="https://www.twitch.tv/nexusmedia_ru"]');
         assert.match(await russianCaster.innerText(), /neloboda/i);

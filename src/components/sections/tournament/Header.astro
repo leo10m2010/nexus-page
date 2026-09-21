@@ -1,6 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
-import Section from "@ui/Section.astro";
+import PageHero from "@ui/PageHero.astro";
 import StatusBadge from "@ui/StatusBadge.astro";
 import {
   getPrizeTotal,
@@ -10,7 +10,6 @@ import {
 } from "@lib/competition";
 import { formatDateRange, formatMoney } from "@lib/format";
 import { useTranslations, resolveLocale, DEFAULT_LOCALE } from "@lib/i18n";
-import { NAV_HEIGHT } from "@config/nav";
 
 interface Props {
   tournament: Tournament;
@@ -30,7 +29,7 @@ const where = tournament.location
   ? { label: c.info.location, value: tournament.location, icon: "ph:map-pin-bold" }
   : tournament.venue
     ? { label: c.info.venue, value: c.venue[tournament.venue], icon: "ph:map-pin-bold" }
-    : { label: c.info.location, value: tournament.region, icon: "ph:map-pin-bold" };
+    : { label: c.info.location, value: tournament.region || null, icon: "ph:map-pin-bold" };
 
 const facts = [
   {
@@ -53,9 +52,8 @@ const facts = [
 
 ---
 
-<Section class="relative overflow-hidden border-b border-line">
-
-  <div class="relative" style={`padding-top:${NAV_HEIGHT}px`}>
+<PageHero title={tournament.name} description={tournament.status === "upcoming" ? t.roadmap.detailsTbd : undefined} art>
+  <div slot="before">
     <a
       href={backHref}
       class="eyebrow reveal inline-flex items-center gap-2 text-muted transition-colors hover:text-accent-lift"
@@ -68,27 +66,17 @@ const facts = [
       <StatusBadge status={tournament.status} />
     </div>
 
-    <h1 class="display reveal mt-5 max-w-[24ch] text-[clamp(2rem,5vw,4.25rem)]">
-      {tournament.name}
-    </h1>
-
-    <dl class="reveal mt-12 flex flex-wrap gap-x-10 gap-y-6 border-t border-line pt-8">
+  </div>
+    <dl class="flex flex-wrap gap-x-10 gap-y-6 border-t border-line pt-8">
       {
         facts.map((fact) => (
-          <div class="flex items-center gap-3">
-            <Icon
-              name={fact.icon}
-              class={`size-5 shrink-0 ${fact.accent ? "text-accent-lift" : "text-muted"}`}
-            />
-            <div>
-              <dt class="text-[0.6875rem] tracking-[0.16em] text-muted uppercase">{fact.label}</dt>
+          <div>
+              <dt class="flex items-center gap-2 text-[0.6875rem] tracking-[0.16em] text-muted uppercase"><Icon name={fact.icon} class={`size-4 shrink-0 ${fact.accent ? "text-accent-lift" : "text-muted"}`} />{fact.label}</dt>
               <dd class={`display-sm mt-0.5 text-[1.0625rem] ${fact.accent ? "text-accent-lift" : ""}`}>
                 {fact.value}
               </dd>
-            </div>
           </div>
         ))
       }
     </dl>
-  </div>
-</Section>
+</PageHero>

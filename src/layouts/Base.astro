@@ -1,11 +1,13 @@
 ---
 import "@fontsource-variable/archivo/wdth.css";
 import "@fontsource-variable/inter-tight/wght.css";
+import "@fontsource/bebas-neue/latin-400.css";
 import "@styles/global.css";
+import "@styles/brand.css";
 
 import Seo from "@layout/Seo.astro";
 import { themeBootScript } from "@lib/theme";
-import { localeMeta, resolveLocale, useTranslations } from "@lib/i18n";
+import { localeMeta, localePath, resolveLocale, useTranslations } from "@lib/i18n";
 
 interface Props {
   title: string;
@@ -19,22 +21,22 @@ const t = useTranslations(locale);
 ---
 
 <!doctype html>
-<html lang={localeMeta[locale].htmlLang} translate="no">
+<html lang={localeMeta[locale].htmlLang} translate="no" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google" content="notranslate" />
     <link rel="icon" type="image/svg+xml" href="/logos/app.svg" />
     <link rel="apple-touch-icon" href="/logos/app.svg" />
-    <meta name="theme-color" content="#06080f" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#f1f1f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1015" />
+    <meta name="color-scheme" content="dark" />
 
     <Seo title={title} description={description} noindex={noindex} />
 
     <script is:inline set:html={themeBootScript} />
   </head>
 
-  <body>
+  <body class:list={[{ "public-site": !Astro.url.pathname.startsWith("/admin/"), "internal-page": Astro.url.pathname !== localePath(locale) && !Astro.url.pathname.startsWith("/admin/") }]}>
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-accent focus:px-4 focus:py-2 focus:text-on-accent"

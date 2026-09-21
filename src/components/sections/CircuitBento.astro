@@ -1,0 +1,61 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import StatusBadge from "@ui/StatusBadge.astro";
+import { editionStyle } from "@lib/tournament-presentation";
+import { getRoadmapStages, getRoadmapNumeral, getFeaturedRoadmapStage } from "@lib/roadmap";
+import { formatMoney } from "@lib/format";
+import { resolveLocale, useTranslations } from "@lib/i18n";
+import team from "@assets/team-practice.png";
+import field from "@assets/brand-field.png";
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const stages = await getRoadmapStages(locale);
+const featured = getFeaturedRoadmapStage(stages);
+const viewResults = { es: "Ver resultados", en: "View results", ru: "Результаты" }[locale];
+const labels = {
+  es: { title: "El circuito", live: "En juego", next: "Próximamente", prize: "en premios" },
+  en: { title: "The circuit", live: "In play", next: "Coming next", prize: "prize pool" },
+  ru: { title: "Наш сезон", live: "Идёт сейчас", next: "Скоро", prize: "призовой фонд" },
+}[locale];
+---
+<section id="roadmap" class="home-container tour-section" aria-labelledby="tour-heading">
+  <header class="tour-header"><h2 id="tour-heading">{labels.title}</h2><span>2026</span></header>
+  <div class="tour-posters" style={`--tour-columns:${stages.map(stage => stage === featured ? "1.45fr" : "1fr").join(" ")}`}>
+    {stages.map((stage,i) => <article class:list={["tour-poster", { "tour-poster--current": stage === featured }]} data-edition={stage.id} style={editionStyle(stage.href ? stage.accent : undefined)}>
+      <Image class="tour-art" src={stage === featured ? team : field} alt="" widths={[400,700,1000]} sizes="(max-width: 767px) 100vw, 40vw" format="webp" loading="lazy" />
+      <StatusBadge status={stage.status ?? "upcoming"} class="tour-status" />
+      <h3>{stage.name}</h3><span class="tour-number" aria-hidden="true">{getRoadmapNumeral(i)}</span>
+      <div class="tour-details"><p>{stage.dates ?? t.roadmap.dateTbd}</p><p><strong>{formatMoney(stage.prizeTotal,stage.currency,locale)}</strong><span>{labels.prize}</span></p></div>
+      {stage.href && <a class="tour-link" href={stage.href}><span>{stage.status === "finished" ? viewResults : t.competition.viewTournament}</span><Icon name="ph:arrow-up-right" /></a>}
+    </article>)}
+  </div>
+</section>
+<style>
+  .tour-section { padding-block: 65px 12px; }
+  .tour-header { display: flex; justify-content: space-between; align-items: baseline; gap: 20px; border-bottom: 1px solid var(--c-line-strong); padding-bottom: 14px; margin-bottom: 22px; }
+  .tour-header h2 { font-family: var(--font-poster); font-weight: 400; text-transform: uppercase; font-size: 46px; line-height: 1; letter-spacing: 0; color: var(--c-accent-lift); }
+  .tour-header > span { font-family: var(--font-poster); font-size: 27px; color: var(--c-text-muted); }
+  .tour-posters { display: grid; grid-template-columns: var(--tour-columns); gap: 14px; }
+  .tour-poster { position: relative; isolation: isolate; overflow: hidden; min-height: 375px; padding: 23px 25px; background: #182b3d; color: #f2f4f6; display: flex; flex-direction: column; }
+  .tour-poster:nth-child(3) { background: #1b222d; }
+  .tour-poster--current { background: var(--edition-surface, #101b28); }
+  .tour-art { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: .12; }
+  .tour-poster--current .tour-art { opacity: .6; object-position: 65% center; filter: grayscale(.6); }
+  .tour-poster--current::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, var(--edition-surface, #101b28), transparent 100%); }
+  .tour-poster h3 { font-family: var(--font-poster); font-size: clamp(30px, 3.1vw, 45px); font-weight: 400; letter-spacing: -.015em; text-transform: uppercase; line-height: 1; margin-top: 25px; position: relative; }
+  .tour-poster--current h3 { max-width: 230px; font-size: 66px; }
+  .tour-number { font-family: var(--font-poster); font-size: 172px; line-height: 1; color: #a5bfd9; opacity: .55; align-self: flex-end; margin: 12px 0 -5px; }
+  .tour-poster--current .tour-number { display: none; }
+  .tour-details { margin-top: auto; position: relative; }
+  .tour-details > p:first-child { font-size: 12px; margin-bottom: 9px; color: #c8d4df; }
+  .tour-details > p:last-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 7px; }
+  .tour-details strong { font-weight: 650; font-size: 18px; }
+  .tour-details p span { font-size: 10px; color: #becbd9; }
+  .tour-link { margin-top: 19px; padding-top: 13px; border-top: 1px solid #a2b9d070; display: flex; align-items: center; justify-content: space-between; gap: 10px; font-family: var(--font-poster); font-size: 20px; text-transform: uppercase; color: var(--edition-ink, #64beef); }
+  .tour-link svg { width: 20px; height: 20px; transition: transform .2s; }
+  .tour-link:hover svg { transform: translate(3px,-3px); }
+  @media (max-width: 1023px) { .tour-poster { padding: 20px; min-height: 365px; } .tour-posters { gap: 10px; } .tour-poster--current h3 { font-size: 55px; } }
+  @media (max-width: 767px) { .tour-header h2 { font-size: 37px; } .tour-posters { grid-template-columns: 1fr; gap: 14px; } .tour-poster { min-height: 255px; padding: 24px; } .tour-poster--current { min-height: 370px; } .tour-poster h3 { font-size: 43px; margin-top: 21px; } .tour-poster--current h3 { font-size: 65px; } .tour-number { position: absolute; right: 20px; bottom: 8px; font-size: 130px; opacity: .19; } .tour-details { padding-top: 25px; } }
+  @media (prefers-reduced-motion: reduce) { .tour-link svg { transition: none; } }
+</style>

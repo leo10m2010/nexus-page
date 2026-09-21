@@ -1,33 +1,19 @@
 ---
+import { Icon } from "astro-icon/components";
 import type { Tournament } from "@lib/competition";
 import { useTranslations } from "@lib/i18n";
-
-interface Props {
-  status: Tournament["status"];
-}
-const { status } = Astro.props;
+interface Props { status: Tournament["status"]; class?: string; }
+const { status, class: className = "" } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
-
-const tone = {
-  live: "border-accent text-accent-lift",
-  upcoming: "border-line-strong text-ink",
-  finished: "border-line text-muted",
-}[status];
 ---
-
-<span
-  class={`inline-flex items-center gap-2 rounded-control border px-2.5 py-1 font-display text-[0.6875rem] font-bold tracking-[0.14em] uppercase ${tone}`}
->
-  {status === "live" && <span class="live-dot size-1.5 bg-accent-lift"></span>}
+<span class={`status-badge ${className}`} data-status={status}>
+  {status === "live" ? <span class="live-dot" aria-hidden="true"></span> : <Icon name={status === "finished" ? "ph:check-circle" : "ph:calendar-blank"} aria-hidden="true" />}
   {t.competition.status[status]}
 </span>
-
 <style>
-  @media (prefers-reduced-motion: no-preference) {
-    .live-dot { animation: live 2s ease-in-out infinite; }
-    @keyframes live {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-  }
+  .status-badge { display: inline-flex; align-items: center; align-self: flex-start; gap: 7px; padding: 6px 9px; border: 1px solid color-mix(in srgb, var(--edition-ink, var(--c-accent-lift)) 45%, transparent); border-radius: 3px; background: color-mix(in srgb, var(--edition-accent, var(--c-accent)) 8%, var(--c-bg)); font-family: var(--font-display); font-size: 10px; font-weight: 650; letter-spacing: .075em; line-height: 1.25; text-transform: uppercase; color: var(--edition-ink, var(--c-accent-lift)); }
+  .status-badge svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .status-badge[data-status="finished"] { color: #b9c5d1; border-color: #8292a34d; background: #8292a310; }
+  .live-dot { width: 6px; height: 6px; background: currentColor; }
+  @media (prefers-reduced-motion: no-preference) { .live-dot { animation: live 2s ease-in-out infinite; } @keyframes live { 0%, 100% { opacity: 1; } 50% { opacity: .3; } } }
 </style>

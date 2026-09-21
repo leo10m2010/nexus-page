@@ -1,0 +1,9 @@
+id: season-two
+name: Nexus Series II
+status: upcoming
+startDate: 2026-10-15
+endDate: 2026-10-27
+roadmapColor: "#8b3dff"
+prizePool:
+  currency: USD
+  total: 20000

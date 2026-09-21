@@ -1,0 +1,132 @@
+---
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import Nav from "@layout/Nav.astro";
+import { showCompetition } from "@config/features";
+import { getRoadmapStages, getFeaturedRoadmapStage } from "@lib/roadmap";
+import { editionStyle } from "@lib/tournament-presentation";
+import { resolveLocale, useTranslations } from "@lib/i18n";
+import zeus from "@assets/hero-zeus.png";
+import sven from "@assets/hero-sven.png";
+import rocks from "@assets/hero-rocks.png";
+import background from "@assets/hero-background.png";
+import "@fontsource/bebas-neue/latin-400.css";
+
+const locale = resolveLocale(Astro.currentLocale);
+const t = useTranslations(locale);
+const stages = showCompetition ? await getRoadmapStages(locale) : [];
+const active = getFeaturedRoadmapStage(stages);
+const target = showCompetition ? "#roadmap" : "#community";
+const copy = {
+  es: { title: ["REGIONES", "UNIDAS.", "RIVALES", "EN JUEGO."], note: "EL CIRCUITO", intro: "Tres torneos. Una temporada de Dota 2. Sigue cada partida de Nexus Series.", tour: "VER EL CIRCUITO", teams: "EQUIPOS", watch: "EN VIVO", season: "TEMPORADA 2026", values: ["JUEGA", "COMPITE", "CONECTA"], global: "UN ESCENARIO GLOBAL", community: "UNA COMUNIDAD", scroll: "EXPLORA" },
+  en: { title: ["REGIONS", "UNITED.", "RIVALRY", "IGNITED."], note: "THE CIRCUIT", intro: "Three tournaments. One season of Dota 2. Follow every match of Nexus Series.", tour: "VIEW THE CIRCUIT", teams: "TEAMS", watch: "WATCH", season: "2026 SEASON", values: ["PLAY", "COMPETE", "BELONG"], global: "A GLOBAL STAGE", community: "ONE COMMUNITY", scroll: "SCROLL" },
+  ru: { title: ["РЕГИОНЫ", "ВМЕСТЕ.", "БОРЬБА", "В ИГРЕ."], note: "НАШ СЕЗОН", intro: "Три турнира. Один сезон Dota 2. Следите за каждым матчем Nexus Series.", tour: "СМОТРЕТЬ СЕЗОН", teams: "КОМАНДЫ", watch: "ЭФИР", season: "СЕЗОН 2026", values: ["ИГРАЙ", "СОРЕВНУЙСЯ", "ОБЪЕДИНЯЙСЯ"], global: "МИРОВАЯ АРЕНА", community: "ОДНО СООБЩЕСТВО", scroll: "ДАЛЕЕ" },
+}[locale];
+---
+
+<section id="home" class="poster-shell" aria-label="Nexus Series">
+  <div class="poster-frame">
+    <Image class="poster-background" src={background} alt="" widths={[768, 1280, 1672]} sizes="100vw" format="webp" quality={85} loading="eager" />
+    <div class="poster-art" aria-hidden="true">
+      <Image class="hero-sven" src={sven} alt="" widths={[480, 768, 1086]} sizes="(max-width: 767px) 70vw, 40vw" format="webp" quality={85} loading="eager" />
+      <Image class="hero-zeus" src={zeus} alt="" widths={[480, 768, 1086]} sizes="(max-width: 767px) 100vw, 55vw" format="webp" quality={88} loading="eager" fetchpriority="high" />
+      <Image class="hero-rocks" src={rocks} alt="" widths={[480, 900, 1448]} sizes="(max-width: 767px) 85vw, 48vw" format="webp" quality={82} loading="eager" />
+      <Image class="hero-shield" src={background} alt="" widths={[768, 1280, 1672]} sizes="100vw" format="webp" quality={85} loading="eager" />
+    </div>
+    <Nav overlay />
+    <div class="poster-stage">
+      <div class="poster-title">
+        <h1>{copy.title.map(line => <span>{line}</span>)}</h1>
+        <div class="poster-edition"><p><em>DOTA 2</em><strong>2026</strong></p></div>
+      </div>
+      <div class="poster-info" style={editionStyle(active?.href ? active.accent : undefined)}><h2>{active?.name ?? copy.note}</h2><p>{active?.status === "upcoming" ? `${t.competition.status.upcoming} · ${active.dates ?? t.roadmap.dateTbd}. ${t.roadmap.detailsTbd}` : copy.intro}</p><a class="poster-action" href={active?.href ?? target}>{active?.href ? t.competition.viewTournament : showCompetition ? copy.tour : t.cta.community}<Icon name="ph:arrow-right" /></a></div>
+    </div>
+    <div class="poster-baseline">
+      <a class="poster-scroll" href={target}>{copy.scroll}<Icon name="ph:arrow-down" /></a>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Layer order: background -2, artwork -1 (Sven / Zeus / rocks), copy 1, nav 2. */
+  .poster-shell { width: 100%; }
+  .poster-frame { position: relative; isolation: isolate; display: flex; flex-direction: column; width: 100%; min-height: 700px; height: 100svh; background: #0b1015; color: #f2f4f6; overflow: hidden; }
+  .poster-background { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
+  .poster-art { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
+  .poster-art img { position: absolute; max-width: none; object-fit: contain; }
+  .hero-sven { z-index: 0; height: 91%; width: auto; right: 12%; top: 10%; filter: brightness(.56) saturate(.8); }
+  .hero-zeus { z-index: 1; height: 124%; width: auto; left: 31%; bottom: -24%; filter: brightness(.72) saturate(.84); }
+  .hero-rocks { z-index: 2; width: 48%; height: auto; right: -2%; bottom: -5%; filter: brightness(.65); }
+  .poster-art .hero-shield { z-index: 3; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 15%; clip-path: polygon(0 0, 44% 0, 27% 100%, 0 100%); }
+  .poster-art::after { content: ""; position: absolute; z-index: 4; inset: 0; background: linear-gradient(0deg, #0b1015 0%, #0b1015db 5%, transparent 25%), linear-gradient(90deg, transparent 69%, #0b101544); }
+  .poster-header { position: relative; z-index: 2; }
+  .poster-nav { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; height: 82px; padding-inline: 4.7%; gap: 20px; }
+  .poster-nav-left, .poster-nav-right, .poster-social { display: flex; align-items: center; gap: 30px; }
+  .poster-social { gap: 13px; }
+  .poster-nav-right { justify-content: flex-end; gap: 30px; }
+  .poster-nav a:not(.poster-seal) { font-family: var(--font-poster); font-size: 17px; white-space: nowrap; }
+  .poster-nav a:hover { color: #64beef; }
+  .poster-social a { display: grid; place-items: center; min-height: 36px; }
+  .poster-social svg { width: 16px; height: 16px; }
+  .poster-seal { align-self: start; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 32px; height: 128px; width: 150px; margin-top: -35px; border-radius: 0 0 50% 50%; background: #f2f4f6; color: #0b1015; }
+  .poster-nav :global([data-theme-toggle]), .poster-nav :global([data-locale-toggle]) { color: #e6edf4; border: 0; padding-inline: 4px; }
+  .poster-nav :global(.locale-menu) { color: var(--c-text); }
+  .poster-menu-toggle { display: none; }
+  .poster-stage { position: relative; z-index: 1; flex: 1; display: grid; grid-template-columns: 34% 1fr 20%; align-items: center; gap: 20px; padding: 20px 7.7% 30px 13.8%; }
+  .poster-title { align-self: center; }
+  .poster-title h1 { font-family: var(--font-poster); font-size: clamp(78px, min(7.3vw, 13svh), 142px); font-weight: 400; letter-spacing: -.018em; line-height: .96; text-wrap: nowrap; text-shadow: 0 2px 15px #0b101530; }
+  .poster-title h1 span { display: block; }
+  .poster-edition { display: flex; align-items: center; gap: 34px; margin-top: 28px; }
+  .poster-edition p { flex-shrink: 0; }
+  .poster-edition em { display: block; font-size: clamp(23px, 1.9vw, 34px); font-style: italic; line-height: 1.2; }
+  .poster-edition strong { display: block; color: #19b3ee; font-size: clamp(25px, 2vw, 36px); font-weight: 750; line-height: 1.15; }
+  .poster-edition ul { border-left: 1px solid #83909c80; padding-left: 30px; display: grid; gap: 8px; font-size: 10px; letter-spacing: .3em; color: #c0c7cf; }
+  .poster-info { grid-column: 3; position: relative; align-self: center; transform: translateY(85px); }
+  .poster-info h2 { font-family: var(--font-body); font-size: 21px; font-weight: 750; text-transform: uppercase; letter-spacing: -.02em; }
+  .poster-info p { font-size: 14px; line-height: 1.65; color: #c1c8d1; margin-top: 13px; }
+  .poster-action { display: flex; justify-content: space-between; align-items: center; gap: 15px; border: 1px solid var(--edition-ink, #91a0ae); background: #0b10153d; margin-top: 23px; padding: 15px; font-family: var(--font-poster); font-size: 19px; line-height: 1; white-space: nowrap; }
+  .poster-action svg { width: 18px; height: 18px; color: var(--edition-ink, #19b3ee); }
+  .poster-action:hover { background: var(--edition-ink, #64beef); border-color: var(--edition-ink, #64beef); color: #0b1015; }
+  .poster-action:hover svg { color: #0b1015; }
+  .poster-baseline { position: relative; z-index: 1; display: flex; justify-content: center; align-items: center; padding: 20px 4.7% 35px; font-size: 10px; letter-spacing: .18em; color: #c0c8d1; }
+  .poster-global { display: flex; align-items: center; gap: 22px; }
+  .poster-global > svg { width: 40px; height: 40px; color: #19b3ee; flex-shrink: 0; }
+  .poster-global p { display: grid; gap: 7px; font-size: 11px; letter-spacing: .23em; }
+  .poster-global p span:first-child { color: #48c4f2; }
+  .poster-global::after { content: ""; width: 65px; height: 1px; background: #189bc8; margin-left: 8px; }
+  .poster-scroll { display: flex; align-items: center; gap: 10px; padding: 10px; }
+  .poster-scroll svg { width: 15px; height: 15px; }
+  .poster-scroll:hover { color: #64beef; }
+  .poster-season { justify-self: end; }
+  .poster-mobile-menu:not([hidden]) { position: absolute; top: 72px; right: 15px; left: 15px; display: grid; padding: 15px 24px; background: #111c29; border: 1px solid #8badca55; }
+  .poster-mobile-menu a { padding: 10px 0; font-size: 16px; }
+  :global(html[lang="ru"]) .poster-title h1 { font-family: var(--font-display); font-stretch: condensed; font-size: clamp(43px, 4.7vw, 66px); font-weight: 850; line-height: 1.15; }
+  :global(html[lang="ru"]) .poster-edition { gap: 18px; }
+  :global(html[lang="ru"]) .poster-edition ul { letter-spacing: .1em; padding-left: 18px; }
+  @media (min-width: 1400px) { .poster-edition { margin-left: -4vw; gap: 60px; } }
+  @media (max-width: 1200px) { .poster-nav { gap: 10px; padding-inline: 30px; } .poster-nav-left, .poster-nav-right { gap: 18px; } .poster-nav a:not(.poster-seal) { font-size: 15px; } .poster-stage { padding-left: 9%; padding-right: 5%; grid-template-columns: 35% 1fr 26%; } .poster-info h2 { font-size: 18px; } .poster-info p { font-size: 13px; } .poster-title h1 { font-size: min(8.4vw, 12svh); } .poster-edition { gap: 22px; } .poster-edition ul { padding-left: 20px; font-size: 9px; } .hero-zeus { left: 27%; } .hero-sven { right: 1%; } .poster-global::after { display: none; } }
+  @media (max-width: 1023px) { .poster-desktop-link { display: none; } .poster-menu-toggle { display: grid; place-items: center; width: 34px; height: 40px; } .poster-menu-toggle svg { width: 21px; height: 21px; } .poster-nav-right { gap: 7px; } .poster-global p { font-size: 9px; } .poster-edition { gap: 16px; } .poster-edition ul { letter-spacing: .16em; padding-left: 16px; } }
+  @media (max-width: 767px) {
+    .poster-frame { height: auto; min-height: max(820px, 100svh); }
+    .poster-nav { height: 75px; padding-inline: 20px; grid-template-columns: 1fr 95px 1fr; gap: 4px; }
+    .poster-social { gap: 11px; } .poster-social a:nth-child(2) { display: none; }
+    .poster-social svg { width: 14px; height: 14px; }
+    .poster-nav-right { gap: 2px; } .poster-nav-right :global([data-theme-toggle]) { display: none; }
+    .poster-seal { width: 95px; height: 108px; padding-bottom: 23px; } .poster-seal :global(.brand-logo-mono) { max-width: 75px; }
+    .poster-stage { grid-template-columns: 1fr; padding: 40px 24px 20px; gap: 230px; align-items: start; }
+    .poster-title { align-self: start; } .poster-title h1 { font-size: clamp(59px, 14vw, 91px); line-height: .94; }
+    .poster-edition { margin-top: 20px; gap: 20px; } .poster-edition em { font-size: 23px; } .poster-edition strong { font-size: 27px; } .poster-edition ul { font-size: 8px; gap: 5px; }
+    .poster-background { object-position: 38% center; }
+    .hero-zeus { height: 76%; left: 2%; bottom: 10%; filter: brightness(.75) saturate(.85); }
+    .hero-sven { height: 46%; right: -22%; top: 20%; filter: brightness(.48); }
+    .poster-art .hero-shield { display: none; }
+    .hero-rocks { width: 100%; right: -35%; bottom: 13%; }
+    .poster-art::after { background: linear-gradient(0deg, #0b1015 5%, #0b1015ed 13%, transparent 35%), linear-gradient(90deg, #0b1015c9, transparent 56%); }
+    .poster-info { grid-column: 1; align-self: end; max-width: 315px; transform: none; }
+    .poster-info h2 { font-size: 20px; } .poster-info p { font-size: 13px; } .poster-action { font-size: 19px; padding: 13px 15px; margin-top: 18px; }
+    .poster-baseline { grid-template-columns: 1fr auto; padding: 15px 24px 25px; gap: 15px; }
+    .poster-global { gap: 12px; } .poster-global > svg { width: 29px; height: 29px; } .poster-global p { font-size: 8px; letter-spacing: .15em; gap: 5px; }
+    .poster-scroll { font-size: 8px; padding-right: 0; gap: 5px; } .poster-season { display: none; }
+    :global(html[lang="ru"]) .poster-title h1 { font-size: clamp(32px, 8.3vw, 50px); }
+  }
+</style>

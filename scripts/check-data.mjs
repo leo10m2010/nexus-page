@@ -391,6 +391,17 @@ for (const t of tournaments) {
   }
 
   const payouts = t.prizePool?.distribution;
+  const announcedTotal = t.prizePool?.total;
+  if (t.prizePool && announcedTotal == null && !payouts?.length) {
+    problems.push(`tournaments.yaml: "${t.id}" needs an announced prize total or a distribution`);
+  }
+  if (announcedTotal != null && (!Number.isFinite(announcedTotal) || announcedTotal < 0)) {
+    problems.push(`tournaments.yaml: "${t.id}" has an invalid prize total`);
+  }
+  if (announcedTotal != null && payouts?.length) {
+    const distributed = payouts.reduce((sum, row) => sum + row.amount * ((row.to ?? row.place) - row.place + 1), 0);
+    if (Math.abs(distributed - announcedTotal) > 0.01) problems.push(`tournaments.yaml: "${t.id}" prize total differs from its distribution`);
+  }
   if (payouts) {
     const coveredPlaces = new Set();
     for (const row of payouts) {

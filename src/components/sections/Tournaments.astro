@@ -1,6 +1,7 @@
 ---
 import Section from "@ui/Section.astro";
 import StatusBadge from "@ui/StatusBadge.astro";
+import { editionStyle } from "@lib/tournament-presentation";
 import {
   getPrizeTotal,
   getTournamentFormats,
@@ -14,6 +15,7 @@ import { useTranslations, resolveLocale } from "@lib/i18n";
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
 const tournaments = await getTournaments();
+const viewResults = { es: "Ver resultados", en: "View results", ru: "Результаты" }[locale];
 ---
 
 <Section id="tournaments" bordered>
@@ -26,6 +28,9 @@ const tournaments = await getTournaments();
       tournaments.map((tour, i) => (
         <a
           href={tournamentPath(tour.id, locale)}
+          data-edition={tour.id}
+          data-status={tour.status}
+          style={editionStyle(tour.roadmapColor)}
           class={`card card-tile flex flex-col justify-between gap-8 rounded-card p-8 transition-colors sm:p-10 ${
             i === 0 ? "md:col-span-2" : ""
           }`}
@@ -64,7 +69,7 @@ const tournaments = await getTournaments();
                   {t.competition.info.format}
                 </dt>
                 <dd class="mt-1 text-ink">
-                  {getTournamentFormats(tour).map((format) => t.competition.format[format]).join(" + ")}
+                    {getTournamentFormats(tour).map((format) => t.competition.format[format]).join(" + ") || t.roadmap.comingSoon}
                 </dd>
               </div>
               {tour.prizePool && (
@@ -80,7 +85,7 @@ const tournaments = await getTournaments();
             </dl>
 
             <span class="card-cta font-display text-[0.75rem] font-semibold tracking-[0.16em] text-accent-lift uppercase">
-              {t.competition.viewTournament}
+              {tour.status === "finished" ? viewResults : t.competition.viewTournament}
               <span aria-hidden="true" class="card-arrow">&rarr;</span>
             </span>
           </div>
@@ -91,6 +96,9 @@ const tournaments = await getTournaments();
 </Section>
 
 <style>
+  .card[data-status="upcoming"], .card[data-status="live"] { border-top: 2px solid var(--edition-accent, var(--c-accent)); background-color: var(--edition-surface, var(--c-bg-elev)); }
+  .card[data-status="finished"] { border-left: 2px solid #8292a3; background-color: var(--c-bg); }
+  .card[data-status="finished"] .card-cta { color: #b9c5d1; }
   .card:hover { border-color: var(--c-accent); }
   .card-arrow {
     display: inline-block;

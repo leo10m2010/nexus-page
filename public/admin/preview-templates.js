@@ -55,7 +55,7 @@ nxWindow.NX_TEAM_META = TEAM_META;
 
 function prizeTotal(prizePool) {
   var distribution = prizePool && prizePool.get("distribution");
-  if (!distribution || distribution.size === 0) return null;
+  if (!distribution || distribution.size === 0) return prizePool && prizePool.get("total") != null ? prizePool.get("total") : null;
   return distribution.reduce(function (sum, row) {
     var place = Number(row.get("place"));
     var to = Number(row.get("to") || place);

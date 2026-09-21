@@ -76,6 +76,11 @@ matches:
     bracket: final
     round: 1
     slot: 1
+    score:
+      home: 0
+      away: 3
+    liquipediaRevision: 2428237
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
   - id: s1-third
     stage: thirdPlace
     startsAt: "2026-09-14T20:55:00Z"
@@ -85,5 +90,8 @@ matches:
     bracket: final
     round: 2
     slot: 1
-    liquipediaRevision: 2427698
+    liquipediaRevision: 2428237
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/1
+    score:
+      home: 2
+      away: 0

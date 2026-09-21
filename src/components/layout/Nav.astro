@@ -1,292 +1,58 @@
 ---
 import { Icon } from "astro-icon/components";
 import BrandLogoMono from "@ui/BrandLogoMono.astro";
-import Button from "@ui/Button.astro";
-import ThemeToggle from "@layout/ThemeToggle.astro";
 import LocaleSwitcher from "@layout/LocaleSwitcher.astro";
-import { navItems, NAV_HEIGHT } from "@config/nav";
-import { ctas } from "@config/site";
+import { social } from "@config/site";
 import { showCompetition } from "@config/features";
-import { getRoadmapNumeral, getRoadmapStages } from "@lib/roadmap";
-import { formatMoney } from "@lib/format";
 import { localePath, resolveLocale, useTranslations } from "@lib/i18n";
-
+interface Props { overlay?: boolean }
+const { overlay = false } = Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
-
-const homePath = localePath(locale);
-const competitionHref = `${homePath}competition/`.replace("//", "/");
-
-const isHome = Astro.url.pathname === homePath;
-const sectionHref = (hash: string) => (isHome ? hash : `${homePath}${hash}`);
-
-const stages = showCompetition ? await getRoadmapStages(locale) : [];
+const home = localePath(locale);
+const isHome = Astro.url.pathname === home;
+const section = (id: string) => isHome ? `#${id}` : `${home}#${id}`;
+const labels = { es: { watch: "EN VIVO", partners: "PARTNERS" }, en: { watch: "WATCH", partners: "PARTNERS" }, ru: { watch: "ЭФИР", partners: "ПАРТНЁРЫ" } }[locale];
 ---
-
-<div id="nav-sentinel" class="h-px w-px" aria-hidden="true"></div>
-
-<header
-  class="site-header fixed inset-x-0 top-0 z-50 border-b border-line backdrop-blur-xl"
-  style={`height:${NAV_HEIGHT}px`}
->
-  <nav
-    class="mx-auto flex h-full max-w-[1400px] items-center gap-6 px-5 sm:px-8"
-    aria-label={t.a11y.primaryNav}
-  >
-    <a href={sectionHref("#home")} class="brand shrink-0" aria-label={t.a11y.backToTop}>
-      <BrandLogoMono height={36} class="text-ink" />
-    </a>
-
-    <ul class="ml-auto hidden items-center gap-4 xl:gap-8 lg:flex">
-      {
-        navItems.map((l) => (
-          <li>
-            <a
-              href={sectionHref(l.href)}
-              class="nav-link font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
-            >
-              {t.nav[l.key]}
-            </a>
-          </li>
-        ))
-      }
-      {
-        showCompetition && (
-          <li class="group relative">
-            <a
-              href={competitionHref}
-              class="nav-link inline-flex items-center gap-1.5 font-display text-[0.8125rem] font-semibold tracking-[0.14em] text-muted uppercase transition-colors hover:text-ink"
-            >
-              {t.competition.navLabel}
-              <Icon
-                name="ph:caret-down-bold"
-                class="caret size-3 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
-              />
-            </a>
-
-            <div class="tournament-panel absolute left-1/2 top-full z-10 w-[23rem] -translate-x-1/2 pt-4">
-              <div class="relative overflow-hidden rounded-card border border-line bg-elev p-5 shadow-[0_24px_48px_-24px_rgb(0_0_0/0.6)]">
-                <p class="relative eyebrow">{t.roadmap.eyebrow}</p>
-
-                {
-                  stages.map((stage, i) =>
-                    stage.href ? (
-                      <a
-                        href={stage.href}
-                        class="panel-row relative mt-4 flex items-center gap-3 rounded-control border border-accent/30 bg-bg p-3 transition-colors"
-                      >
-                        {stage.icon ? (
-                          <img
-                            src={stage.icon}
-                            alt=""
-                            width="28"
-                            height="40"
-                            class="h-10 w-auto shrink-0 object-contain"
-                          />
-                        ) : (
-                          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-control border border-accent bg-accent font-display text-sm font-bold text-on-accent">
-                            {getRoadmapNumeral(i)}
-                          </span>
-                        )}
-                        <span class="min-w-0 flex-1">
-                          <span class="block truncate font-display text-sm font-bold text-ink">
-                            {stage.name}
-                          </span>
-                          <span class="block truncate text-xs text-muted">
-                            {stage.dates ?? t.roadmap.dateTbd}
-                          </span>
-                        </span>
-                        <span class="shrink-0 font-display text-sm font-bold text-accent-lift">
-                          {formatMoney(stage.prizeTotal, stage.currency, locale)}
-                        </span>
-                      </a>
-                    ) : null,
-                  )
-                }
-
-                {
-                  stages.some((s) => !s.href) && (
-                    <ul class="relative mt-4 flex flex-col gap-2 border-t border-line pt-4">
-                      {stages.map(
-                        (stage, i) =>
-                          !stage.href && (
-                            <li class="flex items-center gap-3 text-xs">
-                              <span class="font-display font-bold text-muted">{getRoadmapNumeral(i)}</span>
-                              <span class="min-w-0 flex-1 truncate text-muted">{stage.name}</span>
-                              <span class="shrink-0 text-muted">{t.roadmap.comingSoon}</span>
-                            </li>
-                          ),
-                      )}
-                    </ul>
-                  )
-                }
-
-                <a
-                  href={competitionHref}
-                  class="panel-cta relative mt-4 flex items-center justify-between border-t border-line pt-4 font-display text-[0.75rem] font-bold tracking-[0.12em] text-accent-lift uppercase"
-                >
-                  {t.competition.allTournaments}
-                  <span aria-hidden="true" class="panel-arrow">&rarr;</span>
-                </a>
-              </div>
-            </div>
-          </li>
-        )
-      }
-    </ul>
-
-    <div class="ml-auto flex items-center gap-2 lg:ml-0">
-      <LocaleSwitcher />
-      <ThemeToggle />
-
-      <span class="hidden lg:block">
-        <Button {...ctas.partnership} label={t.cta.partnership} class="!py-[0.6875rem]" />
-      </span>
-
-      <button
-        type="button"
-        data-menu-toggle
-        data-label-open={t.a11y.openMenu}
-        data-label-close={t.a11y.closeMenu}
-        class="menu-toggle relative grid size-10 place-items-center rounded-control border border-line text-ink lg:hidden"
-        aria-label={t.a11y.openMenu}
-        aria-expanded="false"
-        aria-controls="mobile-menu"
-      >
-        <Icon name="ph:list-bold" class="icon-open size-5" />
-        <Icon name="ph:x-bold" class="icon-close size-5" />
-      </button>
-    </div>
+<header class:list={["brand-header", { "brand-header--overlay": overlay }]}>
+  <nav class="brand-nav" aria-label={t.a11y.primaryNav}>
+    <div class="brand-nav-left"><div class="brand-social"><a href={social.instagram} aria-label="Instagram" target="_blank" rel="noopener noreferrer"><Icon name="simple-icons:instagram" /></a><a href={social.facebook} aria-label="Facebook" target="_blank" rel="noopener noreferrer"><Icon name="simple-icons:facebook" /></a><a href={social.discord} aria-label="Discord" target="_blank" rel="noopener noreferrer"><Icon name="simple-icons:discord" /></a></div>{showCompetition && <a class="brand-desktop-link" href={section("teams-showcase")}>{t.competition.teams}</a>}<a class="brand-desktop-link" href={section("channels")}>{labels.watch}</a></div>
+    <a href={section("home")} class="brand-seal" aria-label={t.a11y.backToTop}><BrandLogoMono height={32} /></a>
+    <div class="brand-nav-right"><a class="brand-desktop-link" href={section("partners")}>{labels.partners}</a>{showCompetition && <a class="brand-desktop-link" href={`${home}competition/`}>{t.competition.navLabel}</a>}<LocaleSwitcher /><button class="brand-menu-toggle" data-menu-toggle data-label-open={t.a11y.openMenu} data-label-close={t.a11y.closeMenu} aria-label={t.a11y.openMenu} aria-expanded="false" aria-controls="mobile-menu"><Icon name="ph:list" /></button></div>
   </nav>
-
-  <div id="mobile-menu" class="mobile-menu grid lg:hidden" inert>
-    <div class="overflow-hidden">
-      <ul class="flex flex-col gap-1 border-t border-line bg-elev px-5 pt-6">
-        {
-          navItems.map((l) => (
-            <li>
-              <a href={sectionHref(l.href)} class="menu-link display-sm block py-3 text-2xl text-ink">
-                {t.nav[l.key]}
-              </a>
-            </li>
-          ))
-        }
-        {
-          showCompetition && (
-            <li>
-              <a href={competitionHref} class="menu-link display-sm block py-3 text-2xl text-ink">
-                {t.competition.navLabel}
-              </a>
-            </li>
-          )
-        }
-      </ul>
-      <div class="bg-elev px-5 pb-6">
-        <Button {...ctas.partnership} label={t.cta.partnership} block class="menu-link mt-5" />
-      </div>
-    </div>
-  </div>
+  <nav id="mobile-menu" class="brand-mobile-menu" aria-label={t.a11y.primaryNav} hidden inert>
+    {showCompetition && <><a href={`${home}competition/`}>{t.competition.navLabel}</a><a href={section("teams-showcase")}>{t.competition.teams}</a></>}<a href={section("partners")}>{labels.partners}</a><a href={section("channels")}>{labels.watch}</a><a href={section("about")}>{t.nav.about}</a><a href={`${home}mediakit/`}>{t.cta.partnership}</a>
+  </nav>
 </header>
-
-<style>
-
-  .nav-link { position: relative; padding-block: 0.35rem; white-space: nowrap; line-height: 1; }
-  .nav-link::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: 0;
-    height: 1px;
-    background: var(--c-accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s var(--ease-out-quint);
-  }
-  .nav-link:hover::after { transform: scaleX(1); }
-
-  .tournament-panel {
-    opacity: 0;
-    transform: translate(-50%, -6px);
-    pointer-events: none;
-    transition: opacity 0.2s var(--ease-out-quint), transform 0.2s var(--ease-out-quint);
-  }
-  .group:hover .tournament-panel,
-  .group:focus-within .tournament-panel {
-    opacity: 1;
-    transform: translate(-50%, 0);
-    pointer-events: auto;
-  }
-  .panel-row:hover { background: var(--c-bg-elev-2); }
-  .panel-arrow { display: inline-block; transition: transform 0.25s var(--ease-out-quint); }
-  .panel-cta:hover .panel-arrow { transform: translateX(3px); }
-
-  .site-header {
-    background: var(--c-scrim);
-    box-shadow: 0 12px 30px -18px transparent;
-    transition: background-color 0.35s var(--ease-out-quint), box-shadow 0.35s var(--ease-out-quint);
-  }
-  .site-header[data-scrolled="true"] {
-    background: var(--c-bg-elev);
-    box-shadow: 0 12px 30px -18px rgb(0 0 0 / 0.5);
-  }
-
-  .brand { transition: transform 0.25s var(--ease-out-quint); }
-  .brand:active { transform: scale(0.96); }
-
-  .menu-toggle .icon-open,
-  .menu-toggle .icon-close {
-    position: absolute;
-    transition: opacity 0.25s var(--ease-out-quint), transform 0.25s var(--ease-out-quint);
-  }
-  .menu-toggle .icon-close { opacity: 0; transform: rotate(-45deg) scale(0.6); }
-  .menu-toggle[aria-expanded="true"] .icon-open { opacity: 0; transform: rotate(45deg) scale(0.6); }
-  .menu-toggle[aria-expanded="true"] .icon-close { opacity: 1; transform: rotate(0deg) scale(1); }
-
-  .mobile-menu {
-    grid-template-rows: 0fr;
-    transition: grid-template-rows 0.35s var(--ease-out-quint);
-  }
-  .mobile-menu.is-open { grid-template-rows: 1fr; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .nav-link::after { transition: none; }
-    .site-header { transition: none; }
-    .brand:active { transform: none; }
-    .menu-toggle .icon-open,
-    .menu-toggle .icon-close { transition: none; }
-    .mobile-menu { transition: none; }
-    .tournament-panel { transition: none; }
-    .caret { transition: none; }
-    .panel-arrow { transition: none; }
-  }
-</style>
-
 <script>
-  const btn = document.querySelector<HTMLButtonElement>("[data-menu-toggle]");
-  const menu = document.getElementById("mobile-menu");
-
-  const setMenu = (open: boolean) => {
-    if (!menu || !btn) return;
-    menu.classList.toggle("is-open", open);
-    menu.toggleAttribute("inert", !open);
-    btn.setAttribute("aria-expanded", String(open));
-    const label = open ? btn.dataset.labelClose : btn.dataset.labelOpen;
-    if (label) btn.setAttribute("aria-label", label);
-  };
-
-  btn?.addEventListener("click", () => setMenu(btn.getAttribute("aria-expanded") !== "true"));
-  menu?.querySelectorAll(".menu-link").forEach((a) =>
-    a.addEventListener("click", () => setMenu(false)),
-  );
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") setMenu(false);
-  });
-
-  const header = document.querySelector<HTMLElement>(".site-header");
-  const sentinel = document.getElementById("nav-sentinel");
-  if (header && sentinel && "IntersectionObserver" in window) {
-    new IntersectionObserver(
-      ([entry]) => header.dataset.scrolled = String(!entry!.isIntersecting),
-    ).observe(sentinel);
-  }
+  const button = document.querySelector<HTMLButtonElement>('.brand-menu-toggle');
+  const menu = document.querySelector<HTMLElement>('.brand-mobile-menu');
+  function setMenu(open: boolean) { if (!button || !menu) return; menu.hidden = !open; menu.inert = !open; button.setAttribute('aria-expanded', String(open)); button.setAttribute('aria-label', (open ? button.dataset.labelClose : button.dataset.labelOpen) ?? 'Menu'); }
+  button?.addEventListener('click', () => setMenu(button.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setMenu(false)));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && button?.getAttribute('aria-expanded') === 'true') { setMenu(false); button.focus(); } });
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', event => { if (event.matches) setMenu(false); });
 </script>
+<style>
+  .brand-header { position: fixed; inset: 0 0 auto; z-index: 50; background: var(--c-bg); border-bottom: 1px solid var(--c-line); }
+  .brand-header--overlay { position: relative; z-index: 2; background: transparent; border: 0; color: #f2f4f6; }
+  .brand-nav { display: grid; grid-template-columns: 1fr 150px 1fr; align-items: center; height: 68px; padding-inline: 4.7%; gap: 20px; }
+  .brand-header--overlay .brand-nav { height: 82px; }
+  .brand-nav-left, .brand-nav-right, .brand-social { display: flex; align-items: center; gap: 30px; }
+  .brand-social { gap: 13px; } .brand-nav-right { justify-content: flex-end; }
+  .brand-nav a:not(.brand-seal) { font-family: var(--font-poster); font-size: 17px; text-transform: uppercase; white-space: nowrap; }
+  .brand-nav a:hover { color: var(--c-accent-lift); }
+  .brand-social a { display: grid; place-items: center; min-height: 36px; }
+  .brand-social svg { width: 16px; height: 16px; }
+  .brand-seal { align-self: start; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 28px; height: 118px; width: 150px; margin-top: -35px; border-radius: 0 0 50% 50%; background: #f2f4f6; color: #0b1015; }
+  .brand-header--overlay .brand-seal { height: 128px; padding-bottom: 32px; }
+  .brand-nav :global([data-theme-toggle]), .brand-nav :global([data-locale-toggle]) { border: 0; padding-inline: 4px; }
+  .brand-header--overlay :global([data-theme-toggle]), .brand-header--overlay :global([data-locale-toggle]) { color: #e6edf4; }
+  .brand-nav :global(.locale-menu) { color: var(--c-text); }
+  .brand-menu-toggle { display: none; }
+  .brand-mobile-menu:not([hidden]) { position: absolute; top: 68px; right: 15px; left: 15px; display: grid; padding: 15px 24px; background: var(--c-bg-elev); color: var(--c-text); border: 1px solid var(--c-line-strong); }
+  .brand-mobile-menu a { padding: 10px 0; font-size: 16px; }
+  @media (max-width: 1200px) { .brand-nav { gap: 10px; padding-inline: 30px; } .brand-nav-left, .brand-nav-right { gap: 18px; } .brand-nav a:not(.brand-seal) { font-size: 15px; } }
+  @media (max-width: 1023px) { .brand-desktop-link { display: none; } .brand-menu-toggle { display: grid; place-items: center; width: 34px; height: 40px; } .brand-menu-toggle svg { width: 21px; height: 21px; } .brand-nav-right { gap: 7px; } }
+  @media (max-width: 767px) { .brand-nav { padding-inline: 20px; grid-template-columns: 1fr 95px 1fr; gap: 4px; } .brand-header--overlay .brand-nav { height: 75px; } .brand-social { gap: 11px; } .brand-social a:nth-child(2) { display: none; } .brand-social svg { width: 14px; height: 14px; } .brand-nav-right { gap: 2px; } .brand-nav :global([data-locale-toggle]) { gap: 3px; } .brand-nav :global([data-theme-toggle]) { width: 28px; } .brand-seal, .brand-header--overlay .brand-seal { width: 95px; height: 108px; padding-bottom: 23px; } .brand-seal :global(.brand-logo-mono) { max-width: 75px; } }
+</style>

@@ -61,7 +61,7 @@ export const en: Dictionary = {
       },
       {
         title: "Connection",
-        body: "Nexus Series I already fields teams from multiple regions competing under one bracket instead of staying siloed in regional-only circuits — that's the model each season builds on.",
+        body: "Nexus Series I brought teams from multiple regions together in one bracket. The second edition continues that competition model.",
       },
       {
         title: "Growth",
