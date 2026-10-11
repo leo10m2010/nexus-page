@@ -398,6 +398,7 @@ collections:
         required: false
         pattern: ["^https://liquipedia\\.net/.+", "Usa una URL completa de Liquipedia."]
         hint: "Enlace público al torneo en Liquipedia."
+      - { label: "Total de equipos anunciado", name: "teamCount", widget: "number", value_type: "int", min: 1, required: false, hint: "Incluye las plazas de clasificatoria aún pendientes." }
       - label: "Participantes"
         name: "participants"
         widget: "list"
@@ -423,6 +424,17 @@ collections:
               - { label: "Clasificatoria", value: "qualifier" }
               - { label: "Regional", value: "regional" }
               - { label: "Defensor del título", value: "defending" }
+          - { label: "Grupo", name: "group", widget: "string", required: false }
+          - label: "Roster de esta edición"
+            name: "players"
+            widget: "list"
+            required: false
+            collapsed: true
+            summary: "{{fields.handle}}"
+            hint: "Si se completa, reemplaza el roster general solo en esta temporada."
+            fields:
+              - { label: "Jugador", name: "handle", widget: "string" }
+              - { label: "País (2 letras)", name: "country", widget: "string", required: false, pattern: ["^[A-Za-z]{2}$", "Usa dos letras, por ejemplo PE"] }
       - label: "Premios"
         name: "prizePool"
         widget: "object"
@@ -474,6 +486,10 @@ collections:
           - { label: "Cantidad de equipos", name: "teamCount", widget: "number", value_type: "int", min: 1, required: false }
           - { label: "Mejor de (Bo)", name: "bestOf", widget: "number", value_type: "int", min: 1, step: 2, required: false }
           - { label: "Avanzan", name: "advance", widget: "number", value_type: "int", min: 1, required: false }
+          - { label: "Cantidad de grupos", name: "groupCount", widget: "number", value_type: "int", min: 1, required: false }
+          - { label: "Gran final (Bo)", name: "grandFinalBestOf", widget: "number", value_type: "int", min: 1, step: 2, required: false }
+          - { label: "Inicio de fase", name: "startDate", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+          - { label: "Fin de fase", name: "endDate", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
       - label: "Talento de transmisión"
         name: "broadcastTalent"
         widget: "list"

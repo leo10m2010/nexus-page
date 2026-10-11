@@ -1,5 +1,5 @@
 import { roadmapPlaceholders } from "@config/roadmap";
-import { getParticipants, getPrizeTotal, getTournaments, tournamentPath } from "@lib/competition";
+import { getParticipants, getPrizeTotal, getTournamentTeamCount, getTournaments, tournamentPath } from "@lib/competition";
 import { formatDateRange } from "@lib/format";
 import type { Team, Tournament } from "@lib/competition";
 import type { Locale } from "@types";
@@ -57,7 +57,7 @@ export async function getRoadmapStages(locale: Locale): Promise<RoadmapStage[]> 
         prizeTotal: getPrizeTotal(tour) ?? 0,
         currency: tour.prizePool?.currency ?? "USD",
         teams: participants.map((p) => p.team),
-        teamCount: tour.participants ? participants.length : null,
+        teamCount: getTournamentTeamCount(tour),
         icon: tour.roadmapIcon ?? placeholder?.icon ?? null,
         accent: tour.roadmapColor ?? placeholder?.accent ?? "#1477e7",
         liquipediaUrl: tour.liquipediaUrl ?? null,

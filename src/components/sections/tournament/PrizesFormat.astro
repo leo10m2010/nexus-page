@@ -1,7 +1,7 @@
 ---
 import { Icon } from "astro-icon/components";
 import { getPrizeTotal, type Tournament, type Phase } from "@lib/competition";
-import { formatMoney } from "@lib/format";
+import { formatMoney, formatDateRange } from "@lib/format";
 import { useTranslations, resolveLocale } from "@lib/i18n";
 interface Props { tournament: Tournament; phases: Phase[]; }
 const { tournament, phases } = Astro.props;
@@ -27,7 +27,12 @@ const placement = (row: (typeof payouts)[number]) => row.to ? c.placeRange(row.p
     <h2 id="format-title">{c.section.format}</h2>
     <ol class="format-flow">{phases.map(phase => <li class="phase-step">
       <span class="phase-emblem" aria-hidden="true"><Icon name={phase.key === "groupStage" ? "ph:users-four" : "ph:tree-structure"} /></span>
-      <div><h3>{c.phase[phase.key]}</h3><p>{c.format[phase.format]}</p><ul class="phase-stats">{phase.teamCount && <li><Icon name="ph:users-three" aria-hidden="true" />{c.teamCount(phase.teamCount)}</li>}{phase.bestOf && <li><Icon name="ph:sword" aria-hidden="true" />{c.bestOf(phase.bestOf)}</li>}{phase.advance && phase.advance !== phase.teamCount && <li><Icon name="ph:arrow-right" aria-hidden="true" />{c.advance(phase.advance)}</li>}</ul></div>
+      <div><h3>{c.phase[phase.key]}</h3><p>{c.format[phase.format]}</p>
+        {phase.startDate && phase.endDate && <p>{formatDateRange(phase.startDate, phase.endDate, locale)}</p>}
+        {phase.groupCount && phase.teamCount && <p>{{ es: `${phase.groupCount} grupos de ${phase.teamCount / phase.groupCount} equipos`, en: `${phase.groupCount} groups of ${phase.teamCount / phase.groupCount} teams`, ru: `${phase.groupCount} группы по ${phase.teamCount / phase.groupCount} команд` }[locale]}{phase.advance && ` · ${{ es: `Los ${phase.advance / phase.groupCount} primeros de cada grupo avanzan.`, en: `The top ${phase.advance / phase.groupCount} in each group advance.`, ru: `Лучшие ${phase.advance / phase.groupCount} из каждой группы проходят дальше.` }[locale]}`}</p>}
+        <ul class="phase-stats">{phase.teamCount && <li><Icon name="ph:users-three" aria-hidden="true" />{c.teamCount(phase.teamCount)}</li>}{phase.bestOf && <li><Icon name="ph:sword" aria-hidden="true" />{c.bestOf(phase.bestOf)}</li>}{phase.advance && phase.advance !== phase.teamCount && <li><Icon name="ph:arrow-right" aria-hidden="true" />{c.advance(phase.advance)}</li>}</ul>
+        {phase.grandFinalBestOf && <p>{c.stage.grandFinal} · {c.bestOf(phase.grandFinalBestOf)}</p>}
+      </div>
     </li>)}</ol>
   </section>}
 </div>

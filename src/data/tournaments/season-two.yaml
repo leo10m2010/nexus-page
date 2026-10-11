@@ -1,10 +1,129 @@
-name: Nexus Series II
+id: season-two
+name: NEXUS SERIES II
 status: upcoming
 startDate: 2026-10-15
-endDate: 2026-10-27
-roadmapColor: "#8b3dff"
+endDate: 2026-11-01
+region: South America
+venue: online
+roadmapColor: "#2595d3"
 liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+teamCount: 12
 prizePool:
   currency: USD
   total: 20000
-id: season-two
+  distribution:
+    - { place: 1, amount: 12000 }
+    - { place: 2, amount: 5000 }
+    - { place: 3, amount: 3000 }
+phases:
+  - key: groupStage
+    format: roundRobin
+    startDate: 2026-10-15
+    endDate: 2026-10-24
+    teamCount: 12
+    groupCount: 2
+    bestOf: 3
+    advance: 8
+  - key: playoffs
+    format: doubleElimination
+    startDate: 2026-10-28
+    endDate: 2026-11-01
+    teamCount: 8
+    bestOf: 3
+    grandFinalBestOf: 5
+broadcastTalent:
+  - name: Tultras
+    language: en
+    icon: simple-icons:twitch
+    href: https://www.twitch.tv/nexusmedia_en
+participants:
+  - team: amaru-gaming
+    via: invited
+    group: B
+    players:
+      - { handle: Costabile }
+      - { handle: PiPi }
+      - { handle: Oscar }
+      - { handle: N1ght }
+      - { handle: Panda }
+  - team: chandogs
+    via: invited
+    group: B
+    players:
+      - { handle: Toxic, country: PE }
+      - { handle: S1RENM, country: PE }
+      - { handle: YiSuS, country: CO }
+      - { handle: Kobe, country: PE }
+      - { handle: Bastian, country: PE }
+  - team: los-perros
+    via: invited
+    group: A
+    players:
+      - { handle: payk }
+      - { handle: SHEOL, country: PE }
+      - { handle: Vitaly }
+      - { handle: Asao, country: PE }
+      - { handle: Michael }
+  - team: new-growth
+    via: invited
+    group: B
+    players:
+      - { handle: Tiburoncin, country: PE }
+      - { handle: Ñengo }
+      - { handle: Hermit }
+      - { handle: blake, country: PE }
+      - { handle: JimmyCoff666 }
+  - team: rebeldes
+    via: invited
+    group: A
+    players:
+      - { handle: hFn }
+      - { handle: Panda, country: UA }
+      - { handle: hotoke, country: RU }
+      - { handle: waveformn }
+      - { handle: Hane }
+  - team: teamdk
+    via: invited
+    group: B
+    players:
+      - { handle: Snufy, country: PE }
+      - { handle: Robo-Z }
+      - { handle: Junior Alex, country: PE }
+      - { handle: Zxca }
+      - { handle: SexyeYogye }
+  - team: team-cobra
+    via: invited
+    group: B
+    players:
+      - { handle: Parker }
+      - { handle: SLATEMS }
+      - { handle: Frank }
+      - { handle: CoYoTão, country: BR }
+      - { handle: Stinger }
+  - team: team-lynx
+    via: invited
+    group: A
+    players:
+      - { handle: 'v1olent`' }
+      - { handle: mellojul }
+      - { handle: htiviy_vladik, country: UA }
+      - { handle: QBFY }
+      - { handle: kreker }
+  - team: team-synapse
+    via: invited
+    group: A
+    players:
+      - { handle: TA2000 }
+      - { handle: Mikey }
+      - { handle: emptiness死, country: KZ }
+      - { handle: Jeezy, country: TR }
+      - { handle: Bengan }
+  - team: zero-tenacity
+    via: invited
+    group: A
+    players:
+      - { handle: nesfeer }
+      - { handle: erase }
+      - { handle: nefrit }
+      - { handle: raregods, country: RU }
+      - { handle: Till The End }

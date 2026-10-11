@@ -68,6 +68,7 @@ const tournaments = defineCollection({
       roadmapIcon: z.string().optional(),
       roadmapColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
       liquipediaUrl: z.url().optional(),
+      teamCount: z.number().int().positive().optional(),
       prizePool: z
         .object({
           currency: z.string().regex(/^[A-Z]{3}$/),
@@ -101,11 +102,15 @@ const tournaments = defineCollection({
             teamCount: z.number().int().positive().optional(),
             bestOf: bestOf.optional(),
             advance: z.number().int().positive().optional(),
+            groupCount: z.number().int().positive().optional(),
+            grandFinalBestOf: bestOf.optional(),
+            startDate: z.coerce.date().optional(),
+            endDate: z.coerce.date().optional(),
           }),
         )
         .optional(),
       participants: z
-        .array(z.object({ team: z.string(), via: qualification.optional() }))
+        .array(z.object({ team: z.string(), via: qualification.optional(), group: z.string().optional(), players: z.array(player).optional() }))
         .optional(),
       broadcastTalent: z
         .array(
@@ -119,12 +124,24 @@ const tournaments = defineCollection({
         .optional(),
     })
     .superRefine((tournament, ctx) => {
+      if (tournament.teamCount && (tournament.participants?.length ?? 0) > tournament.teamCount) {
+        ctx.addIssue({ code: "custom", path: ["teamCount"], message: "El total anunciado no puede ser menor que los participantes confirmados" });
+      }
       const phaseKeys = new Set<string>();
       for (const [index, phase] of (tournament.phases ?? []).entries()) {
         if (phaseKeys.has(phase.key)) {
           ctx.addIssue({ code: "custom", path: ["phases", index, "key"], message: "La fase está repetida" });
         }
         phaseKeys.add(phase.key);
+        if (phase.groupCount && phase.teamCount && phase.teamCount % phase.groupCount !== 0) {
+          ctx.addIssue({ code: "custom", path: ["phases", index, "groupCount"], message: "Los equipos deben repartirse en grupos del mismo tamaño" });
+        }
+        if (phase.groupCount && phase.advance && phase.advance % phase.groupCount !== 0) {
+          ctx.addIssue({ code: "custom", path: ["phases", index, "advance"], message: "Debe avanzar la misma cantidad de equipos por grupo" });
+        }
+        if (phase.startDate && phase.endDate && (phase.endDate < phase.startDate || phase.startDate < tournament.startDate || phase.endDate > tournament.endDate)) {
+          ctx.addIssue({ code: "custom", path: ["phases", index, "startDate"], message: "Las fechas de la fase deben estar ordenadas y dentro del torneo" });
+        }
         if (phase.teamCount && phase.advance && phase.advance > phase.teamCount) {
           ctx.addIssue({
             code: "custom",

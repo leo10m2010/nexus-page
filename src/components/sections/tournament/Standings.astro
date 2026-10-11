@@ -2,7 +2,7 @@
 import Section from "@ui/Section.astro";
 import TeamMark from "@ui/TeamMark.astro";
 import type { Group } from "@lib/competition";
-import { useTranslations } from "@lib/i18n";
+import { resolveLocale, useTranslations } from "@lib/i18n";
 
 interface Props {
   id: string;
@@ -12,6 +12,7 @@ const { id, groups } = Astro.props;
 
 const t = useTranslations(Astro.currentLocale);
 const c = t.competition;
+const locale = resolveLocale(Astro.currentLocale);
 
 const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
 ---
@@ -68,6 +69,7 @@ const sign = (n: number) => (n > 0 ? `+${n}` : String(n));
               </tbody>
             </table>
           </div>
+          {group.pendingSlots > 0 && <p class="mt-4 text-sm text-muted">{{ es: `${group.pendingSlots} plaza del clasificatorio cerrado por confirmar.`, en: `${group.pendingSlots} closed qualifier slot to be confirmed.`, ru: `${group.pendingSlots} место из закрытой квалификации ещё не определено.` }[locale]}</p>}
         </div>
       ))
     }

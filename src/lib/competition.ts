@@ -68,6 +68,7 @@ export interface StandingRow {
 export interface Group {
   name: string;
   rows: StandingRow[];
+  pendingSlots: number;
 }
 
 export function hasMatchResult(match: Pick<Match, "score" | "walkover">): boolean {
@@ -163,7 +164,7 @@ function flattenBracket(document: BracketDocument): Match[] {
 }
 
 export function getTournamentTeamCount(tournament: Tournament): number | null {
-  return tournament.participants?.length ?? null;
+  return tournament.teamCount ?? tournament.participants?.length ?? null;
 }
 
 export function getTournamentFormats(tournament: Tournament): Phase["format"][] {
@@ -337,12 +338,23 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
   );
 
   const byGroup = new Map<string, Map<string, StandingRow>>();
+  const participants = await getParticipants(tournament);
+  for (const entry of tournament.participants ?? []) {
+    if (!entry.group) continue;
+    const team = participants.find((participant) => participant.team.id === entry.team)?.team;
+    if (!team) continue;
+    const table = byGroup.get(entry.group) ?? new Map<string, StandingRow>();
+    table.set(team.id, { team, wins: 0, losses: 0, mapsWon: 0, mapsLost: 0 });
+    byGroup.set(entry.group, table);
+  }
   for (const match of allMatches.filter((m) => m.group)) {
     const table = byGroup.get(match.group!) ?? new Map<string, StandingRow>();
     byGroup.set(match.group!, table);
     for (const team of [match.home, match.away]) if (team && !table.has(team.id)) table.set(team.id, { team, wins: 0, losses: 0, mapsWon: 0, mapsLost: 0 });
   }
   const isGsl = tournament.phases?.some((phase) => phase.key === "groupStage" && phase.format === "modifiedGsl");
+  const groupPhase = tournament.phases?.find((phase) => phase.key === "groupStage");
+  const groupCapacity = groupPhase?.groupCount && groupPhase.teamCount ? groupPhase.teamCount / groupPhase.groupCount : 0;
 
   for (const match of played) {
     const { home: homeScore, away: awayScore } = match.score ?? { home: 0, away: 0 };
@@ -372,6 +384,7 @@ export async function getGroups(tournamentId: string): Promise<Group[]> {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([name, table]) => ({
       name,
+      pendingSlots: Math.max(0, groupCapacity - table.size),
       rows: [...table.values()].sort(
         (a, b) =>
           b.wins - a.wins ||
@@ -386,11 +399,11 @@ export async function getParticipants(tournament: Tournament): Promise<Participa
   if (!tournament.participants?.length) return [];
 
   const teamById = new Map((await getTeams()).map((t) => [t.id, t]));
-  return tournament.participants.map(({ team, via }) => {
+  return tournament.participants.map(({ team, via, players }) => {
     const found = teamById.get(team);
     if (!found) {
       throw new Error(`tournaments.yaml: "${tournament.id}" lists unknown team "${team}"`);
     }
-    return { team: found, via };
+    return { team: players ? { ...found, players, liquipediaUrl: tournament.liquipediaUrl ?? found.liquipediaUrl } : found, via };
   });
 }

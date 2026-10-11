@@ -82,7 +82,7 @@ const description = [
     }
     {
       participants.length > 0 && (
-        <Participants id="participants" participants={participants} />
+        <Participants id="participants" participants={participants} teamCount={teamCount ?? participants.length} />
       )
     }
     {groups.length > 0 && <Standings id="standings" groups={groups} />}

@@ -52,7 +52,7 @@ const facts = [
 
 ---
 
-<PageHero title={tournament.name} description={tournament.status === "upcoming" ? t.roadmap.detailsTbd : undefined} art>
+<PageHero title={tournament.name} description={tournament.status === "upcoming" && !tournament.phases?.length && !tournament.participants?.length ? t.roadmap.detailsTbd : undefined} art>
   <div slot="before">
     <a
       href={backHref}

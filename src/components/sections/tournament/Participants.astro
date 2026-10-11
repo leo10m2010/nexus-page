@@ -8,8 +8,9 @@ import { useTranslations, resolveLocale } from "@lib/i18n";
 interface Props {
   id: string;
   participants: Participant[];
+  teamCount?: number;
 }
-const { id, participants } = Astro.props;
+const { id, participants, teamCount = participants.length } = Astro.props;
 
 const locale = resolveLocale(Astro.currentLocale);
 const t = useTranslations(locale);
@@ -19,8 +20,9 @@ const c = t.competition;
 <Section id={id} bordered>
   <div class="flex flex-wrap items-baseline justify-between gap-4">
     <h2 class="display reveal text-[clamp(1.75rem,3.4vw,2.75rem)]">{c.section.participants}</h2>
-    <p class="reveal text-sm text-muted">{c.teamCount(participants.length)}</p>
+    <p class="reveal text-sm text-muted">{c.teamCount(teamCount)}</p>
   </div>
+  {teamCount > participants.length && <p class="mt-4 text-sm text-muted">{{ es: `${participants.length} invitados confirmados · ${teamCount - participants.length} plazas del clasificatorio cerrado por confirmar.`, en: `${participants.length} confirmed invites · ${teamCount - participants.length} closed qualifier slots to be confirmed.`, ru: `${participants.length} подтверждённых приглашений · ${teamCount - participants.length} места из закрытой квалификации ещё не определены.` }[locale]}</p>}
 
   <ul class="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
     {
