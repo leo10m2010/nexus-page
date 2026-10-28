@@ -292,7 +292,7 @@ for (const bracket of brackets) {
       const sourceMatch = localById.get(source.match);
       if (!sourceMatch) {
         problems.push(`brackets.yaml: "${match.id}" points at unknown source "${source.match}"`);
-      } else if (Date.parse(sourceMatch.startsAt) >= Date.parse(match.startsAt)) {
+      } else if (match.startsAtConfirmed !== false && sourceMatch.startsAtConfirmed !== false && Date.parse(sourceMatch.startsAt) >= Date.parse(match.startsAt)) {
         problems.push(`brackets.yaml: "${match.id}" must start after source "${source.match}"`);
       }
     }

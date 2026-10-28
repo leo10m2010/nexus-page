@@ -149,6 +149,14 @@ export function compareTournament(snapshot, remote) {
       if (peruDay < String(tournament.startDate).slice(0, 10) || peruDay > String(tournament.endDate).slice(0, 10)) issues.push("Fecha fuera del torneo.");
     }
     if (current) {
+      if (current.startsAtConfirmed === false) {
+        const predecessors = [current.homeSource, current.awaySource].filter(Boolean).map((origin) => local.get(origin.match));
+        const successors = [...local.values()].filter((m) => [m.homeSource, m.awaySource].some((origin) => origin?.match === current.id));
+        const validSchedule = match.startsAt && predecessors.every((m) => m && m.startsAtConfirmed !== false && new Date(m.startsAt) < new Date(match.startsAt))
+          && successors.every((m) => m.startsAtConfirmed === false || new Date(m.startsAt) > new Date(match.startsAt));
+        if (validSchedule) changes.startsAtConfirmed = { before: false, after: true };
+        else issues.push("Horario por confirmar: la fecha de Liquipedia contradice la progresión del bracket.");
+      }
       if (newMatches.has(id)) {
         for (const field of ["home", "away", "startsAt"]) changes[field] = { before: null, after: current[field] };
       }
@@ -205,7 +213,7 @@ export function applyApproved(snapshot, plan, selected, approveFormat = false, n
     if (winnerOf(match) && winnerOf(match) !== winnerOf(nextResult)
       && [...local.values()].some((candidate) => winnerOf(candidate) && dependsOn(candidate, match.id))) throw new Error("Este ganador ya alimenta un partido con resultado. Revisa manualmente las rondas posteriores.");
     for (const [field, change] of Object.entries(row.changes)) {
-      if (!["startsAt", "home", "away", "score", "walkover", "groupRound"].includes(field) || !equal(match[field], change.before)) throw new Error("Los datos cambiaron. Revisa de nuevo antes de guardar.");
+      if (!["startsAt", "startsAtConfirmed", "home", "away", "score", "walkover", "groupRound"].includes(field) || !equal(match[field], change.before)) throw new Error("Los datos cambiaron. Revisa de nuevo antes de guardar.");
       if (change.after === null) delete match[field];
       else match[field] = structuredClone(change.after);
     }
@@ -225,7 +233,7 @@ export function applyApproved(snapshot, plan, selected, approveFormat = false, n
   }
   for (const match of local.values()) for (const side of ["home", "away"]) {
     const origin = match[`${side}Source`];
-    if (origin && new Date(local.get(origin.match)?.startsAt) >= new Date(match.startsAt)) throw new Error("Un cambio de fecha contradice el orden del bracket.");
+    if (origin && match.startsAtConfirmed !== false && local.get(origin.match)?.startsAtConfirmed !== false && new Date(local.get(origin.match)?.startsAt) >= new Date(match.startsAt)) throw new Error("Un cambio de fecha contradice el orden del bracket.");
   }
   if (!changedIds.length && !approveFormat) throw new Error("Selecciona al menos un cambio.");
   copy.mapping.lastImportedAt = now;

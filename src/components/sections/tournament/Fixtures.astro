@@ -19,7 +19,7 @@ const t = useTranslations(locale);
 const c = t.competition;
 const platforms = [...new Set(channels.map((channel) => channel.platform))];
 
-const playable = matches.filter((m) => m.stage === "groupStage" || (m.home && m.away));
+const playable = matches.filter((m) => m.startsAtConfirmed !== false && (m.stage === "groupStage" || (m.home && m.away)));
 
 const days = [...new Map(playable.map((m) => [dayKey(m.startsAt, "America/Lima"), m.startsAt])).entries()].map(
   ([day, date]) => ({

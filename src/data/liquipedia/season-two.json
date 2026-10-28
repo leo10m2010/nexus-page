@@ -40,12 +40,22 @@
     "6vIiKKtH6Z/R1M1": "s2-ubqf1",
     "6vIiKKtH6Z/R1M2": "s2-ubqf2",
     "6vIiKKtH6Z/R1M3": "s2-ubqf3",
-    "6vIiKKtH6Z/R1M4": "s2-ubqf4"
+    "6vIiKKtH6Z/R1M4": "s2-ubqf4",
+    "6vIiKKtH6Z/R2M1": "s2-ubsf1",
+    "6vIiKKtH6Z/R2M2": "s2-ubsf2",
+    "6vIiKKtH6Z/R4M1": "s2-ubf",
+    "6vIiKKtH6Z/R1M5": "s2-lbr1a",
+    "6vIiKKtH6Z/R1M6": "s2-lbr1b",
+    "6vIiKKtH6Z/R2M3": "s2-lbqf1",
+    "6vIiKKtH6Z/R2M4": "s2-lbqf2",
+    "6vIiKKtH6Z/R3M1": "s2-lbsf",
+    "6vIiKKtH6Z/R4M2": "s2-lbf",
+    "6vIiKKtH6Z/R5M1": "s2-gf"
   },
   "lastReviewedRevision": 2442348,
   "reviewNotes": [
     "Standings use current entrants: SOLID (formerly Amaru Gaming), Team Revenant (replacement for Team Cobra), Selva Esports (replacement for Team OPD). Aliases are tournament-specific.",
     "6vIiKKtH6A/M3 is FF/FF. No winner or numeric score is stored.",
-    "Lower final is listed on October 30 before its October 31 predecessor. Later playoff rounds are not imported until the schedule is verified."
+    "Full playoff progression is imported. Lower final is listed on October 30 before its October 31 predecessor; its source date is retained with startsAtConfirmed=false and shown as unconfirmed."
   ]
 }

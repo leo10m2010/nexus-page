@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { parse, stringify } from "yaml";
 import { parseWikiDate, parseTournamentMatches, compareTournament, applyApproved } from "../netlify/lib/liquipedia-matches.js";
 import { createSyncHandler, serializeApproved } from "../netlify/lib/liquipedia-sync.js";
@@ -135,6 +136,39 @@ test("winner corrections cannot silently alter a scored downstream round", () =>
   const data = snapshot(); data.groupMatches[0].score = { home: 2, away: 0 };
   data.bracket.matches.push({ id: "final", stage: "grandFinal", startsAt: "2026-09-15T20:00:00Z", homeSource: { match: "s1-ga1", outcome: "winner" }, score: { home: 2, away: 0 } });
   assert.throws(() => applyApproved(data, compareTournament(data, remote()), ["groupA/M1"]), /rondas posteriores/);
+});
+test("an explicitly unconfirmed bracket date does not block unrelated result updates", () => {
+  const data = snapshot();
+  data.bracket.matches.push({ id: "unconfirmed", stage: "lowerFinal", startsAt: "2026-09-05T17:00:00Z", startsAtConfirmed: false, homeSource: { match: "s1-ga1", outcome: "winner" } });
+  assert.equal(applyApproved(data, compareTournament(data, remote()), ["groupA/M1"]).changedIds.length, 1);
+});
+test("an unconfirmed date can only be confirmed after the source schedule becomes consistent", () => {
+  const data = snapshot(); data.mapping.matches["playoffs/R1M1"] = "unconfirmed";
+  data.bracket.matches.push({ id: "unconfirmed", stage: "lowerFinal", startsAt: "2026-09-05T17:00:00Z", startsAtConfirmed: false, homeSource: { match: "s1-ga1", outcome: "winner" } });
+  const text = (day) => `{{Bracket|id=playoffs|R1M1={{Match|date=September ${day}, 2026 - 12:00 {{Abbr/PET}}}}}}`;
+  const invalid = compareTournament(data, remote(text(5))).rows[0];
+  assert.equal(invalid.selectable, false); assert.match(invalid.issues.join(" "), /Horario por confirmar/);
+  const plan = compareTournament(data, remote(text(8)));
+  assert.equal(plan.rows[0].selectable, true);
+  assert.deepEqual(plan.rows[0].changes.startsAtConfirmed, { before: false, after: true });
+  const result = applyApproved(data, plan, ["playoffs/R1M1"]);
+  assert.equal(result.snapshot.bracket.matches[0].startsAtConfirmed, true);
+  data.files = { "src/data/brackets/season-one.yaml": { text: stringify(data.bracket) } };
+  const saved = serializeApproved(data, result).find((file) => file.path.endsWith("season-one.yaml"));
+  assert.equal(parse(saved.content).matches[0].startsAtConfirmed, true);
+});
+test("Season 2 includes every playoff round, with all 14 source IDs mapped", () => {
+  const bracket = parse(readFileSync(new URL("../src/data/brackets/season-two.yaml", import.meta.url), "utf8"));
+  const mapping = JSON.parse(readFileSync(new URL("../src/data/liquipedia/season-two.json", import.meta.url), "utf8"));
+  assert.equal(bracket.matches.length, 14);
+  assert.equal(bracket.matches.filter((m) => m.bracket === "upper").length, 7);
+  assert.equal(bracket.matches.filter((m) => m.bracket === "lower").length, 6);
+  assert.equal(bracket.matches.find((m) => m.stage === "grandFinal").bestOf, 5);
+  for (const match of bracket.matches) assert.ok(Object.values(mapping.matches).includes(match.id), match.id);
+  const final = bracket.matches.find((m) => m.stage === "grandFinal");
+  assert.deepEqual(final.homeSource, { match: "s2-ubf", outcome: "winner" });
+  assert.deepEqual(final.awaySource, { match: "s2-lbf", outcome: "winner" });
+  assert.equal(bracket.matches.find((m) => m.id === "s2-lbf").startsAtConfirmed, false);
 });
 
 const token = "test_token_for_authenticated_mock_only";

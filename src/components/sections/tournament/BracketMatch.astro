@@ -8,11 +8,12 @@ interface Props { match: ResolvedMatch; final?: boolean; }
 const { match, final = false } = Astro.props;
 const locale = resolveLocale(Astro.currentLocale);
 const c = useTranslations(locale).competition;
+const unconfirmedTime = { es: "Horario por confirmar", en: "Schedule to be confirmed", ru: "Время уточняется" }[locale];
 const winsNeeded = Math.floor((match.bestOf ?? 3) / 2) + 1;
 const resolvedWinner = match.walkover ?? (match.score && Math.max(match.score.home, match.score.away) === winsNeeded && Math.min(match.score.home, match.score.away) < winsNeeded ? (match.score.home > match.score.away ? "home" : "away") : null);
 ---
 <article class:list={["playoff-match", { "playoff-match--final": final }]} data-bracket-match={match.id} aria-label={`${match.home?.name ?? c.tbd} · ${match.away?.name ?? c.tbd}`}>
-  <header class="playoff-match-meta"><time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time><span>{match.bestOf && c.bestOf(match.bestOf)}</span>{match.home && match.away && <a href={`#match-${match.id}`} aria-label={`${c.section.matches}: ${match.home.name} / ${match.away.name}`}><Icon name="ph:arrow-up-right" /></a>}</header>
+  <header class="playoff-match-meta">{match.startsAtConfirmed === false ? <small>{unconfirmedTime}</small> : <time datetime={match.startsAt.toISOString()}>{formatDate(match.startsAt, locale, "America/Lima")}</time>}<span>{match.bestOf && c.bestOf(match.bestOf)}</span>{match.home && match.away && match.startsAtConfirmed !== false && <a href={`#match-${match.id}`} aria-label={`${c.section.matches}: ${match.home.name} / ${match.away.name}`}><Icon name="ph:arrow-up-right" /></a>}</header>
   <div class="playoff-seats">
     {(["home", "away"] as const).map(seat => <div class:list={["playoff-seat", { "is-winner": resolvedWinner === seat, "is-loser": resolvedWinner !== null && resolvedWinner !== seat }]} data-seat={seat}>
       <TeamMark team={match[seat]} size={29} />

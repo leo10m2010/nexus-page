@@ -83,8 +83,8 @@
       copy.append(text("span", dates(row.startsAt), "change-line"));
       label.append(copy); item.append(label);
       for (const [field, change] of Object.entries(row.changes)) {
-        const value = (v, before) => v == null ? "Sin dato" : field === "score" ? `${v.home} - ${v.away}` : field === "walkover" ? (v === "home" ? "W - FF" : "FF - W") : field === "groupRound" ? ({ opening: "Apertura", elimination: "Eliminación", winners: "Ganadores", decider: "Partido decisivo" })[v] : field === "startsAt" ? dates(v) : field === "home" ? (before ? row.currentHome : row.home) || v : field === "away" ? (before ? row.currentAway : row.away) || v : String(v);
-        item.append(text("p", `${({ startsAt: "Horario", score: "Resultado", walkover: "Resultado por retirada", groupRound: "Ronda", home: "Equipo A", away: "Equipo B" })[field]}: ${value(change.before, true)} → ${value(change.after, false)}`, "change-line"));
+        const value = (v, before) => v == null ? "Sin dato" : field === "startsAtConfirmed" ? (v ? "Confirmado" : "Por confirmar") : field === "score" ? `${v.home} - ${v.away}` : field === "walkover" ? (v === "home" ? "W - FF" : "FF - W") : field === "groupRound" ? ({ opening: "Apertura", elimination: "Eliminación", winners: "Ganadores", decider: "Partido decisivo" })[v] : field === "startsAt" ? dates(v) : field === "home" ? (before ? row.currentHome : row.home) || v : field === "away" ? (before ? row.currentAway : row.away) || v : String(v);
+        item.append(text("p", `${({ startsAt: "Horario", startsAtConfirmed: "Confirmación de horario", score: "Resultado", walkover: "Resultado por retirada", groupRound: "Ronda", home: "Equipo A", away: "Equipo B" })[field]}: ${value(change.before, true)} → ${value(change.after, false)}`, "change-line"));
       }
       for (const issue of row.issues) item.append(text("p", issue, "issue"));
       $(state === "synced" ? "sync-updated-matches" : "sync-matches").append(item);

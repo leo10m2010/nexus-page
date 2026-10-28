@@ -224,6 +224,7 @@ const bracketMatch = z
       "thirdPlace",
     ]),
     startsAt: z.coerce.date(),
+    startsAtConfirmed: z.boolean().optional(),
     liquipediaUrl: z.url().optional(),
     liquipediaRevision: z.number().int().positive().optional(),
     home: z.string().optional(),

@@ -1,8 +1,7 @@
 id: season-two
 tournament: season-two
 defaultBestOf: 3
-# Opening playoffs confirmed by Liquipedia revision 2442348.
-# Later rounds will be added after the contradictory lower-final date is corrected.
+# Full 8U4L2DSL1D bracket from Liquipedia revision 2442348.
 matches:
   - id: s2-ubqf1
     stage: quarterfinal
@@ -42,5 +41,109 @@ matches:
     bracket: upper
     round: 1
     slot: 4
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-ubsf1
+    stage: semifinal
+    startsAt: "2026-10-29T18:00:00Z"
+    homeSource: { match: s2-ubqf1, outcome: winner }
+    awaySource: { match: s2-ubqf2, outcome: winner }
+    bracket: upper
+    round: 2
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-ubsf2
+    stage: semifinal
+    startsAt: "2026-10-29T21:00:00Z"
+    homeSource: { match: s2-ubqf3, outcome: winner }
+    awaySource: { match: s2-ubqf4, outcome: winner }
+    bracket: upper
+    round: 2
+    slot: 2
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-ubf
+    stage: upperFinal
+    startsAt: "2026-10-30T21:00:00Z"
+    homeSource: { match: s2-ubsf1, outcome: winner }
+    awaySource: { match: s2-ubsf2, outcome: winner }
+    bracket: upper
+    round: 3
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbr1a
+    stage: lowerRound
+    startsAt: "2026-10-29T17:00:00Z"
+    homeSource: { match: s2-ubqf1, outcome: loser }
+    awaySource: { match: s2-ubqf2, outcome: loser }
+    bracket: lower
+    round: 1
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbr1b
+    stage: lowerRound
+    startsAt: "2026-10-29T15:00:00Z"
+    homeSource: { match: s2-ubqf3, outcome: loser }
+    awaySource: { match: s2-ubqf4, outcome: loser }
+    bracket: lower
+    round: 1
+    slot: 2
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbqf1
+    stage: lowerRound
+    startsAt: "2026-10-30T15:00:00Z"
+    homeSource: { match: s2-ubsf2, outcome: loser }
+    awaySource: { match: s2-lbr1a, outcome: winner }
+    bracket: lower
+    round: 2
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbqf2
+    stage: lowerRound
+    startsAt: "2026-10-30T18:00:00Z"
+    homeSource: { match: s2-ubsf1, outcome: loser }
+    awaySource: { match: s2-lbr1b, outcome: winner }
+    bracket: lower
+    round: 2
+    slot: 2
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbsf
+    stage: lowerRound
+    startsAt: "2026-10-31T18:00:00Z"
+    homeSource: { match: s2-lbqf1, outcome: winner }
+    awaySource: { match: s2-lbqf2, outcome: winner }
+    bracket: lower
+    round: 3
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-lbf
+    stage: lowerFinal
+    # Source says October 30, before the October 31 lower semifinal.
+    # Preserve the source timestamp for review, but do not publish it as a confirmed date.
+    startsAt: "2026-10-30T21:00:00Z"
+    startsAtConfirmed: false
+    homeSource: { match: s2-ubf, outcome: loser }
+    awaySource: { match: s2-lbsf, outcome: winner }
+    bracket: lower
+    round: 4
+    slot: 1
+    liquipediaRevision: 2442348
+    liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+  - id: s2-gf
+    stage: grandFinal
+    startsAt: "2026-11-01T15:00:00Z"
+    homeSource: { match: s2-ubf, outcome: winner }
+    awaySource: { match: s2-lbf, outcome: winner }
+    bestOf: 5
+    bracket: final
+    round: 1
+    slot: 1
     liquipediaRevision: 2442348
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

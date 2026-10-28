@@ -16,6 +16,7 @@ export interface Match {
   tournament: string;
   stage: MatchStage;
   startsAt: Date;
+  startsAtConfirmed?: boolean;
   liquipediaUrl?: string;
   liquipediaRevision?: number;
   home?: string;
@@ -148,6 +149,7 @@ function flattenBracket(document: BracketDocument): Match[] {
     tournament: document.tournament,
     stage: match.stage,
     startsAt: match.startsAt,
+    startsAtConfirmed: match.startsAtConfirmed,
     liquipediaUrl: match.liquipediaUrl,
     liquipediaRevision: match.liquipediaRevision,
     home: resolveSide(match, "home"),
@@ -278,6 +280,7 @@ export async function getSchedule(
   const upcoming = (await getResolvedMatches())
     .filter((m) => m.tournament.status !== "finished")
     .filter((m) => !hasMatchResult(m) && m.home && m.away)
+    .filter((m) => m.startsAtConfirmed !== false)
     .filter((m) => !tournamentId || m.tournament.id === tournamentId)
     .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime());
 
