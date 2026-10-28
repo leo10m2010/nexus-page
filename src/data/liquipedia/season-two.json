@@ -1,0 +1,51 @@
+{
+  "page": "NEXUS SERIES/2",
+  "autoDiscover": true,
+  "aliases": {
+    "Amaru Gaming": "solid",
+    "Team Cobra": "team-revenant",
+    "Team OPD": "selva-esports"
+  },
+  "matches": {
+    "6vIiKKtH6A/M1": "s2-groups-01",
+    "6vIiKKtH6A/M2": "s2-groups-02",
+    "6vIiKKtH6A/M3": "s2-groups-03",
+    "6vIiKKtH6B/M1": "s2-groups-04",
+    "6vIiKKtH6B/M2": "s2-groups-05",
+    "6vIiKKtH6B/M3": "s2-groups-06",
+    "6vIiKKtH6C/M1": "s2-groups-07",
+    "6vIiKKtH6C/M2": "s2-groups-08",
+    "6vIiKKtH6C/M3": "s2-groups-09",
+    "6vIiKKtH6D/M1": "s2-groups-10",
+    "6vIiKKtH6D/M2": "s2-groups-11",
+    "6vIiKKtH6D/M3": "s2-groups-12",
+    "6vIiKKtH6E/M1": "s2-groups-13",
+    "6vIiKKtH6E/M2": "s2-groups-14",
+    "6vIiKKtH6E/M3": "s2-groups-15",
+    "6vIiKKtH6F/M1": "s2-groups-16",
+    "6vIiKKtH6F/M2": "s2-groups-17",
+    "6vIiKKtH6F/M3": "s2-groups-18",
+    "6vIiKKtH6G/M1": "s2-groups-19",
+    "6vIiKKtH6G/M2": "s2-groups-20",
+    "6vIiKKtH6G/M3": "s2-groups-21",
+    "6vIiKKtH6H/M1": "s2-groups-22",
+    "6vIiKKtH6H/M2": "s2-groups-23",
+    "6vIiKKtH6H/M3": "s2-groups-24",
+    "6vIiKKtH6I/M1": "s2-groups-25",
+    "6vIiKKtH6I/M2": "s2-groups-26",
+    "6vIiKKtH6I/M3": "s2-groups-27",
+    "6vIiKKtH6J/M1": "s2-groups-28",
+    "6vIiKKtH6J/M2": "s2-groups-29",
+    "6vIiKKtH6J/M3": "s2-groups-30",
+    "6vIiKKtH6Z/R1M1": "s2-ubqf1",
+    "6vIiKKtH6Z/R1M2": "s2-ubqf2",
+    "6vIiKKtH6Z/R1M3": "s2-ubqf3",
+    "6vIiKKtH6Z/R1M4": "s2-ubqf4"
+  },
+  "lastReviewedRevision": 2442348,
+  "reviewNotes": [
+    "Standings use current entrants: SOLID (formerly Amaru Gaming), Team Revenant (replacement for Team Cobra), Selva Esports (replacement for Team OPD). Aliases are tournament-specific.",
+    "6vIiKKtH6A/M3 is FF/FF. No winner or numeric score is stored.",
+    "Lower final is listed on October 30 before its October 31 predecessor. Later playoff rounds are not imported until the schedule is verified."
+  ]
+}

@@ -1,0 +1,10 @@
+id: selva-esports
+name: Selva Esports
+tag: SE
+liquipediaUrl: https://liquipedia.net/dota2/Selva_Esports
+players:
+  - { handle: Ribau, country: PE }
+  - { handle: enji, country: BR }
+  - { handle: bsK-, country: PE }
+  - { handle: 16añitos, country: BR }
+  - { handle: Jennie, country: PE }

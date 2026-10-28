@@ -3,6 +3,9 @@ tournament: season-two
 phase: groupStage
 stage: groupStage
 group: B
-startsAt: 2026-10-18T18:00:00Z
+startsAt: 2026-10-18T18:15:00Z
 home: teamdk
-away: amaru-gaming
+away: solid
+score: { home: 1, away: 2 }
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

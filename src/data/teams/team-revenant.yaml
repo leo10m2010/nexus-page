@@ -1,0 +1,10 @@
+id: team-revenant
+name: Team Revenant
+tag: REV
+liquipediaUrl: https://liquipedia.net/dota2/Team_Revenant
+players:
+  - { handle: Zasa, country: PE }
+  - { handle: zerag-, country: PE }
+  - { handle: Ares-, country: PE }
+  - { handle: Hanzama, country: PE }
+  - { handle: Stinger }

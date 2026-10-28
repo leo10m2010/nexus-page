@@ -3,6 +3,9 @@ tournament: season-two
 phase: groupStage
 stage: groupStage
 group: A
-startsAt: 2026-10-21T18:00:00Z
+startsAt: 2026-10-21T18:05:00Z
 home: team-synapse
 away: rebeldes
+score: { home: 2, away: 0 }
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

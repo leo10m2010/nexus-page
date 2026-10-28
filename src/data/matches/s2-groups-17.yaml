@@ -3,5 +3,9 @@ tournament: season-two
 phase: groupStage
 stage: groupStage
 group: B
-startsAt: 2026-10-20T18:00:00Z
-home: amaru-gaming
+startsAt: 2026-10-20T18:15:00Z
+home: solid
+away: pizza-hook
+score: { home: 2, away: 0 }
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

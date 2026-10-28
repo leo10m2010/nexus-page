@@ -1,0 +1,10 @@
+id: pizza-hook
+name: Pizza Hook
+tag: PZHK
+liquipediaUrl: https://liquipedia.net/dota2/Pizza_Hook
+players:
+  - { handle: Porty, country: PE }
+  - { handle: BroColi, country: PE }
+  - { handle: ArzenT }
+  - { handle: Smoker }
+  - { handle: FeelinG }

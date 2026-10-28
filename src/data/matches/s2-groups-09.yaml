@@ -4,5 +4,8 @@ phase: groupStage
 stage: groupStage
 group: B
 startsAt: 2026-10-17T21:00:00Z
-home: team-cobra
+home: team-revenant
 away: teamdk
+walkover: away
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

@@ -5,3 +5,7 @@ stage: groupStage
 group: A
 startsAt: 2026-10-22T15:00:00Z
 home: zero-tenacity
+away: selva-esports
+walkover: home
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2

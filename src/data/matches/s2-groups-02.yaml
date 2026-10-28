@@ -3,6 +3,9 @@ tournament: season-two
 phase: groupStage
 stage: groupStage
 group: A
-startsAt: 2026-10-15T18:00:00Z
+startsAt: 2026-10-15T18:30:00Z
 home: los-perros
 away: rebeldes
+score: { home: 1, away: 2 }
+liquipediaRevision: 2442348
+liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
