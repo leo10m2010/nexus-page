@@ -1,10 +1,13 @@
-id: pizza-hook
+liquipediaUrl: https://liquipedia.net/dota2/Pizza_Hook
 name: Pizza Hook
 tag: PZHK
-liquipediaUrl: https://liquipedia.net/dota2/Pizza_Hook
+logo: /teams/recurso-30-4x.png
 players:
-  - { handle: Porty, country: PE }
-  - { handle: BroColi, country: PE }
-  - { handle: ArzenT }
-  - { handle: Smoker }
-  - { handle: FeelinG }
+  - handle: Porty
+    country: PE
+  - handle: BroColi
+    country: PE
+  - handle: ArzenT
+  - handle: Smoker
+  - handle: FeelinG
+id: pizza-hook
