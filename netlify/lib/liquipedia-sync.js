@@ -1,4 +1,4 @@
-import { parse, parseDocument } from "yaml";
+import { parse, parseDocument, stringify } from "yaml";
 import { loadLiquipediaRevision } from "./liquipedia.js";
 import { compareTournament, applyApproved } from "./liquipedia-matches.js";
 
@@ -14,9 +14,16 @@ export function serializeApproved(original, result) {
     else files.get(path).setIn(steps, value);
   };
   const all = [...result.snapshot.groupMatches, ...(result.snapshot.bracket?.matches ?? [])];
+  const created = [];
   for (const id of result.changedIds) {
     const next = all.find((m) => m.id === id);
     const old = [...original.groupMatches, ...(original.bracket?.matches ?? [])].find((m) => m.id === id);
+    if (!old) {
+      const path = `src/data/matches/${id}.yaml`;
+      if (original.files[path]) throw fail("El archivo del partido nuevo ya existe; revisa la configuración.");
+      created.push({ path, content: stringify(next) });
+      continue;
+    }
     const group = original.groupMatches.some((m) => m.id === id);
     const path = group ? `src/data/matches/${id}.yaml` : `src/data/brackets/${original.tournament.id}.yaml`;
     const prefix = group ? [] : ["matches", original.bracket.matches.findIndex((m) => m.id === id)];
@@ -27,6 +34,7 @@ export function serializeApproved(original, result) {
     update(`src/data/tournaments/${original.tournament.id}.yaml`, ["phases", index, "format"], "modifiedGsl");
   }
   return [
+    ...created,
     ...[...files].map(([path, document]) => ({ path, content: document.toString() })),
     { path: `src/data/liquipedia/${original.tournament.id}.json`, content: JSON.stringify(result.snapshot.mapping, null, 2) + "\n" },
   ];
@@ -77,10 +85,17 @@ export function createSyncHandler({ fetcher = fetch, loadRevision = loadLiquiped
         files[path] = { text, data, sha: item.sha };
         return data;
       };
-      const mapping = await load(`src/data/liquipedia/${id}.json`);
       const tournament = await load(`src/data/tournaments/${id}.yaml`);
+      const mappingPath = `src/data/liquipedia/${id}.json`;
+      const mapping = tree.tree.some((entry) => entry.path === mappingPath)
+        ? await load(mappingPath)
+        : { page: tournament.liquipediaUrl, matches: {}, aliases: {} };
+      mapping.autoDiscover = true;
+      if (!mapping.page) throw fail("Añade la URL de Liquipedia a este torneo para poder sincronizarlo.");
       if (tournament.id !== id || typeof mapping.page !== "string") throw fail("La configuración del torneo no coincide.");
       const paths = new Set(tree.tree.filter((entry) => /^src\/data\/teams\/[a-z0-9-]+\.yaml$/.test(entry.path)).map((entry) => entry.path));
+      // Read all fixtures, not just already mapped ones: new seasons have no mapping yet.
+      for (const entry of tree.tree) if (/^src\/data\/matches\/[a-z0-9-]+\.yaml$/.test(entry.path)) paths.add(entry.path);
       for (const matchId of Object.values(mapping.matches ?? {})) {
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(matchId)) throw fail("La referencia local de un partido es inválida.");
         const path = `src/data/matches/${matchId}.yaml`;

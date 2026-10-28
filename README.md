@@ -464,8 +464,13 @@ en `/admin/sync/`.
 Los resultados completos aparecen como **Finalizado**. Los pendientes no reciben
 marcadores inventados. El importador no modifica casters, canales, sponsors ni
 logos, y rechaza el guardado si hubo otro cambio en GitHub durante la revisión.
-Las referencias estables y los alias están en `src/data/liquipedia/season-one.json`.
-Un cruce nuevo o un formato no reconocido requiere revisión manual.
+Cada torneo usa su `liquipediaUrl`: no hace falta crear un JSON para cada nueva season.
+El panel descubre coincidencias únicas por fecha, fase y equipos compatibles y guarda
+las referencias en `src/data/liquipedia/<id-del-torneo>.json` al aprobar cambios.
+Los vínculos y alias existentes se conservan. Los partidos de grupos nuevos pueden
+crearse al confirmar si ambos equipos participan en el mismo grupo del torneo.
+Equipos desconocidos, coincidencias ambiguas y cruces de playoffs sin vincular
+requieren configuración manual; no se inventan participantes ni progresiones.
 
 Los resultados `W/FF` se guardan como victorias administrativas (`walkover`),
 sin inventar un marcador por mapas. Cuentan para la clasificación y la progresión

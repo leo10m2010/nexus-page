@@ -139,7 +139,7 @@ test("winner corrections cannot silently alter a scored downstream round", () =>
 
 const token = "test_token_for_authenticated_mock_only";
 const event = (body) => ({ httpMethod: "POST", headers: { authorization: `Bearer ${token}`, origin: "https://nexusseries.org", host: "nexusseries.org" }, body: JSON.stringify({ tournament: "season-one", ...body }) });
-function githubMock({ push = true, race = false } = {}) {
+function githubMock({ push = true, race = false, unmapped = false } = {}) {
   const data = snapshot(), calls = [], files = {
     "src/data/liquipedia/season-one.json": JSON.stringify(data.mapping),
     "src/data/tournaments/season-one.yaml": stringify(data.tournament),
@@ -148,6 +148,11 @@ function githubMock({ push = true, race = false } = {}) {
     "src/data/teams/amaru.yaml": stringify(data.teams[0]),
     "src/data/teams/pibble.yaml": stringify(data.teams[1]),
   };
+  if (unmapped) {
+    delete files["src/data/liquipedia/season-one.json"];
+    files["src/data/tournaments/season-one.yaml"] = stringify({ ...data.tournament, liquipediaUrl: sourceUrl });
+    files["src/data/teams/pibble.yaml"] = stringify({ id: "pibble", name: "Pibbles Corp" });
+  }
   const entries = Object.keys(files).map((path, index) => ({ path, type: "blob", sha: `blob${index}`, size: files[path].length }));
   const fetcher = async (url, options) => {
     const root = "https://api.github.com/repos/leo10m2010/nexus-page";
@@ -184,6 +189,52 @@ test("preview performs no writes and does not expose tokens", async () => {
   assert.equal(result.statusCode, 200); assert.equal(JSON.parse(result.body).rows[0].selectable, true);
   assert.ok(mock.calls.every((call) => call.method === "GET")); assert.ok(!result.body.includes(token));
   assert.equal(mock.calls[0].url, "https://api.github.com/repos/leo10m2010/nexus-page");
+});
+test("seasons without a mapping discover fixtures from their Liquipedia URL and save the mapping on approval", async () => {
+  const mock = githubMock({ unmapped: true });
+  const handler = createSyncHandler({ fetcher: mock.fetcher, loadRevision: async (page) => { assert.equal(page, sourceUrl); return remote(); } });
+  const preview = await handler(event({ action: "preview" }));
+  assert.equal(preview.statusCode, 200, preview.body);
+  assert.equal(JSON.parse(preview.body).rows[0].id, "s1-ga1");
+  assert.ok(mock.calls.every((call) => call.method === "GET"));
+  const saved = await handler(event({ action: "apply", head: "head1", revision: 42, selected: ["groupA/M1"] }));
+  assert.equal(saved.statusCode, 200, saved.body);
+  const mapping = mock.calls.find((call) => call.path === "git/trees" && call.method === "POST").body.tree.find((file) => file.path.endsWith("season-one.json"));
+  assert.equal(JSON.parse(mapping.content).matches["groupA/M1"], "s1-ga1");
+});
+test("automatic discovery inherits best-of even with only one recorded map", () => {
+  const data = snapshot(); data.mapping = { ...data.mapping, matches: {}, autoDiscover: true };
+  const row = compareTournament(data, remote(wiki(["1"]))).rows[0];
+  assert.equal(row.id, "s1-ga1"); assert.equal(row.score, null); assert.equal(row.selectable, false);
+});
+test("ambiguous fixtures and conflicting teams are not automatically linked", () => {
+  for (const conflict of [false, true]) {
+    const data = snapshot(); data.mapping = { ...data.mapping, matches: {}, autoDiscover: true };
+    if (conflict) data.groupMatches[0].home = "pibble";
+    else data.groupMatches.push({ ...data.groupMatches[0], id: "duplicate" });
+    assert.equal(compareTournament(data, remote()).rows[0].selectable, false);
+  }
+});
+test("new group fixtures require approval and serialize as new YAML files", () => {
+  const data = snapshot(); data.mapping = { ...data.mapping, matches: {}, autoDiscover: true }; data.groupMatches = [];
+  data.tournament.participants.forEach((p) => { p.group = "A"; }); data.files = {};
+  const plan = compareTournament(data, remote());
+  assert.equal(plan.rows[0].selectable, true);
+  assert.equal(data.groupMatches.length, 0);
+  const result = applyApproved(data, plan, ["groupA/M1"]);
+  const file = serializeApproved(data, result).find((f) => f.path.endsWith(".yaml"));
+  const fixture = parse(file.content);
+  assert.equal(fixture.group, "A"); assert.equal(fixture.home, "amaru");
+  assert.deepEqual(fixture.score, { home: 0, away: 2 });
+  assert.equal(compareTournament(result.snapshot, remote()).rows[0].selectable, false);
+});
+test("ambiguous partial fixtures are not bypassed by creating duplicates", () => {
+  const data = snapshot(); data.mapping = { ...data.mapping, matches: {}, autoDiscover: true };
+  data.tournament.participants.forEach((p) => { p.group = "A"; });
+  delete data.groupMatches[0].away;
+  data.groupMatches.push({ ...data.groupMatches[0], id: "second-slot" });
+  const row = compareTournament(data, remote()).rows[0];
+  assert.equal(row.selectable, false); assert.equal(row.createMatch, undefined);
 });
 test("a trailing slash on GitHub repository lookup reproduces the reported 502", async () => {
   const mock = githubMock();

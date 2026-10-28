@@ -1,4 +1,5 @@
 import { extractTemplates } from "./liquipedia.js";
+import { createHash } from "node:crypto";
 
 const key = (value) => String(value ?? "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
 const equal = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
@@ -54,7 +55,7 @@ export function parseTournamentMatches(wikitext, { bestOfBySource = {} } = {}) {
       const finished = validBo && !invalidMaps && !conflicting && Math.max(officialScore.home, officialScore.away) === wins && Math.min(officialScore.home, officialScore.away) < wins;
       const groupRound = container.name === "matchlist" && container.params.gsl === "losersfirst"
         ? ({ m1: "opening", m2: "opening", m3: "elimination", m4: "winners", m5: "decider" })[slot] : undefined;
-      matches.push({ id, homeName: home["1"]?.trim() || null, awayName: away["1"]?.trim() || null, startsAt: parseWikiDate(p.date), bestOf: validBo ? bestOf : null, groupRound,
+      matches.push({ id, container: container.name, homeName: home["1"]?.trim() || null, awayName: away["1"]?.trim() || null, startsAt: parseWikiDate(p.date), bestOf: validBo ? bestOf : null, groupRound,
         walkover, score: !walkover && finished ? officialScore : null,
         state: walkover || finished ? "finished" : homeResult || awayResult || score.home + score.away > 0 || invalidMaps ? "incomplete" : "pending" });
     }
@@ -68,7 +69,7 @@ export function compareTournament(snapshot, remote) {
   const local = new Map([...groupMatches, ...(bracket?.matches ?? [])].map((match) => [match.id, match]));
   const getBestOf = (match) => match?.bestOf ?? (match?.stage === "groupStage" ? tournament.phases?.find((phase) => phase.key === "groupStage")?.bestOf : bracket?.defaultBestOf);
   const bestOfBySource = Object.fromEntries(Object.entries(mapping.matches ?? {}).map(([source, id]) => [source, getBestOf(local.get(id))]));
-  const parsed = parseTournamentMatches(remote.wikitext, { bestOfBySource });
+  let parsed = parseTournamentMatches(remote.wikitext, { bestOfBySource });
   const teamById = new Map(teams.map((team) => [team.id, team]));
   const names = new Map();
   for (const team of teams) for (const name of [team.name, team.id]) {
@@ -80,6 +81,48 @@ export function compareTournament(snapshot, remote) {
     names.set(key(name), new Set([id]));
   }
   const resolve = (name) => { const ids = names.get(key(name)); return ids?.size === 1 ? [...ids][0] : null; };
+  // Discover only unique, compatible fixtures. Never guess by list order or nearest time.
+  const discovered = {};
+  const newMatches = new Map();
+  if (mapping.autoDiscover) {
+    const claimed = new Set(Object.values(mapping.matches ?? {}));
+    const proposals = new Map();
+    for (const match of parsed.matches) {
+      if (mapping.matches?.[match.id] || !match.startsAt) continue;
+      const home = resolve(match.homeName), away = resolve(match.awayName);
+      const candidates = [...local.values()].filter((candidate) => {
+        if (claimed.has(candidate.id) || (match.container === "matchlist") !== (candidate.stage === "groupStage")) return false;
+        if (candidate.homeSource || candidate.awaySource) return false;
+        if (new Date(candidate.startsAt).toISOString().slice(0, 10) !== match.startsAt.slice(0, 10)) return false;
+        if ((candidate.home && candidate.home !== home) || (candidate.away && candidate.away !== away)) return false;
+        return (home && candidate.home === home) || (away && candidate.away === away);
+      });
+      if (candidates.length === 1) proposals.set(match.id, candidates[0].id);
+    }
+    for (const [source, id] of proposals) {
+      if ([...proposals.values()].filter((value) => value === id).length === 1) discovered[source] = id;
+    }
+    for (const [source, id] of Object.entries(discovered)) bestOfBySource[source] = getBestOf(local.get(id));
+    for (const match of parsed.matches) {
+      if (mapping.matches?.[match.id] || discovered[match.id] || match.container !== "matchlist" || !match.startsAt) continue;
+      const home = resolve(match.homeName), away = resolve(match.awayName);
+      const participant = (id) => tournament.participants?.find((p) => p.team === id);
+      const group = participant(home)?.group;
+      const phase = tournament.phases?.find((p) => p.key === "groupStage");
+      // Creation is limited to confirmed group fixtures; unfamiliar brackets stay manual.
+      if (!home || !away || home === away || !group || participant(away)?.group !== group || !phase?.bestOf) continue;
+      const day = match.startsAt.slice(0, 10);
+      if ((phase.startDate && day < String(phase.startDate).slice(0, 10)) || (phase.endDate && day > String(phase.endDate).slice(0, 10))) continue;
+      if ([...local.values()].some((m) => m.stage === "groupStage" && new Date(m.startsAt).toISOString().slice(0, 10) === day && [m.home, m.away].some((team) => team && [home, away].includes(team)))) continue;
+      if ([...local.values()].some((m) => m.stage === "groupStage" && [m.home, m.away].includes(home) && [m.home, m.away].includes(away))) continue;
+      const id = `${tournament.id}-lp-${createHash("sha256").update(match.id).digest("hex").slice(0, 16)}`;
+      if (local.has(id)) continue;
+      const fixture = { id, tournament: tournament.id, stage: "groupStage", group, startsAt: match.startsAt, home, away, bestOf: phase.bestOf };
+      local.set(id, fixture); newMatches.set(id, fixture); discovered[match.id] = id;
+      bestOfBySource[match.id] = phase.bestOf;
+    }
+    parsed = parseTournamentMatches(remote.wikitext, { bestOfBySource });
+  }
   const resolveLocal = (match, side, seen = new Set()) => {
     if (match?.[side]) return match[side];
     const origin = match?.[`${side}Source`];
@@ -91,7 +134,7 @@ export function compareTournament(snapshot, remote) {
     return resolveLocal(source, origin.outcome === "winner" ? winner : winner === "home" ? "away" : "home", next);
   };
   const rows = parsed.matches.map((match) => {
-    const id = mapping.matches?.[match.id], current = local.get(id), changes = {}, issues = [];
+    const id = mapping.matches?.[match.id] ?? discovered[match.id], current = local.get(id), changes = {}, issues = [];
     if (!current) issues.push("Partido sin vincular; requiere revisión de la configuración.");
     if (!match.startsAt) issues.push("Fecha u horario no reconocidos.");
     if (!match.bestOf) issues.push("No se reconoce el formato de la serie.");
@@ -106,6 +149,9 @@ export function compareTournament(snapshot, remote) {
       if (peruDay < String(tournament.startDate).slice(0, 10) || peruDay > String(tournament.endDate).slice(0, 10)) issues.push("Fecha fuera del torneo.");
     }
     if (current) {
+      if (newMatches.has(id)) {
+        for (const field of ["home", "away", "startsAt"]) changes[field] = { before: null, after: current[field] };
+      }
       if (match.startsAt && new Date(current.startsAt).toISOString() !== new Date(match.startsAt).toISOString()) changes.startsAt = { before: current.startsAt, after: match.startsAt };
       const expectedBo = getBestOf(current);
       if (match.bestOf && expectedBo !== match.bestOf) issues.push(`Formato distinto: Bo${expectedBo} / Bo${match.bestOf}. Revisión manual necesaria.`);
@@ -126,7 +172,7 @@ export function compareTournament(snapshot, remote) {
       }
       if (match.state === "incomplete") issues.push("Serie incompleta: no se guardará un resultado final.");
     }
-    return { sourceId: match.id, id: id ?? null, home: match.homeName, away: match.awayName, currentHome: teamById.get(resolveLocal(current, "home"))?.name, currentAway: teamById.get(resolveLocal(current, "away"))?.name, startsAt: match.startsAt, score: match.score, walkover: match.walkover, groupRound: match.groupRound, state: match.state,
+    return { sourceId: match.id, id: id ?? null, ...(newMatches.has(id) ? { createMatch: newMatches.get(id) } : {}), home: match.homeName, away: match.awayName, currentHome: teamById.get(resolveLocal(current, "home"))?.name, currentAway: teamById.get(resolveLocal(current, "away"))?.name, startsAt: match.startsAt, score: match.score, walkover: match.walkover, groupRound: match.groupRound, state: match.state,
       changes, issues: [...new Set(issues)], selectable: issues.length === 0 && Object.keys(changes).length > 0 };
   });
   const groupPhase = tournament.phases?.find((p) => p.key === "groupStage");
@@ -148,6 +194,11 @@ export function applyApproved(snapshot, plan, selected, approveFormat = false, n
   };
   for (const sourceId of selected) {
     const row = plan.rows.find((candidate) => candidate.sourceId === sourceId);
+    if (row?.selectable && row.createMatch && !local.has(row.id)) {
+      const fixture = structuredClone(row.createMatch);
+      for (const field of ["home", "away", "startsAt"]) delete fixture[field];
+      copy.groupMatches.push(fixture); local.set(row.id, fixture);
+    }
     if (!row?.selectable || !local.has(row.id)) throw new Error("La selección contiene un cambio bloqueado o inexistente.");
     const match = local.get(row.id);
     const nextResult = { score: "score" in row.changes ? row.changes.score.after : match.score, walkover: "walkover" in row.changes ? row.changes.walkover.after : match.walkover };
@@ -160,6 +211,8 @@ export function applyApproved(snapshot, plan, selected, approveFormat = false, n
     }
     if (match.score && match.walkover) throw new Error("El partido no puede tener marcador y resultado administrativo a la vez.");
     copy.mapping.revisions ??= {};
+    copy.mapping.matches ??= {};
+    copy.mapping.matches[sourceId] = row.id;
     copy.mapping.revisions[sourceId] = plan.revision;
     match.liquipediaRevision = plan.revision;
     match.liquipediaUrl = plan.url;
