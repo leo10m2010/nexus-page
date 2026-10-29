@@ -57,5 +57,12 @@
     "Standings use current entrants: SOLID (formerly Amaru Gaming), Team Revenant (replacement for Team Cobra), Selva Esports (replacement for Team OPD). Aliases are tournament-specific.",
     "6vIiKKtH6A/M3 is FF/FF. No winner or numeric score is stored.",
     "Full playoff progression is imported. Lower final is listed on October 30 before its October 31 predecessor; its source date is retained with startsAtConfirmed=false and shown as unconfirmed."
-  ]
+  ],
+  "revisions": {
+    "6vIiKKtH6Z/R1M1": 2443465,
+    "6vIiKKtH6Z/R1M2": 2443465,
+    "6vIiKKtH6Z/R1M3": 2443465,
+    "6vIiKKtH6Z/R1M4": 2443465
+  },
+  "lastImportedAt": "2026-10-29T14:20:14.975Z"
 }

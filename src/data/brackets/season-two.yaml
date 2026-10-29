@@ -5,14 +5,17 @@ defaultBestOf: 3
 matches:
   - id: s2-ubqf1
     stage: quarterfinal
-    startsAt: "2026-10-28T15:00:00Z"
+    startsAt: "2026-10-28T15:20:00Z"
     home: solid
     away: team-synapse
     bracket: upper
     round: 1
     slot: 1
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2443465
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 0
+      away: 2
   - id: s2-ubqf2
     stage: quarterfinal
     startsAt: "2026-10-28T18:00:00Z"
@@ -21,28 +24,37 @@ matches:
     bracket: upper
     round: 1
     slot: 2
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2443465
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 2
+      away: 1
   - id: s2-ubqf3
     stage: quarterfinal
-    startsAt: "2026-10-28T21:00:00Z"
+    startsAt: "2026-10-28T22:00:00Z"
     home: chandogs
     away: rebeldes
     bracket: upper
     round: 1
     slot: 3
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2443465
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 2
+      away: 1
   - id: s2-ubqf4
     stage: quarterfinal
-    startsAt: "2026-10-29T00:00:00Z"
+    startsAt: "2026-10-29T01:30:00Z"
     home: los-perros
     away: new-growth
     bracket: upper
     round: 1
     slot: 4
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2443465
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 0
+      away: 2
   - id: s2-ubsf1
     stage: semifinal
     startsAt: "2026-10-29T18:00:00Z"
