@@ -81,14 +81,17 @@ matches:
       away: 2
   - id: s2-ubf
     stage: upperFinal
-    startsAt: "2026-10-30T21:00:00Z"
+    startsAt: "2026-10-31T00:00:00Z"
     homeSource: { match: s2-ubsf1, outcome: winner }
     awaySource: { match: s2-ubsf2, outcome: winner }
     bracket: upper
     round: 3
     slot: 1
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2444484
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 2
+      away: 0
   - id: s2-lbr1a
     stage: lowerRound
     startsAt: "2026-10-29T18:15:00Z"
@@ -115,24 +118,28 @@ matches:
     walkover: home
   - id: s2-lbqf1
     stage: lowerRound
-    startsAt: "2026-10-30T15:00:00Z"
+    startsAt: "2026-10-30T18:25:00Z"
     homeSource: { match: s2-ubsf2, outcome: loser }
     awaySource: { match: s2-lbr1a, outcome: winner }
     bracket: lower
     round: 2
     slot: 1
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2444484
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 1
+      away: 2
   - id: s2-lbqf2
     stage: lowerRound
-    startsAt: "2026-10-30T18:00:00Z"
+    startsAt: "2026-10-30T22:00:00Z"
     homeSource: { match: s2-ubsf1, outcome: loser }
     awaySource: { match: s2-lbr1b, outcome: winner }
     bracket: lower
     round: 2
     slot: 2
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2444484
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    walkover: away
   - id: s2-lbsf
     stage: lowerRound
     startsAt: "2026-10-31T18:00:00Z"
