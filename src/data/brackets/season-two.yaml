@@ -157,15 +157,16 @@ matches:
     stage: lowerFinal
     # Source says October 30, before the October 31 lower semifinal.
     # Preserve the source timestamp for review, but do not publish it as a confirmed date.
-    startsAt: "2026-10-30T21:00:00Z"
-    startsAtConfirmed: false
+    startsAt: "2026-10-31T21:30:00Z"
+    startsAtConfirmed: true
     homeSource: { match: s2-ubf, outcome: loser }
     awaySource: { match: s2-lbsf, outcome: winner }
     bracket: lower
     round: 4
     slot: 1
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2444484
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    walkover: away
   - id: s2-gf
     stage: grandFinal
     startsAt: "2026-11-01T15:00:00Z"
