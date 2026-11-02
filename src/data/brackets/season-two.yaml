@@ -169,12 +169,15 @@ matches:
     walkover: away
   - id: s2-gf
     stage: grandFinal
-    startsAt: "2026-11-01T15:00:00Z"
+    startsAt: "2026-11-01T21:00:00Z"
     homeSource: { match: s2-ubf, outcome: winner }
     awaySource: { match: s2-lbf, outcome: winner }
     bestOf: 5
     bracket: final
     round: 1
     slot: 1
-    liquipediaRevision: 2442348
+    liquipediaRevision: 2444484
     liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
+    score:
+      home: 3
+      away: 0
