@@ -1,6 +1,5 @@
-id: season-two
 name: NEXUS SERIES II
-status: live
+status: finished
 startDate: 2026-10-15
 endDate: 2026-11-01
 region: South America
@@ -8,13 +7,153 @@ venue: online
 roadmapColor: "#8b3dff"
 liquipediaUrl: https://liquipedia.net/dota2/NEXUS_SERIES/2
 teamCount: 12
+participants:
+  - team: solid
+    via: invited
+    group: B
+    players:
+      - handle: Costabile
+      - handle: PiPi
+      - handle: Oscar
+      - handle: N1ght
+      - handle: Panda
+  - team: chandogs
+    via: invited
+    group: B
+    players:
+      - handle: Toxic
+        country: PE
+      - handle: S1RENM
+        country: PE
+      - handle: YiSuS
+        country: CO
+      - handle: Kobe
+        country: PE
+      - handle: Bastian
+        country: PE
+  - team: los-perros
+    via: invited
+    group: A
+    players:
+      - handle: payk
+      - handle: SHEOL
+        country: PE
+      - handle: kendallx
+        country: PE
+      - handle: CoYoTão
+        country: BR
+      - handle: Michael
+  - team: new-growth
+    via: invited
+    group: B
+    players:
+      - handle: Tiburoncin
+        country: PE
+      - handle: Ñengo
+      - handle: Hermit
+      - handle: Demon
+      - handle: JimmyCoff666
+  - team: rebeldes
+    via: invited
+    group: A
+    players:
+      - handle: hFn
+      - handle: mini
+      - handle: tavo
+      - handle: Hane
+      - handle: Yanbura
+  - team: teamdk
+    via: invited
+    group: B
+    players:
+      - handle: Snufy
+        country: PE
+      - handle: Robo-Z
+      - handle: Junior Alex
+        country: PE
+      - handle: Zxca
+      - handle: SexyeYogye
+  - team: team-revenant
+    via: invited
+    group: B
+    players:
+      - handle: Zasa
+        country: PE
+      - handle: zerag-
+        country: PE
+      - handle: Ares-
+        country: PE
+      - handle: Hanzama
+        country: PE
+      - handle: Stinger
+  - team: team-lynx
+    via: invited
+    group: A
+    players:
+      - handle: v1olent`
+      - handle: mellojul
+      - handle: htiviy_vladik
+        country: UA
+      - handle: QBFY
+      - handle: kreker
+  - team: team-synapse
+    via: invited
+    group: A
+    players:
+      - handle: rubikon155
+      - handle: G.T.I
+        country: TR
+      - handle: emptiness死
+        country: KZ
+      - handle: Jeezy
+        country: TR
+      - handle: Stoic
+        country: TR
+  - team: zero-tenacity
+    via: invited
+    group: A
+    players:
+      - handle: nesfeer
+      - handle: erase
+      - handle: nefrit
+      - handle: raregods
+        country: RU
+      - handle: Till The End
+  - team: pizza-hook
+    via: qualifier
+    group: B
+    players:
+      - handle: Porty
+        country: PE
+      - handle: BroColi
+        country: PE
+      - handle: ArzenT
+      - handle: Smoker
+      - handle: FeelinG
+  - team: selva-esports
+    via: qualifier
+    group: A
+    players:
+      - handle: Ribau
+        country: PE
+      - handle: enji
+        country: BR
+      - handle: bsK-
+        country: PE
+      - handle: 16añitos
+        country: BR
+      - handle: Jennie
+        country: PE
 prizePool:
   currency: USD
   total: 20000
   distribution:
-    - { place: 1, amount: 12000 }
-    - { place: 2, amount: 5000 }
-    - { place: 3, amount: 3000 }
+    - place: 1
+      amount: 12000
+    - place: 2
+      amount: 5000
+    - place: 3
+      amount: 3000
 phases:
   - key: groupStage
     format: roundRobin
@@ -36,112 +175,4 @@ broadcastTalent:
     language: en
     icon: simple-icons:twitch
     href: https://www.twitch.tv/nexusmedia_en
-participants:
-  - team: solid
-    via: invited
-    group: B
-    players:
-      - { handle: Costabile }
-      - { handle: PiPi }
-      - { handle: Oscar }
-      - { handle: N1ght }
-      - { handle: Panda }
-  - team: chandogs
-    via: invited
-    group: B
-    players:
-      - { handle: Toxic, country: PE }
-      - { handle: S1RENM, country: PE }
-      - { handle: YiSuS, country: CO }
-      - { handle: Kobe, country: PE }
-      - { handle: Bastian, country: PE }
-  - team: los-perros
-    via: invited
-    group: A
-    players:
-      - { handle: payk }
-      - { handle: SHEOL, country: PE }
-      - { handle: kendallx, country: PE }
-      - { handle: CoYoTão, country: BR }
-      - { handle: Michael }
-  - team: new-growth
-    via: invited
-    group: B
-    players:
-      - { handle: Tiburoncin, country: PE }
-      - { handle: Ñengo }
-      - { handle: Hermit }
-      - { handle: Demon }
-      - { handle: JimmyCoff666 }
-  - team: rebeldes
-    via: invited
-    group: A
-    players:
-      - { handle: hFn }
-      - { handle: mini }
-      - { handle: tavo }
-      - { handle: Hane }
-      - { handle: Yanbura }
-  - team: teamdk
-    via: invited
-    group: B
-    players:
-      - { handle: Snufy, country: PE }
-      - { handle: Robo-Z }
-      - { handle: Junior Alex, country: PE }
-      - { handle: Zxca }
-      - { handle: SexyeYogye }
-  - team: team-revenant
-    via: invited
-    group: B
-    players:
-      - { handle: Zasa, country: PE }
-      - { handle: zerag-, country: PE }
-      - { handle: Ares-, country: PE }
-      - { handle: Hanzama, country: PE }
-      - { handle: Stinger }
-  - team: team-lynx
-    via: invited
-    group: A
-    players:
-      - { handle: 'v1olent`' }
-      - { handle: mellojul }
-      - { handle: htiviy_vladik, country: UA }
-      - { handle: QBFY }
-      - { handle: kreker }
-  - team: team-synapse
-    via: invited
-    group: A
-    players:
-      - { handle: rubikon155 }
-      - { handle: G.T.I, country: TR }
-      - { handle: emptiness死, country: KZ }
-      - { handle: Jeezy, country: TR }
-      - { handle: Stoic, country: TR }
-  - team: zero-tenacity
-    via: invited
-    group: A
-    players:
-      - { handle: nesfeer }
-      - { handle: erase }
-      - { handle: nefrit }
-      - { handle: raregods, country: RU }
-      - { handle: Till The End }
-  - team: pizza-hook
-    via: qualifier
-    group: B
-    players:
-      - { handle: Porty, country: PE }
-      - { handle: BroColi, country: PE }
-      - { handle: ArzenT }
-      - { handle: Smoker }
-      - { handle: FeelinG }
-  - team: selva-esports
-    via: qualifier
-    group: A
-    players:
-      - { handle: Ribau, country: PE }
-      - { handle: enji, country: BR }
-      - { handle: bsK-, country: PE }
-      - { handle: 16añitos, country: BR }
-      - { handle: Jennie, country: PE }
+id: season-two
